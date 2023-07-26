@@ -1,0 +1,53 @@
+.content-col{
+    background: white;
+    padding: 28px;
+    border-radius: 8px
+}
+.toc-col{
+    padding-right: 16px;
+    padding-bottom: 16px;
+}
+
+section{
+    margin-bottom: 64px;
+}
+
+section h3{
+    font-weight: 500;
+    color: #24405c;
+    margin-bottom: 16px;
+}
+
+section text, section p{
+    font-size: 16px;
+    color: #2e5073;
+    margin: 16px 0;
+    display: block;
+    text-align: justify;
+}
+
+.adjusted-content{
+    position: relative;
+    top: 64px;
+    padding: 16px 0;
+    margin-top: 24px;
+}
+
+/* table of content */
+.toc-div{
+    padding: 28px;
+    background: white;
+    border-radius: 8px;
+}
+
+.toc-div text{
+    color: grey;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.toc-div text:hover{
+    color: #007bff;
+    cursor: pointer;
+    text-decoration:  underline;
+}

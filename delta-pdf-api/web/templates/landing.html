@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <title>Delta App</title>
+
+    <!-- Mobile Specific Metas -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Sign PDF contracts on blockchain">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+    <!-- Logo in title  -->
+    <link rel="shortcut icon" href="/static/images/png/deltasign.png" class="landing-delta-logo" type="image/png">
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://deltasign.io">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Delta Sign">
+    <meta property="og:description" content="Sign PDF contracts on blockchain">
+    <meta property="og:image" content="/static/images/png/deltasign-social-cover.png"/>
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="twitter:domain" content="">
+    <meta property="twitter:url" content="https://deltasign.io">
+    <meta name="twitter:title" content="Delta Sign">
+    <meta name="twitter:description" content="Sign PDF contracts on blockchain">
+    <meta name="twitter:image" content="/static/images/png/deltasign-social-cover.png"/>
+
+    <!-- Google primary font family -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter">
+
+    <!-- PLUGINS CSS STYLE -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/css/all.min.css"/>
+    <link rel="stylesheet" href="/static/css/themify-icons.css"/>
+
+    <!-- CUSTOM CSS -->
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <link rel="stylesheet" href="/static/css/landing.css">
+
+    <link rel="stylesheet" href="/static/css/snackbar.min.css"/>
+
+    <!-- Favicons   -->
+    <link rel="icon" type="image/png" sizes="192x192"  href="/static/images/png/deltasign.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/png/deltasign.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/images/png/deltasign.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/images/png/deltasign.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    <script src="/static/js/scripts.js"></script>
+    <script>
+        function onValidCaptcha() {
+            submitSubscription();
+        }
+    </script>
+
+</head>
+<body class="body-wrapper" data-spy="scroll" data-target=".privacy-nav">
+ <!-- Sticky top nav bar -->
+    <nav class="navbar sticky-top navbar-expand-md navbar-light landing-nav-bar" id="landing-nav-bar-id">
+        <div class="container-fluid landing-nav-container">
+            <h1>
+                <a class="navbar-brand" href="/">
+                    <img src="/static/images/png/deltasign.png" class="landing-delta-logo" alt="Delta Sign"/>
+                    Delta Sign
+                </a>
+            </h1>
+            <div class="collapse navbar-collapse" id="landing-top-nav">
+                <div class="navbar-nav ml-auto">
+                    <div class="landing-footer-join-community">
+                        <ul class="social-icon list-inline no-padding no-margin">
+                            <li class="list-inline-item">
+                                <a href="https://twitter.com/DeltaSignIO" target="_blank"><i class="ti-twitter"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero section   -->
+    <div class="container-fluid h-justified-flex landing-hero-container section-top-offset" id="landing-hero-container">
+        <div class="row g-4 section-container">
+            <div class="col-lg-6 col-md-6 col-sm-12 no-padding horizontal-start-flex">
+                 <span class="h-start-flex landing-hero-content"  id="landing-hero-content">
+                    <h2 class="landing-hero-title">
+                        Sign PDF contracts on blockchain
+                    </h2>
+                    <h4 class="landing-hero-subtitle">
+                        Turn your PDF contracts into immutable digital contracts
+                        that nobody can refute.
+                    </h4>
+                </span>
+
+                <!--   input for email        -->
+                <div class="h-start-flex form-inline full-width landing-email-request-span">
+                    <input class="landing-email-request-input subscriber-input"
+                           name="landing-email-request-subscription"
+                           placeholder="Email address"
+                           alt="Request for subscription"/>
+                    <button class="landing-email-request-btn">Register (Beta)</button>
+                </div>
+
+                <span class="h-start-flex landing-email-request-info">
+                    <text>We will notify you when we launch</text>
+                </span>
+                <div class="g-recaptcha"
+                     data-sitekey="6LcNMwQcAAAAAEILpuLu8UTd8hY41wWsIlmSUlAJ"
+                     data-callback="onValidCaptcha"
+                     data-size="invisible">
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 no-padding landing-hero-cover-col">
+                <img src="/static/images/jpg/deltasign-hero-image.jpg" class="landing-hero-img" alt="Delta Sign screen">
+            </div>
+        </div>
+    </div>
+
+    <!-- Easy steps  -->
+    <div class="container-fluid centered-flex landing-easy-steps-container section-top-offset" id="landing-easy-steps-container">
+       <div class="section">
+           <h3 class="section-title" id="landing-easy-steps-title">
+               How it works
+           </h3>
+           <h5 class="section-subtitle">
+               Turn your business experience into Delta experience
+           </h5>
+           <div class="container-fluid section-container landing-easy-steps-content">
+               <div class="row g-4">
+                   <div class="col-lg-4 col-md-12 landing-easy-step-container">
+                       <img src="/static/images/png/user-verify.png"/>
+                       <h4>Upload PDF document</h4>
+                       <text class="wrap-word">
+                           Upload any PDF document you want to be signed on
+                           blockchain.
+                       </text>
+                   </div>
+                   <div class="col-lg-4 col-md-12 landing-easy-step-container">
+                       <img src="/static/images/png/user-mobile-phone.png"/>
+                       <h4>Create Delta Sign contract</h4>
+                       <text class="wrap-word">
+                           Create a sign contract and specify the signers.
+                           We'll send them email notification.
+                       </text>
+                   </div>
+                   <div class="col-lg-4 col-md-12 landing-easy-step-container">
+                       <img src="/static/images/png/settled-credit-record.png"/>
+                       <h4>Signers sign the contract</h4>
+                       <text class="wrap-word">
+                           The signers easily sign the contract. We take care of
+                           writing on the blockchain and signature verification.
+                       </text>
+                   </div>
+               </div>
+           </div>
+       </div>
+    </div>
+
+    <!--   call to action and footer  -->
+   <div class="call-to-action-footer-container centered-flex section-top-offset">
+       <div class="container-fluid section centered-flex flex landing-call-action">
+           <h3 class="section-title">Try beta version</h3>
+           <h5 class="section-subtitle"> Register to get notified when we launch </h5>
+           <div class="h-start-flex form-inline landing-email-request-span">
+               <input class="landing-email-request-input subscriber-input"
+                      name="landing-email-request-subscription"
+                      placeholder="Email address"
+                      alt="Request for subscription"/>
+               <button class="landing-email-request-btn">Register (Beta)</button>
+           </div>
+       </div>
+
+       <!-- footer   -->
+       <footer>
+           <div class="container-fluid landing-footer" id="landing-footer-container">
+               <div class="row g-6">
+                   <div class="col-lg-6 col-md-12">
+                       <div class="landing-contact-about">
+                           <h3>Contacts</h3>
+                           <div class="landing-contact-about-info">
+                               <div>
+                                   <i class="fa fa-home" aria-hidden="true"></i>
+                                   <p><a href="https://deltasign.io" class="text-white" target="_blank" rel="noopener noreferrer">
+                                       Delta Sign
+                                   </a></p>
+                               </div>
+                               <div>
+                                   <i class="fa fa-map-marker-alt" ></i>
+                                   <p>
+                                       Delft, The Netherlands
+                                       <br />
+                                   </p>
+                               </div>
+                               <div>
+                                   <i class="fa fa-envelope-open-text" ></i>
+                                   <p>info@deltasign.io</p>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   <div class="col-lg-6 col-md-12">
+                       <div class="landing-footer-privacy-terms">
+                           <h3>Links</h3>
+                           <ul class="no-style-ul no-padding no-margin">
+                               <li class="small-bottom-margin">
+                                   • <a href="/privacy_policy" target="_blank">Privacy Policy</a>
+                               </li>
+                               <li class="small-bottom-margin">
+                                   • <a href="/terms_conditions" target="_blank">
+                                       Terms and Conditions
+                                   </a>
+                               </li>
+                               <li class="small-bottom-margin">
+                                   • <a href="https://cardano.ideascale.com/a/dtd/Dapp-for-business-contracts/333905-48088" target="_blank">
+                                       Project Catalyst (Requires Signing Up)
+                                   </a>
+                               </li>
+                           </ul>
+                       </div>
+                   </div>
+               </div>
+
+               <hr/>
+               <div class="landing-footer-cookie">
+                   We use cookie to improve your experience on our site. By using our site you consent cookies.
+                   <a href="/privacy_policy"> <strong>Learn more</strong></a>
+               </div>
+           </div>
+       </footer>
+   </div>
+
+ <div class="modal fade" id="showSubscriptionResult" role="dialog">
+     <div class="modal-dialog">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <div class="modal-title"><strong><span id="result-modal-title"></span></strong></div>
+                 <button type="button" class="close" data-dismiss="modal">&times;</button>
+             </div>
+             <div class="modal-body" id="result-modal-body">
+
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal"> OK </button>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <!-- Global site tag (gtag.js) - Google Analytics -->
+ <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJ120S2RBB"></script>
+ <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag() {
+         dataLayer.push(arguments);
+     }
+     gtag('js', new Date());
+     gtag('config', 'G-QJ120S2RBB');
+ </script>
+
+ <script src='https://www.google.com/recaptcha/api.js'></script>
+ <script src="/static/js/navbar-scroll.js"></script>
+</body>
+</html>

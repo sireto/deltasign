@@ -1,0 +1,53 @@
+version: "3.7"
+networks:
+  frontend:
+    external: true
+services:
+  mariadb:
+    restart: always
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    networks:
+      - frontend
+    volumes:
+      - ~/delta/dev-delta-api/data/sql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=changeme
+      - MYSQL_PASSWORD=changeme
+      - MYSQL_USER=changeme
+      - MYSQL_DATABASE=changeme
+    deploy:
+      restart_policy:
+        delay: 15s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          memory: 100M
+  deltaapi:
+    restart: always
+    depends_on:
+      - "mariadb"
+    image: git.sireto.io:5050/deltalender/delta-pdf-api:latest
+    networks:
+      - frontend
+    volumes:
+      - ~/delta/dev-delta-api/data/api:/opt/deltapdf
+    environment:
+      DB_DIR: /opt/deltapdf
+      DB_PROVIDER: ${DB_PROVIDER}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DEPLOYMENT: ${DEPLOYMENT}
+      CARDANO_TRANSACTION_URL: ${CARDANO_TRANSACTION_URL}
+      CARDANO_TRANSACTION_SECRET: ${CARDANO_TRANSACTION_SECRET}
+      EMAIL_SMTP_SERVER: ${EMAIL_SMTP_SERVER}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_SERVICE_TEST_MODE: ${EMAIL_SERVICE_TEST_MODE}
+      OTP_VALIDITY: ${OTP_VALIDITY}
