@@ -401,7 +401,7 @@ class _HomeScreenState extends State<HomeScreen> {
               } else {
                 FilePickerResult result = await FilePicker.platform.pickFiles(
                     type: FileType.custom, allowedExtensions: ['pdf']);
-                if (result != null) {
+                if (result != null && result.files.isNotEmpty) {
                   setState(() {
                     _upload(result);
                     isLoading = true;
@@ -550,27 +550,43 @@ class _HomeScreenState extends State<HomeScreen> {
     String fileName = file.path.split('/').last;
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+
     DocumentModel documentModel = DocumentModel(
         fileName: fileName, filePath: file.path, createdDate: formattedDate);
-    var value = await ServerOp(apiKey: _userModel.apiKey, context: this.context)
-        .uploadDoc(filePath: file.path);
-    if (value != null) {
-      setState(() {
-        _documents.insert(0, value);
-        isLoading = false;
-        Fluttertoast.showToast(
-            msg: "Successfully added",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM);
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-        Fluttertoast.showToast(
-            msg: "Failed",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM);
-      });
+    if (await file.exists()) {
+      FileStat fileStat = await file.stat();
+      print(fileStat.size);
+      if (fileStat.size != 0) {
+        var value =
+            await ServerOp(apiKey: _userModel.apiKey, context: this.context)
+                .uploadDoc(filePath: file.path);
+        if (value != null) {
+          setState(() {
+            _documents.insert(0, value);
+            isLoading = false;
+            Fluttertoast.showToast(
+                msg: "Successfully added",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM);
+          });
+        } else {
+          setState(() {
+            isLoading = false;
+            Fluttertoast.showToast(
+                msg: "Failed",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM);
+          });
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+          Fluttertoast.showToast(
+              msg: "File size is 0",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM);
+        });
+      }
     }
   }
 
@@ -751,7 +767,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 }
                               } else if (processType == contractName) {
                                 if (contractName.text.isNotEmpty) {
-                              
                                   Navigator.pop(context);
                                   Navigator.push(
                                       context,
@@ -862,7 +877,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //   });
           // }
         });
-      
+
         if (isContractSign == false || _contracts[index].isContractSigned) {
           Navigator.push(
               this.context,
