@@ -66,13 +66,14 @@ async def get_user_by_uuid(uuid: str):
         raise BadRequest("User does not exist")
 
 
-@users_api.delete("/users/{uuid}", tags=["User API"])
+@users_api.delete("/users", tags=["User API"])
 async def delete_user(user: User = Depends(get_logged_user)):
     with db_session:
         user_service.delete_user_by_uuid(user.uuid)
 
 
 @users_api.get("/users/{uuid}/contracts", tags=["User API"])
-async def get_user_contracts(user: User = Depends(get_logged_user), sent: bool = True, received: bool = False):
+async def get_user_contracts(uuid: str, user: User = Depends(get_logged_user), sent: bool = True,
+                             received: bool = False):
     with db_session:
         return [c.json() for c in contract_service.get_user_contracts(user, sent, received)]

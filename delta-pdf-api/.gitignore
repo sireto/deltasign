@@ -4,3 +4,4 @@ logs/*
 __pycache__/
 .idea
 .env
+deltapdf.sqlite3

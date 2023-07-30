@@ -13,10 +13,10 @@ services:
     volumes:
       - ~/delta/dev-delta-api/data/sql:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=changeme
-      - MYSQL_PASSWORD=changeme
-      - MYSQL_USER=changeme
-      - MYSQL_DATABASE=changeme
+      - MYSQL_ROOT_PASSWORD={MYSQL_ROOT_PASSWORD}
+      - MYSQL_PASSWORD={MYSQL_PASSWORD}
+      - MYSQL_USER={MYSQL_USER}
+      - MYSQL_DATABASE={MYSQL_DATABASE}
     deploy:
       restart_policy:
         delay: 15s
@@ -30,7 +30,7 @@ services:
     restart: always
     depends_on:
       - "mariadb"
-    image: git.sireto.io:5050/deltalender/delta-pdf-api:latest
+    image: registry.sireto.io/deltalender/delta-pdf-api:latest
     networks:
       - frontend
     volumes:
