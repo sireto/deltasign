@@ -13,16 +13,16 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get('JWT_ACCESS_TOKEN_EXPIRE_MI
 
 # Database details
 DB_PROVIDER = os.environ.get('DB_PROVIDER', 'mysql')
-DB_HOST = os.environ.get('DB_HOST', 'localhost')
+DB_HOST = os.environ.get('DB_HOST', 'localhost:3306')
 DB_USER = os.environ.get('DB_USER', 'root')
-DB_PASSWORD = os.environ.get('DB_PASSWORD', 'pakkasran')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', 'root')
 DB_NAME = os.environ.get('DB_NAME', 'deltapdf')
 DB_DIR = os.environ.get('DB_DIR', '.')
 
 # Deployment type
 # PRODUCTION  - For production
 # Anything else - For non-production
-DEPLOYMENT = os.environ.get('DEPLOYMENT', 'DEV')
+DEPLOYMENT = os.environ.get('DEPLOYMENT', 'PRODUCTION')
 
 CARDANO_TRANSACTION_URL = os.environ.get('CARDANO_TRANSACTION_URL', 'https://minter.cnftregistry.io/payment/metadata')
 CARDANO_TRANSACTION_SECRET = os.environ.get('CARDANO_TRANSACTION_SECRET', '$ireT0001')

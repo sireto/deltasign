@@ -62,7 +62,7 @@ def create_new_contract(contract_request: ContractCreationRequest, user: User):
     # copy original final under the name filehash_contractUuid.pdf
     s3_url = document.s3_url
     source_key = s3_service.get_object_key_from_url(s3_url)
-    contract_key = source_key.replace(".pdf",f"_{contract.uuid}.pdf")
+    contract_key = source_key.replace(".pdf", f"_{contract.uuid}.pdf")
     s3_service.copy_file_in_s3(source_key, contract_key)
 
     contract.signed_doc_url = s3_url.replace(source_key, contract_key)
@@ -166,6 +166,7 @@ def sign_contract(contract: Contract, user: User, file: bytes):
 
     return Contract.get(uuid=contract.uuid).json()
 
+
 @db_session
 def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User):
     contract = Contract.get(uuid=uuid)
@@ -185,10 +186,10 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
         for annotation in Contract[contract.id].annotations:
             print(f"annotation: {annotation.json()} {annotation.signed}")
             if not os.path.exists('./data/s3'):
-                os.makedirs('./data/s3',mode=0o777)
-                  
+                os.makedirs('./data/s3', mode=0o777)
+
             if (not annotation.signed) and annotation.signer == user.email:
-               
+
                 document_s3_url = create_pdf_signature(annotation, contract, file)
                 s3_url = s3_service.save_file(user.uuid, file, "signature")
                 # save file hash to annotations
@@ -199,6 +200,8 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
                 sig_annotation.signed = True
 
             # TODO refactor this print statement as it will print even if the email is present as signer
+            elif annotation.signed and annotation.signer == user.email:
+                print(f"Already signed")
             else:
                 print(f"Annotation signer {annotation.signer} does not match current user {user.email}")
 

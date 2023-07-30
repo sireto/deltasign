@@ -42,7 +42,8 @@ class ServerOp {
         'api-key': '$_apiKey',
         'Content-Type': 'multipart/form-data'
       };
-      String filename = filePath.split('/').last;
+
+      String filename = filePath.split('/').last.replaceAll("'", "");
       FormData formData = new FormData.fromMap({
         "file": await MultipartFile.fromFile(
           filePath,
@@ -56,7 +57,6 @@ class ServerOp {
           options: Options(
             headers: headers,
           ));
-
       if (response.statusCode == 200) {
         print("from server ${response.data}");
         // Fluttertoast.showToast(
@@ -76,6 +76,7 @@ class ServerOp {
         print("error");
       }
     } on DioError catch (e) {
+      print(e);
       if (e.response != null) {
         print("document already contain");
       }
