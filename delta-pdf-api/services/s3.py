@@ -7,8 +7,10 @@ import boto3
 import io
 
 import botocore
+from fastapi import HTTPException
 
 import util
+from api.exceptions import BadRequest
 from dto.constants import uuid_regex
 
 from env import AWS_BUCKET, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_ENDPOINT_URL
@@ -38,16 +40,17 @@ class S3Service:
         self.bucket.upload_fileobj(io.BytesIO(binary_pdf), f"pdf/{sha256_hash}.pdf")
 
     def get_file_from_s3_url(self, s3_url) -> str:
-        object_key = self.__get_object_key_from_url(s3_url)
-        signed_pdf_url = util.get_signed_url(s3_url)
-        if self.check_if_file_exists(signed_pdf_url):
-            object_key = self.__get_object_key_from_url(signed_pdf_url)
-        file_download_path = self.__get_download_path(object_key)
+        # signed_pdf_url = util.get_signed_url(s3_url)
+        if self.check_if_file_exists(s3_url):
+            # object_key = self.__get_object_key_from_url(signed_pdf_url)
+            object_key = self.__get_object_key_from_url(s3_url)
+            file_download_path = self.__get_download_path(object_key)
+            self.s3_client.download_file(self.bucket_name, object_key, file_download_path)
+            return file_download_path
+        raise BadRequest("Document not found.")
 
-        self.s3_client.download_file(self.bucket_name, object_key, file_download_path)
-        return file_download_path
-
-    def copy_file_in_s3(self, source_key: str, key: str, source_bucket_name: str = AWS_BUCKET, bucket_name: str = AWS_BUCKET):
+    def copy_file_in_s3(self, source_key: str, key: str, source_bucket_name: str = AWS_BUCKET,
+                        bucket_name: str = AWS_BUCKET):
         copy_source = self.__get_source_from_buket_name_and_key(source_bucket_name, source_key)
         self.s3.meta.client.copy(copy_source, bucket_name, key)
 
@@ -92,6 +95,7 @@ class S3Service:
 
     def check_if_file_exists(self, s3_url) -> bool:
         object_key = self.__get_object_key_from_url(s3_url)
+        print(self.bucket_name)
         try:
             self.s3.Object(self.bucket_name, object_key).load()
             return True
@@ -104,7 +108,7 @@ class S3Service:
 s3_service = S3Service()
 
 if __name__ == '__main__':
-    s3_url ="https://s3.eu-central-1.wasabisys.com/eu.delta.sireto.io/pdf/f431a3b9-5c85-4387-a930-0217e6302794/a04b85fca0d6b705044c9e7d57fd928d023570b46ff07fd780dbbe762137d837.pdf"
+    s3_url = "https://s3.eu-central-1.wasabisys.com/eu.delta.sireto.io/pdf/f431a3b9-5c85-4387-a930-0217e6302794/a04b85fca0d6b705044c9e7d57fd928d023570b46ff07fd780dbbe762137d837.pdf"
     response = s3_service.check_if_file_exists(s3_url)
     print(response)
     # s3_service.get_file_from_s3_url("https://s3.eu-central-1.wasabisys.com/eu.delta.sireto.io/pdf/f431a3b9-5c85-4387-a930-0217e6302794/a04b85fca0d6b705044c9e7d57fd928d023570b46ff07fd780dbbe762137d837.pdf")

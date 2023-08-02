@@ -22,7 +22,7 @@ DB_DIR = os.environ.get('DB_DIR', '.')
 # Deployment type
 # PRODUCTION  - For production
 # Anything else - For non-production
-DEPLOYMENT = os.environ.get('DEPLOYMENT', 'PRODUCTION')
+DEPLOYMENT = os.environ.get('DEPLOYMENT', 'DEV')
 
 CARDANO_TRANSACTION_URL = os.environ.get('CARDANO_TRANSACTION_URL', 'https://minter.cnftregistry.io/payment/metadata')
 CARDANO_TRANSACTION_SECRET = os.environ.get('CARDANO_TRANSACTION_SECRET', '$ireT0001')

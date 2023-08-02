@@ -181,7 +181,7 @@ def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User):
 
 
 def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
-    with db_session:
+    with (db_session):
         document_s3_url = ""
         for annotation in Contract[contract.id].annotations:
             print(f"annotation: {annotation.json()} {annotation.signed}")
@@ -189,7 +189,6 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
                 os.makedirs('./data/s3', mode=0o777)
 
             if (not annotation.signed) and annotation.signer == user.email:
-
                 document_s3_url = create_pdf_signature(annotation, contract, file)
                 s3_url = s3_service.save_file(user.uuid, file, "signature")
                 # save file hash to annotations
