@@ -26,23 +26,25 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      API_PATH:delta-pdf-api
     steps:
       -
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: $API_PATH/docker/setup-qemu-action@v2
       -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: $API_PATH/docker/setup-buildx-action@v2
       -
         name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: $API_PATH/docker/login-action@v2
         with:
           registry: "registry.sireto.io"
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       -
         name: Build and push
-        uses: docker/build-push-action@v4
+        uses: $API_PATH/docker/build-push-action@v4
         with:
           push: true
           tags: |
@@ -53,6 +55,8 @@ jobs:
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
+    env:
+      API_PATH:delta-pdf-api
     steps:
       -
         name: Executing remote ssh commands using ssh key and deploying
@@ -64,9 +68,9 @@ jobs:
           port: ${{ secrets.SIRETO_BASTION_PORT }}
           script: |
             if [ ${{ github.ref_type }} == 'master' ]; then
-                docker --host=${{ secrets.PROD_DEPLOYMENT_HOST }} service update --image=registry.sireto.io/deltalender/delta-pdf-api:${{ github.ref_name }} delta_sign_api
+                $API_PATH/docker --host=${{ secrets.PROD_DEPLOYMENT_HOST }} service update --image=registry.sireto.io/deltalender/delta-pdf-api:${{ github.ref_name }} delta_sign_api
             elif [ ${{ github.ref_name }} == 'develop' ]; then
-              docker --host=${{ secrets.DEV_DEPLOYMENT_HOST }} service update --image=registry.sireto.io/deltalender/delta-pdf-api:${{ github.sha }} delta_sign_dev_api
+              $API_PATH/docker --host=${{ secrets.DEV_DEPLOYMENT_HOST }} service update --image=registry.sireto.io/deltalender/delta-pdf-api:${{ github.sha }} delta_sign_dev_api
             else
               echo "Deployment skipped for branch ${{ github.ref }}"
             fi
