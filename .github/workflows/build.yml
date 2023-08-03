@@ -44,7 +44,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./delta-pdf-api/
+          context: ./delta-pdf-api
           push: true
           tags: |
             registry.sireto.io/deltalender/delta-pdf-api:${{ github.sha }}
