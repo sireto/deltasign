@@ -27,6 +27,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -44,7 +47,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./delta-pdf-api/
+          context: ./delta-pdf-api
           push: true
           tags: |
             registry.sireto.io/deltalender/delta-pdf-api:${{ github.sha }}
@@ -56,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        name: Executing remote ssh commands using ssh key and deploying
+        name: Update docker service over ssh 
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SIRETO_BASTION_HOST }}
@@ -64,7 +67,7 @@ jobs:
           key: ${{ secrets.SIRETO_BASTION_SSH_KEY }}
           port: ${{ secrets.SIRETO_BASTION_PORT }}
           script: |
-            if [ ${{ github.ref_type }} == 'master' ]; then
+            if [ ${{ github.ref_name }} == 'master' ]; then
                 docker --host=${{ secrets.PROD_DEPLOYMENT_HOST }} service update --image=registry.sireto.io/deltalender/delta-pdf-api:${{ github.ref_name }} delta_sign_api
             elif [ ${{ github.ref_name }} == 'develop' ]; then
               docker --host=${{ secrets.DEV_DEPLOYMENT_HOST }} service update --image=registry.sireto.io/deltalender/delta-pdf-api:${{ github.sha }} delta_sign_dev_api
