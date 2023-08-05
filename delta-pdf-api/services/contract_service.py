@@ -163,7 +163,7 @@ def sign_contract(contract: Contract, user: User, file: bytes):
         raise BadRequest("Contract signing request does not exist.")
     thread = Thread(target=sign_and_upload_to_s3, args=(contract, user, file))
     thread.start()
-
+    thread.join()
     return Contract.get(uuid=contract.uuid).json()
 
 

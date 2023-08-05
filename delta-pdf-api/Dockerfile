@@ -6,7 +6,7 @@ RUN apt-get update && \
 
     
 # We create home folder for non-root user.
-RUN useradd -u 1001 -U  -d /server -m  app
+RUN useradd -u 1001 -U  -d /server -m  app && mkdir /var/lib/deltapdf && chown 1001:1001 /var/lib/deltapdf
 WORKDIR /server
 ENV PATH="$PATH:/server/.local/bin"
 USER app
@@ -18,6 +18,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the code
 COPY ./ ./
-
+VOLUME [ "/var/lib/deltapdf" ]
 EXPOSE 8000
 CMD [ "uvicorn", "--proxy-headers", "--forwarded-allow-ips=*", "main:app", "--host", "0.0.0.0", "--port", "8000" ]

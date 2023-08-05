@@ -17,4 +17,3 @@ pyHanko[pkcs11,image-support]
 pdf-annotate
 Jinja2==3.1.2
 python-multipart
-pycardano
