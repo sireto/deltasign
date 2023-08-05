@@ -12,6 +12,7 @@ ENV PATH="$PATH:/server/.local/bin"
 USER app
 
 COPY ./requirements.txt ./requirements.txt
+COPY ./data/s3 ./data/s3
 
 # install all the packages with cache disabled. (this layer will be cached unless requirements.txt is changed.)
 RUN pip install --no-cache-dir -r requirements.txt
