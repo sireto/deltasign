@@ -1,0 +1,90 @@
+name: Docker Deploy Staging
+
+on:
+  workflow_run:
+    workflows: ["Docker Image Build"]
+    branches: [main,master]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    name: Deploy Docker Images
+    runs-on: builder
+    steps:
+      - name: Set commit status to pending
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const sha = context.eventName === 'workflow_dispatch' ? github.context.sha : (context.payload.workflow_run ? context.payload.workflow_run.head_sha : github.context.sha);
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'pending',
+              description: 'Deployment is running',
+              context: 'deploy/master'
+            })
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install docker-stack
+        run: pip install --upgrade docker-stack
+
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.sireto.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Deploy stack
+        run: (echo 'dummy' > .npmtoken) && docker-stack deploy --with-registry-auth normlogic docker-compose-staging.yml
+        env:
+          DOCKER_HOST: 172.31.0.5:2376
+          COMMIT_SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
+          DB_USER: delta-lender-user
+          DB_PASSWORD: X*I5Er#ywLYo8!
+          DB_NAME: delta-lender
+          DB_PROVIDER: mysql
+          DB_ROOT_PASSWORD: Bjgm2^E4gdNikt
+          
+      - name: Set commit status to success
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const sha = context.eventName === 'workflow_dispatch' ? github.context.sha : (context.payload.workflow_run ? context.payload.workflow_run.head_sha : github.context.sha);
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'success',
+              description: 'Deployment succeeded',
+              context: 'deploy/master'
+            })
+
+      - name: Set commit status to failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const sha = context.eventName === 'workflow_dispatch' ? github.context.sha : (context.payload.workflow_run ? context.payload.workflow_run.head_sha : github.context.sha);
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'failure',
+              description: 'Deployment failed',
+              context: 'deploy/master'
+            })

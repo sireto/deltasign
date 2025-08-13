@@ -1,0 +1,67 @@
+version: "3.7"
+networks:
+  frontend:
+    external: true
+  backend:
+    external: false
+volumes:
+  sql_data:
+  api_data:
+services:
+  mariadb:
+    restart: always
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    networks:
+      - frontend
+      - backend
+    volumes:
+      - sql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_DATABASE=${DB_NAME}
+    deploy:
+      restart_policy:
+        delay: 15s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          memory: 100M
+      placement:
+        constraints:
+            - "node.labels.deltalender==true"
+  backend:
+    restart: always
+    depends_on:
+      - mariadb
+    image: registry.sireto.io/deltalender/delta-pdf-api:${COMMIT_SHA}
+    build:
+      context: .
+      dockerfile: delta-pdf-api/Dockerfile
+    networks:
+      - frontend
+      - backend
+    volumes:
+      - api_data:/opt/deltapdf
+    environment:
+      DB_DIR: /opt/deltapdf
+      DB_PROVIDER: ${DB_PROVIDER}
+      DB_HOST: mariadb
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DEPLOYMENT: staging
+    deploy:
+      restart_policy:
+        delay: 30s
+      resources:
+        limits:
+          memory: 3G
+      placement:
+        constraints:
+            - "node.labels.deltalender==true"
