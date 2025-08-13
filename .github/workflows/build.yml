@@ -9,6 +9,20 @@ on:
       - '*'
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy (master or develop)'
+        required: true
+        default: 'develop'
+        type: choice
+        options:
+          - master
+          - develop
+      tag_or_sha:
+        description: 'Tag or commit SHA to deploy'
+        required: false
+        default: ''
 
 jobs:
 #   sonarcloud:
