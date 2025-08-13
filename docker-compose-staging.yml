@@ -41,8 +41,8 @@ services:
       - mariadb
     image: registry.sireto.io/deltalender/delta-pdf-api:${COMMIT_SHA}
     build:
-      context: .
-      dockerfile: delta-pdf-api/Dockerfile
+      context: ./delta-pdf-api
+      dockerfile: Dockerfile
     networks:
       - frontend
       - backend
