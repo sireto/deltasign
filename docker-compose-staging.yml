@@ -12,7 +12,7 @@ services:
     restart: always
     image: mariadb:latest
     ports:
-      - 3306:3306
+      - 3406:3306
     networks:
       - frontend
       - backend
@@ -49,6 +49,7 @@ services:
     volumes:
       - api_data:/opt/deltapdf
     environment:
+      VIRTUAL_HOST: https://deltasign.sireto.io
       DB_DIR: /opt/deltapdf
       DB_PROVIDER: ${DB_PROVIDER}
       DB_HOST: mariadb
