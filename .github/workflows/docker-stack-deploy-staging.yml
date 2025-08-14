@@ -53,11 +53,37 @@ jobs:
         env:
           DOCKER_HOST: 172.31.0.5:2376
           COMMIT_SHA: ${{ github.event_name == 'workflow_dispatch' && github.sha || github.event.workflow_run.head_sha }}
-          DB_USER: delta-lender-user
-          DB_PASSWORD: X*I5Er#ywLYo8!
-          DB_NAME: delta-lender
-          DB_PROVIDER: mysql
-          DB_ROOT_PASSWORD: Bjgm2^E4gdNikt
+          #JWT secrets
+          JWT_SECRET_KEY : ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ALGORITHM : ${{ vars.JWT_ALGORITHM }}
+          JWT_ACCESS_TOKEN_EXPIRE_MINUTES : ${{ vars.JWT_ACCESS_TOKEN_EXPIRE_MINUTES }}
+
+          # Database details
+          DB_PROVIDER : ${{ vars.STAGING_DB_PROVIDER }}
+          DB_HOST : ${{ vars.STAGING_DB_HOST }}
+          DB_USER : ${{ vars.STAGING_DB_USER }}
+          DB_PASSWORD : ${{ secrets.STAGING_DB_PASSWORD }}
+          DB_NAME : ${{ vars.STAGING_DB_NAME }}
+
+          CARDANO_TRANSACTION_URL : ${{ vars.CARDANO_TRANSACTION_URL }}
+          CARDANO_TRANSACTION_SECRET : ${{ secrets.CARDANO_TRANSACTION_SECRET }}
+
+          # Email service
+          EMAIL_SMTP_SERVER : ${{ vars.EMAIL_SMTP_SERVER }}
+          EMAIL_SMTP_PORT : ${{ vars.EMAIL_SMTP_PORT }}
+          EMAIL_USERNAME : ${{ vars.EMAIL_USERNAME }}
+          EMAIL_PASSWORD : ${{ secrets.EMAIL_PASSWORD }}
+
+          # TOTP
+          OTP_VALIDITY : ${{ vars.OTP_VALIDITY }}
+
+          # AWS
+          AWS_ENDPOINT_URL : ${{ vars.AWS_ENDPOINT_URL }}
+          AWS_ACCESS_KEY : ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY : ${{ secrets.AWS_SECRET_KEY }}
+          AWS_BUCKET : ${{ vars.AWS_BUCKET }}
+          
+          VIRTUAL_HOST: ${{vars.STAGING_VIRTUAL_HOST}}
 
       - name: Set commit status to success
         if: success()
