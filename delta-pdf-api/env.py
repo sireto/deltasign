@@ -7,7 +7,7 @@ def str2bool(v):
 
 # to get a string like this run:
 # openssl rand -hex 32
-JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY', '09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7')
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY','***************************************')
 JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get('JWT_ACCESS_TOKEN_EXPIRE_MINUTES', '30'))
 
@@ -25,13 +25,13 @@ DB_DIR = os.environ.get('DB_DIR', '.')
 DEPLOYMENT = os.environ.get('DEPLOYMENT', 'DEV')
 
 CARDANO_TRANSACTION_URL = os.environ.get('CARDANO_TRANSACTION_URL', 'https://minter.cnftregistry.io/payment/metadata')
-CARDANO_TRANSACTION_SECRET = os.environ.get('CARDANO_TRANSACTION_SECRET', '$ireT0001')
+CARDANO_TRANSACTION_SECRET = os.environ.get('CARDANO_TRANSACTION_SECRET', '***************************************')
 
 # Email service
 EMAIL_SMTP_SERVER = os.environ.get('EMAIL_SMTP_SERVER', 'mail.sireto.io')
 EMAIL_SMTP_PORT = int(os.environ.get('EMAIL_SMTP_PORT', '587'))
 EMAIL_USERNAME = os.environ.get('EMAIL_USERNAME', 'noreply@deltasign.io')
-EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', 'xpc7FgSFd89Nhw5p')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', '***************************************')
 EMAIL_SERVICE_TEST_MODE = str2bool(os.environ.get('EMAIL_SERVICE_TEST_MODE', 'y'))
 
 # TOTP
@@ -39,6 +39,6 @@ OTP_VALIDITY = int(os.environ.get('OTP_VALIDITY', '120'))  # 2 minutes by defaul
 
 # AWS
 AWS_ENDPOINT_URL = os.environ.get("AWS_ENDPOINT_URL", "https://s3.eu-central-1.wasabisys.com")
-AWS_ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY", "MW1WXC4NDMKOFJOQOIBT")
-AWS_SECRET_KEY = os.environ.get("AWS_SECRET_KEY", "tnfhPoDmUZnhWa49Iz0Y75L3sMetZMNlKdjurAzt")
+AWS_ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY", "***************************************")
+AWS_SECRET_KEY = os.environ.get("AWS_SECRET_KEY", "***************************************")
 AWS_BUCKET = os.environ.get("AWS_BUCKET", "eu.delta.sireto.io")

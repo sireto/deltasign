@@ -273,7 +273,7 @@ class SignRequest(database.Entity):
 #         }
 
 
-if DEPLOYMENT == 'PRODUCTION':
+if DEPLOYMENT == 'PRODUCTION' or DEPLOYMENT == 'STAGING':
     database.bind(provider=DB_PROVIDER, host=DB_HOST, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME, charset='utf8mb4')
     database.generate_mapping(create_tables=True)
 else:
