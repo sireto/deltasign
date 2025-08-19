@@ -21,6 +21,7 @@ from services.cardano_service import cardano_service
 
 from services.pdf_signer import pdf_signer
 from services.file_service import delete_file, check_file, save_file
+from services.kuber_service import kuber_service
 
 logger = logging.getLogger(__name__)
 
@@ -245,18 +246,22 @@ def _delete_residual_files_after_signing(file_path):
 def sign_and_upload(pdf_file, signature_file, contract, annotation):
     signed_file = pdf_signer.writeImageBasedStamp(pdf_file, signature_file, annotation)
     s3_service.upload_file(signed_file, contract.signed_doc_url)
-    # # get count of remaining signers
-    # remaining_signers = select(s for s in SignatureAnnotation if s.contract == contract and s.signed == 0)[:]
-    # if remaining_signers.__len__() <= 1:
-    #     document = Document.get(id=contract.document.id)
-    #     contract_db = Contract[contract.id]
-    #     transaction_id, document_hash = cardano_service.post_transaction_with_document_validation_info(
-    #         signed_file,
-    #         document.file_hash,
-    #         document.user.uuid
-    #     )
-    #     contract_db.blockchain_tx_hash = transaction_id
-    #     contract_db.signature_hash = document_hash
+    # get count of remaining signers
+    remaining_signers = select(s for s in SignatureAnnotation if s.contract == contract and s.signed == 0)[:]
+    if remaining_signers.__len__() <= 1:
+        document = Document.get(id=contract.document.id)
+        contract_db = Contract[contract.id]
+        # transaction_id, document_hash = cardano_service.post_transaction_with_document_validation_info(
+        #     signed_file,
+        #     document.file_hash,
+        #     document.user.uuid
+        # )
+        print("Posting Transaction With Document Validation Info")
+        transaction_id , document_hash = kuber_service.post_transaction_with_document_validation_info(signed_file , document.file_hash , document.user.uuid)
+        print("TransactionID", transaction_id)
+        print("DocumentHash", document_hash)
+        contract_db.blockchain_tx_hash = transaction_id
+        contract_db.signature_hash = document_hash
 
     # delete files
     _delete_residual_files_after_signing(signed_file)
