@@ -51,3 +51,7 @@ AWS_BUCKET = os.environ.get("AWS_BUCKET", "eu.delta.sireto.io")
 
 # WALLET
 WALLET_MNEMONIC = os.environ.get("WALLET_MNEMONIC")
+
+# BLOCKFROST
+BLOCKFROST_PROJECT_ID = os.environ.get('BLOCKFROST_PROJECT_ID' , '***************************************')
+BLOCKFROST_URL = f"https://cardano-{NETWORK}.blockfrost.io/"

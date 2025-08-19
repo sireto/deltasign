@@ -17,7 +17,6 @@ from services import document_service, user_service, email_service
 from services.email_service import EmailService
 from services.s3 import s3_service
 
-from services.cardano_service import cardano_service
 
 from services.pdf_signer import pdf_signer
 from services.file_service import delete_file, check_file, save_file
@@ -127,27 +126,27 @@ def get_sign_request(contract: Contract, user: User):
     return None
 
 
-@db_session
-def validate_contract(user: User, file_path: str):
-    hash = ""
-    with open(file_path, 'rb') as docs:
-        hash = util.get_hash(docs.read())
-    contract: Contract = get_contract_by_hash(hash)
-    if not contract:
-        raise Exception("Given file is not registered in our platform.")
+# @db_session
+# def validate_contract(user: User, file_path: str):
+#     hash = ""
+#     with open(file_path, 'rb') as docs:
+#         hash = util.get_hash(docs.read())
+#     contract: Contract = get_contract_by_hash(hash)
+#     if not contract:
+#         raise Exception("Given file is not registered in our platform.")
 
-    metadata = cardano_service.get_contract_validation_metadata(contract.blockchain_tx_hash)
+#     metadata = cardano_service.get_contract_validation_metadata(contract.blockchain_tx_hash)
 
-    if not metadata:
-        raise Exception(f"Metadata not found for txn hash {contract.blockchain_tx_hash}")
-    # check if the document hash matches
-    if metadata["hashes"]["signed_document_hash"][0] == hash:
-        msg = pdf_signer.validate_signed_pdf(file_path, metadata["hashes"])
-        # delete the file
-        delete_file(file_path)
-        return msg
-    else:
-        print(f"Provided file hash {hash} does not match contract hash.")
+#     if not metadata:
+#         raise Exception(f"Metadata not found for txn hash {contract.blockchain_tx_hash}")
+#     # check if the document hash matches
+#     if metadata["hashes"]["signed_document_hash"][0] == hash:
+#         msg = pdf_signer.validate_signed_pdf(file_path, metadata["hashes"])
+#         # delete the file
+#         delete_file(file_path)
+#         return msg
+#     else:
+#         print(f"Provided file hash {hash} does not match contract hash.")
 
 
 @db_session
@@ -251,15 +250,8 @@ def sign_and_upload(pdf_file, signature_file, contract, annotation):
     if remaining_signers.__len__() <= 1:
         document = Document.get(id=contract.document.id)
         contract_db = Contract[contract.id]
-        # transaction_id, document_hash = cardano_service.post_transaction_with_document_validation_info(
-        #     signed_file,
-        #     document.file_hash,
-        #     document.user.uuid
-        # )
         print("Posting Transaction With Document Validation Info")
         transaction_id , document_hash = kuber_service.post_transaction_with_document_validation_info(signed_file , document.file_hash , document.user.uuid)
-        print("TransactionID", transaction_id)
-        print("DocumentHash", document_hash)
         contract_db.blockchain_tx_hash = transaction_id
         contract_db.signature_hash = document_hash
 

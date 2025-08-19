@@ -10,7 +10,8 @@ from api.exceptions import BadRequest, UnauthorizedError
 from db import User, Document, Contract
 from model.annotation import ContractPatchRequest
 from services import document_service, contract_service
-from services.contract_service import ContractCreationRequest, validate_contract
+from services.contract_service import ContractCreationRequest
+# from services.contract_service import validate_contract
 from services.file_service import save_file
 
 contracts_api = APIRouter()
@@ -92,9 +93,9 @@ async def sign_contract(file: UploadFile = File(...),
     return contract_service.sign_contract(contract, user, file.file.read())
 
 
-@contracts_api.post("/contracts/verify", tags=["Contracts API"])
-async def verify_contract(file: UploadFile = File(...),
-                          user: User = Depends(get_logged_user)):
-    file_path = save_file(file)
+# @contracts_api.post("/contracts/verify", tags=["Contracts API"])
+# async def verify_contract(file: UploadFile = File(...),
+#                           user: User = Depends(get_logged_user)):
+#     file_path = save_file(file)
 
-    return validate_contract(user, file_path)
+#     return validate_contract(user, file_path)
