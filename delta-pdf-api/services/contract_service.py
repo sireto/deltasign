@@ -129,27 +129,28 @@ def get_sign_request(contract: Contract, user: User):
     return None
 
 
-# @db_session
-# def validate_contract(user: User, file_path: str):
-#     hash = ""
-#     with open(file_path, 'rb') as docs:
-#         hash = util.get_hash(docs.read())
-#     contract: Contract = get_contract_by_hash(hash)
-#     if not contract:
-#         raise Exception("Given file is not registered in our platform.")
+@db_session
+def validate_contract(user: User, file_path: str):
+    hash = ""
+    with open(file_path, 'rb') as docs:
+        hash = util.get_hash(docs.read())
+    contract: Contract = get_contract_by_hash(hash)
+    if not contract:
+        raise Exception("Given file is not registered in our platform.")
 
-#     metadata = cardano_service.get_contract_validation_metadata(contract.blockchain_tx_hash)
+    metadata_list = blockfrost_service.get_transaction_metadata(contract.blockchain_tx_hash)
 
-#     if not metadata:
-#         raise Exception(f"Metadata not found for txn hash {contract.blockchain_tx_hash}")
-#     # check if the document hash matches
-#     if metadata["hashes"]["signed_document_hash"][0] == hash:
-#         msg = pdf_signer.validate_signed_pdf(file_path, metadata["hashes"])
-#         # delete the file
-#         delete_file(file_path)
-#         return msg
-#     else:
-#         print(f"Provided file hash {hash} does not match contract hash.")
+    if not metadata_list or len(metadata_list) == 0:
+        raise Exception(f"Metadata not found for txn hash {contract.blockchain_tx_hash}")
+
+    metadata = metadata_list[0]["json_metadata"]  
+    
+    if metadata["hashes"]["signed_document_hash"] == hash:  
+        msg = pdf_signer.validate_signed_pdf(file_path, metadata["hashes"])
+        delete_file(file_path)
+        return msg
+    else:
+        print(f"Provided file hash {hash} does not match contract hash.")
 
 
 @db_session

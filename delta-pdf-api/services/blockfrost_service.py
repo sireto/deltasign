@@ -51,7 +51,7 @@ class BlockFrostService:
         else:
             return None
     
-    def verify_transaction(self, transaction_hash: str):
+    def get_transaction(self, transaction_hash: str):
         """
         Fetch a transaction from Blockfrost by its hash.
 
@@ -64,12 +64,15 @@ class BlockFrostService:
     def poll_transaction_until_found(self , transaction_hash , max_attempts , interval):
         attempts = 0
         while attempts < max_attempts:
-            result = self.verify_transaction(transaction_hash)
+            result = self.get_transaction(transaction_hash)
             if result is not None:
                 return result
             attempts += 1
             time.sleep(interval)
-
+    
+    def get_transaction_metadata(self , transaction_hash : str):
+      path = f"/api/v0/txs/{transaction_hash}/metadata"
+      return self.call_blockfrost(path)
 
 blockfrost_service = BlockFrostService()
 
