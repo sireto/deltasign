@@ -73,22 +73,11 @@ class KuberService:
                 )
 
             tx_hash = transaction_result.get("hash")
-            print("tx_hash",tx_hash)
-
-            Thread(target=self.run_polling, args=(tx_hash,)).start()
 
             return tx_hash, pdf_hashes["signed_document_hash"]
 
         return None, None
 
-    def get_contract_validation_metadata(self, hash: str):
-        result_json = self.call_kuber(
-            path="payment/metadata",
-            method="GET",
-            params={"hash": hash}
-        )
-        return result_json
-    
     def run_polling(self, tx_hash):
         tx_details = blockfrost_service.poll_transaction_until_found(
             transaction_hash=tx_hash,

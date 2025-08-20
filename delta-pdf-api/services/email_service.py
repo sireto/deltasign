@@ -3,7 +3,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from env import EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT, EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_SERVICE_TEST_MODE
+from env import EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT, EMAIL_USERNAME, EMAIL_PASSWORD, EMAIL_SERVICE_TEST_MODE , NETWORK
 
 
 # TODO ADD SCHEDULER SERVICE FOR FAILED EMAILS
@@ -35,28 +35,31 @@ class EmailService:
             self.logger.info(f"Email Service Test mode: Email should be sent at this point: {receiver}")
             return
 
-        # Initialize session
-        self.init_connection()
+        try:
+            # Initialize session
+            self.init_connection()
 
-        message = MIMEMultipart("alternative")
-        message["Subject"] = subject
-        message["From"] = self.username
-        message["To"] = receiver
+            message = MIMEMultipart("alternative")
+            message["Subject"] = subject
+            message["From"] = self.username
+            message["To"] = receiver
 
-        # Turn these into plain/html MIMEText objects
-        part1 = MIMEText(text_body, "plain")
-        part2 = MIMEText(html_body, "html")
+            # Turn these into plain/html MIMEText objects
+            part1 = MIMEText(text_body, "plain")
+            part2 = MIMEText(html_body, "html")
 
-        # Add HTML/plain-text parts to MIMEMultipart message
-        # The email client will try to render the last part first
-        message.attach(part1)
-        message.attach(part2)
+            # Add HTML/plain-text parts to MIMEMultipart message
+            # The email client will try to render the last part first
+            message.attach(part1)
+            message.attach(part2)
 
-        # send email
-        self.server.sendmail(self.username, receiver, message.as_string())
+            # send email
+            self.server.sendmail(self.username, receiver, message.as_string())
 
-        # Quit session
-        self.server.quit()
+            # Quit session
+            self.server.quit()
+        except Exception as e:
+            print(e)
 
     def email_login_code(self, receiver, login_code):
         subject = "Delta Sign - Login code"
@@ -178,3 +181,46 @@ class EmailService:
         </html>"""
 
         return self.sendmail("info@deltasign.io", subject, text_body=text_body, html_body=html_body)
+
+    def email_contract_fully_signed(self, tx_hash : str, receivers: list[str], contract_name: str,):
+        """
+        Notify a list of users that a contract has been fully signed and recorded on blockchain.
+
+        :param receivers: List of recipient emails
+        :param contract_name: Name of the contract
+        :param tx_hash: Blockchain transaction hash
+        """
+        subject = f"Delta Sign - Contract '{contract_name}' Fully Signed"
+        text_body = f"""\
+    Hi there,
+
+    The contract '{contract_name}' has been fully signed by all parties.
+    It has been successfully recorded on the cardano blockchain ({NETWORK} network).
+
+    Transaction hash: {tx_hash}
+
+    You can view the contract in your DeltaSign app. 
+
+    Kind Regards,
+    DeltaSign Team
+    """
+        html_body = f"""\
+    <html>
+    <body>
+        <p>Hi there,<br><br/>
+        The contract '<strong>{contract_name}</strong>' has been fully signed by all parties.<br/>
+        It has been successfully recorded on the cardano blockchain ({NETWORK} network).<br/><br/>
+        <strong>Transaction hash:</strong> {tx_hash}<br/><br/>
+        You can view the contract in your DeltaSign app.<br/><br/>
+        Kind Regards,<br/>
+        DeltaSign Team
+        </p>
+    </body>
+    </html>
+    """
+
+        for receiver in receivers:
+            try:
+                self.sendmail(receiver, subject, text_body=text_body, html_body=html_body)
+            except Exception as e:
+                self.logger.error(f"Failed to send contract fully signed email to {receiver}: {e}")
