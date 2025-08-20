@@ -26,9 +26,6 @@ DB_DIR = os.environ.get('DB_DIR', '.')
 # Anything else - For non-production
 DEPLOYMENT = os.environ.get('DEPLOYMENT', 'DEV')
 
-CARDANO_TRANSACTION_URL = os.environ.get('CARDANO_TRANSACTION_URL', 'https://minter.cnftregistry.io/payment/metadata')
-CARDANO_TRANSACTION_SECRET = os.environ.get('CARDANO_TRANSACTION_SECRET', '***************************************')
-
 NETWORK = os.environ.get("NETWORK", "preview")
 KUBER_API_URL = f"https://{NETWORK}.kuber.cardanoapi.io"
 KUBER_API_KEY = os.environ.get("KUBER_API_KEY", "***************************************")
