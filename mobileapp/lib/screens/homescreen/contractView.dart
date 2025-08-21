@@ -6,11 +6,14 @@ import 'package:delta_sign/models/contract_model.dart';
 import 'package:delta_sign/models/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_fullpdfview_fork/flutter_fullpdfview_fork.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart';
 import '../../themes.dart';
+import '../../extensions/string_extensions.dart';
+// import 'package:flutter/services.dart';
 
 class ContractView extends StatefulWidget {
   final ContractModel contractModel;
@@ -481,6 +484,41 @@ class _ContractViewState extends State<ContractView> {
                             : SizedBox(),
                       ],
                     )),
+             _contractModel.blockchainTxHash != null
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Clipboard.setData(
+                              ClipboardData(text: _contractModel.blockchainTxHash),
+                            );
+                            // Optional: show a small message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Transaction hash copied!')),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 20),
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'TxHash : ', 
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  TextSpan(
+                                    text: _contractModel.blockchainTxHash.ellipsis(),
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
