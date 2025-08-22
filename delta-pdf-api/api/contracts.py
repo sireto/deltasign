@@ -10,7 +10,8 @@ from api.exceptions import BadRequest, UnauthorizedError
 from db import User, Document, Contract
 from model.annotation import ContractPatchRequest
 from services import document_service, contract_service
-from services.contract_service import ContractCreationRequest, validate_contract
+from services.contract_service import ContractCreationRequest
+from services.contract_service import validate_contract
 from services.file_service import save_file
 
 contracts_api = APIRouter()

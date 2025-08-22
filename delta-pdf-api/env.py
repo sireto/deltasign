@@ -1,5 +1,7 @@
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -24,8 +26,9 @@ DB_DIR = os.environ.get('DB_DIR', '.')
 # Anything else - For non-production
 DEPLOYMENT = os.environ.get('DEPLOYMENT', 'DEV')
 
-CARDANO_TRANSACTION_URL = os.environ.get('CARDANO_TRANSACTION_URL', 'https://minter.cnftregistry.io/payment/metadata')
-CARDANO_TRANSACTION_SECRET = os.environ.get('CARDANO_TRANSACTION_SECRET', '***************************************')
+NETWORK = os.environ.get("NETWORK", "preview")
+KUBER_API_URL = f"https://{NETWORK}.kuber.cardanoapi.io"
+KUBER_API_KEY = os.environ.get("KUBER_API_KEY", "***************************************")
 
 # Email service
 EMAIL_SMTP_SERVER = os.environ.get('EMAIL_SMTP_SERVER', 'mail.sireto.io')
@@ -42,3 +45,10 @@ AWS_ENDPOINT_URL = os.environ.get("AWS_ENDPOINT_URL", "https://s3.eu-central-1.w
 AWS_ACCESS_KEY = os.environ.get("AWS_ACCESS_KEY", "***************************************")
 AWS_SECRET_KEY = os.environ.get("AWS_SECRET_KEY", "***************************************")
 AWS_BUCKET = os.environ.get("AWS_BUCKET", "eu.delta.sireto.io")
+
+# WALLET
+WALLET_MNEMONIC = os.environ.get("WALLET_MNEMONIC")
+
+# BLOCKFROST
+BLOCKFROST_PROJECT_ID = os.environ.get('BLOCKFROST_PROJECT_ID' , '***************************************')
+BLOCKFROST_URL = f"https://cardano-{NETWORK}.blockfrost.io/"

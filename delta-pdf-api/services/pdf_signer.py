@@ -65,7 +65,7 @@ class PDFSigner:
         with open(signed_pdf_path, 'rb') as docs:
             pdf = PdfFileReader(docs)
             for index, sig in enumerate(pdf.embedded_signatures):
-                if not hashes[f"annotation-{index}"][0] == util.get_hash(sig.compute_digest()):
+                if not hashes[f"annotation-{index}"] == util.get_hash(sig.compute_digest()):
                     raise Exception("Validation Failed")
             print("Pdf validated")
             return "Pdf validated"

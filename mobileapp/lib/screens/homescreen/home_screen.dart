@@ -913,10 +913,11 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             FaIcon(
+              (_contracts[index].blockchainTxHash != null) ? FontAwesomeIcons.link : (
               !_contracts[index].send
                   ? FontAwesomeIcons.fileImport
-                  : FontAwesomeIcons.fileExport,
-              color: !_contracts[index].send ? Colors.blue : Colors.green,
+                  : FontAwesomeIcons.fileExport),
+              color: (_contracts[index].blockchainTxHash != null) ? Colors.green : Colors.blue,
               size: 27,
             ),
             SizedBox(
@@ -1002,6 +1003,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         Text(
+                          _contracts[index].blockchainTxHash != null ? "Fully Signed" :
                           'No.of signers:${_contracts[index].signedNumber ?? 0}/${_contracts[index].signers.length}',
                           style: TextStyle(
                             fontSize: 13,

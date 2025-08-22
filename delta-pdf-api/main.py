@@ -76,11 +76,9 @@ app.openapi = custom_openapi
 async def startup():
     print("app started")
 
-
 @app.on_event("shutdown")
 async def shutdown():
     print("app is shutting down")
-
 
 if __name__ == "__main__":
     # setup_logging()

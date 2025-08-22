@@ -159,7 +159,8 @@ class Contract(database.Entity):
                 "status": self.status,
                 "signers": [sign_request.signer.email for sign_request in sign_requests],
                 "annotations": [annotation.json() for annotation in annotations],
-                "signed_number": self.signed_number
+                "signed_number": self.signed_number,
+                "blockchain_tx_hash" : self.blockchain_tx_hash
             }
 
 

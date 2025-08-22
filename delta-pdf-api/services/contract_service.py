@@ -17,10 +17,13 @@ from services import document_service, user_service, email_service
 from services.email_service import EmailService
 from services.s3 import s3_service
 
-from services.cardano_service import cardano_service
 
 from services.pdf_signer import pdf_signer
 from services.file_service import delete_file, check_file, save_file
+from services.kuber_service import kuber_service
+from services.blockfrost_service import blockfrost_service
+
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -135,14 +138,15 @@ def validate_contract(user: User, file_path: str):
     if not contract:
         raise Exception("Given file is not registered in our platform.")
 
-    metadata = cardano_service.get_contract_validation_metadata(contract.blockchain_tx_hash)
+    metadata_list = blockfrost_service.get_transaction_metadata(contract.blockchain_tx_hash)
 
-    if not metadata:
+    if not metadata_list or len(metadata_list) == 0:
         raise Exception(f"Metadata not found for txn hash {contract.blockchain_tx_hash}")
-    # check if the document hash matches
-    if metadata["hashes"]["signed_document_hash"][0] == hash:
+
+    metadata = metadata_list[0]["json_metadata"]  
+    
+    if metadata["hashes"]["signed_document_hash"] == hash:  
         msg = pdf_signer.validate_signed_pdf(file_path, metadata["hashes"])
-        # delete the file
         delete_file(file_path)
         return msg
     else:
@@ -245,22 +249,41 @@ def _delete_residual_files_after_signing(file_path):
 def sign_and_upload(pdf_file, signature_file, contract, annotation):
     signed_file = pdf_signer.writeImageBasedStamp(pdf_file, signature_file, annotation)
     s3_service.upload_file(signed_file, contract.signed_doc_url)
-    # # get count of remaining signers
-    # remaining_signers = select(s for s in SignatureAnnotation if s.contract == contract and s.signed == 0)[:]
-    # if remaining_signers.__len__() <= 1:
-    #     document = Document.get(id=contract.document.id)
-    #     contract_db = Contract[contract.id]
-    #     transaction_id, document_hash = cardano_service.post_transaction_with_document_validation_info(
-    #         signed_file,
-    #         document.file_hash,
-    #         document.user.uuid
-    #     )
-    #     contract_db.blockchain_tx_hash = transaction_id
-    #     contract_db.signature_hash = document_hash
+    # get count of remaining signers
+    remaining_signers = select(s for s in SignatureAnnotation if s.contract == contract and s.signed == 0)[:]
+
+
+    if remaining_signers.__len__() <= 1:
+        document = Document.get(id=contract.document.id)
+        contract_db = Contract[contract.id]
+        print("Posting Transaction With Document Validation Info")
+        transaction_hash , document_hash = kuber_service.post_transaction_with_document_validation_info(signed_file , document.file_hash , document.user.uuid)
+        contract_db.blockchain_tx_hash = transaction_hash
+        contract_db.signature_hash = document_hash
+
+        email_list = [email for email in contract.json()["signers"]]
+        contract_name = contract.json()["name"]
+
+        if transaction_hash is not None:
+            Thread(target=run_transaction_polling, args=(transaction_hash,email_list,contract_name)).start()
+        else:
+            raise ValueError(f"Transaction Hash is None for contract {contract.id}")
 
     # delete files
     _delete_residual_files_after_signing(signed_file)
 
+def run_transaction_polling(tx_hash , email_list, contract_name):
+        tx_details = blockfrost_service.poll_transaction_until_found(
+            transaction_hash=tx_hash,
+            max_attempts=60,
+            interval=10
+        )
+        if tx_details:
+            print(f"Transaction confirmed:\n{tx_details} . {datetime.now()}")
+            email_service = EmailService()
+            email_service.email_contract_fully_signed(tx_hash, email_list , contract_name)
+        else:
+            print(f"Transaction {tx_hash} not found after polling. {datetime.now()}")
 
 def create_pdf_signature(annotation, contract, file):
     pdf_file = s3_service.get_file_from_s3_url(contract.signed_doc_url)
