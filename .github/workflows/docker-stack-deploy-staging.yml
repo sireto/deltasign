@@ -65,9 +65,6 @@ jobs:
           DB_PASSWORD : ${{ secrets.STAGING_DB_PASSWORD }}
           DB_NAME : ${{ vars.STAGING_DB_NAME }}
 
-          CARDANO_TRANSACTION_URL : ${{ vars.CARDANO_TRANSACTION_URL }}
-          CARDANO_TRANSACTION_SECRET : ${{ secrets.CARDANO_TRANSACTION_SECRET }}
-
           # Email service
           EMAIL_SMTP_SERVER : ${{ vars.EMAIL_SMTP_SERVER }}
           EMAIL_SMTP_PORT : ${{ vars.EMAIL_SMTP_PORT }}
@@ -82,6 +79,13 @@ jobs:
           AWS_ACCESS_KEY : ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_KEY : ${{ secrets.AWS_SECRET_KEY }}
           AWS_BUCKET : ${{ vars.AWS_BUCKET }}
+
+
+          NETWORK: ${vars.NETWORK}
+          KUBER_API_KEY: ${{ secrets.KUBER_API_KEY }}
+          BLOCKFROST_PROJECT_ID: ${{ secrets.BLOCKFROST_PROJECT_ID }}
+          WALLET_MNEMONIC: ${{ secrets.WALLET_MNEMONIC }}
+
           
           VIRTUAL_HOST: ${{vars.STAGING_VIRTUAL_HOST}}
 
