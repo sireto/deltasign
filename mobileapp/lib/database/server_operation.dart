@@ -204,10 +204,10 @@ class ServerOp {
         await _dbDocumentOp.delete(document);
         print("done");
 
-        return true;
+        return {"deleted":true , "message":"Deleted Successfully"};
       } else {
         print("error");
-        return false;
+        return {"deleted":false, "message" : response.data["detail"].toString()};
       }
     } on DioError catch (e) {
       print(e.response.statusCode);
@@ -215,11 +215,11 @@ class ServerOp {
       print(e.response);
       if (e.response != null) {
         print("failed");
-        return false;
+        return {"deleted":false, "message" : e.response.data["detail"].toString()};
       }
     } catch (e) {
       print("caught error  $e");
-      return false;
+      return {"deleted":false, "message" : "unknown issue"};
     }
   }
 
