@@ -41,7 +41,10 @@ def delete_document(uuid, user):
     document = get_document_by_uuid(uuid)
     if document.user.id != user.id:
         raise UnauthorizedError("You do not have permission to delete the document.")
-    document.delete()
+    if len(document.contracts) == 0:
+        document.delete()
+    else:
+        raise BadRequest("There are Contracts that rely on this Document. You cannot delete this!")
 
 
 @db_session
