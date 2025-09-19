@@ -1,4 +1,4 @@
-package com.example.delta_sign
+package io.sireto.deltasign
 
 import io.flutter.embedding.android.FlutterActivity
 
