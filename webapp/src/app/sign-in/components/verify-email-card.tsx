@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shared/ui/input-otp";
 import { useEffect, useState } from "react";
 
 interface VerifyEmailCardProps {
@@ -9,7 +9,11 @@ interface VerifyEmailCardProps {
   onChangeEmail: () => void;
 }
 
-export default function VerifyEmailCard({ email, onVerify, onChangeEmail }: VerifyEmailCardProps) {
+export default function VerifyEmailCard({
+  email,
+  onVerify,
+  onChangeEmail,
+}: VerifyEmailCardProps) {
   const [timer, setTimer] = useState(59);
 
   useEffect(() => {
@@ -63,7 +67,8 @@ export default function VerifyEmailCard({ email, onVerify, onChangeEmail }: Veri
             Resend OTP again:
           </span>
           <span className="block text-center">
-            You can request a new code in 00:{timer.toString().padStart(2, "0")} seconds
+            You can request a new code in 00:{timer.toString().padStart(2, "0")}{" "}
+            seconds
           </span>
         </div>
       </div>
