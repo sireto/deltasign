@@ -67,12 +67,20 @@ export default function NavBar() {
         ) : (
           <div className="flex h-full items-center gap-2">
             <div className="border border-midnight-gray-200 p-2 rounded-full">
-              <Bell size={16}/>
+              <Bell size={16} />
             </div>
             <div className="flex items-center gap-2 border-[1.5px] p-[6px] rounded-[100px]">
-                <Image src="/placeholder.png" alt="placeholder" width={24} height={24} className="rounded-full"/>
-              <p className="text-sm text-midnight-gray-900 font-[600]">Bastion Zuid</p>
-              <ChevronDown size={16}/>
+              <Image
+                src="/placeholder.png"
+                alt="placeholder"
+                width={24}
+                height={24}
+                className="rounded-full"
+              />
+              <p className="text-sm text-midnight-gray-900 font-[600]">
+                Bastion Zuid
+              </p>
+              <ChevronDown size={16} />
             </div>
           </div>
         )}

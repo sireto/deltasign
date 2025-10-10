@@ -13,9 +13,12 @@ export default function Layout({
 }: React.PropsWithChildren<ILayoutProps>) {
   const pathName = usePathname();
 
+  const hideNavBar =
+    pathName.startsWith("/documents/") && pathName !== "/documents";
+
   return (
     <div className="min-h-screen flex flex-col">
-      <NavBar />
+      {!hideNavBar && <NavBar />}
       {children}
       {pathName === "/sign-in" && <Footer />}
     </div>

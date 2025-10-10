@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`antialiased`}>
+    <html lang="enn no-scrollbar">
+      <body className={`antialiased no-scrollbar`}>
         <Layout>{children}</Layout>
       </body>
     </html>
