@@ -1,7 +1,7 @@
-"use client";
-import NavBar from "./components/nav-bar";
-import Footer from "./components/footer";
-import { usePathname } from "next/navigation";
+'use client';
+import NavBar from './components/nav-bar';
+import Footer from './components/footer';
+import { usePathname } from 'next/navigation';
 
 interface ILayoutProps {
   className?: string;
@@ -14,13 +14,13 @@ export default function Layout({
   const pathName = usePathname();
 
   const hideNavBar =
-    pathName.startsWith("/documents/") && pathName !== "/documents";
+    pathName.startsWith('/documents/') && pathName !== '/documents';
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col">
       {!hideNavBar && <NavBar />}
       {children}
-      {pathName === "/sign-in" && <Footer />}
+      {pathName === '/sign-in' && <Footer />}
     </div>
   );
 }

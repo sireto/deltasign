@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   flexRender,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -12,13 +12,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/ui/table";
-import Image from "next/image";
-import PdfIcon from "@/shared/icons/pdf";
-import { Checkbox } from "@/shared/ui/checkbox";
-import { Button } from "@/shared/ui/button";
-import { ChevronDown, ChevronUp, EllipsisVertical } from "lucide-react";
-import { cn } from "@/lib/utils";
+} from '@/shared/ui/table';
+import Image from 'next/image';
+import PdfIcon from '@/shared/icons/pdf';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { Button } from '@/shared/ui/button';
+import { ChevronDown, ChevronUp, EllipsisVertical } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
@@ -36,7 +36,7 @@ type Document = {
 /*                              Helper Components                             */
 /* -------------------------------------------------------------------------- */
 
-const SenderCell = ({ sender }: { sender: Document["sender"] }) => (
+const SenderCell = ({ sender }: { sender: Document['sender'] }) => (
   <div className="flex items-center gap-2">
     <Image
       src={sender.image}
@@ -46,31 +46,31 @@ const SenderCell = ({ sender }: { sender: Document["sender"] }) => (
       className="rounded-full"
     />
     <div>
-      <p className="font-semibold text-xs text-midnight-gray-900">
+      <p className="text-midnight-gray-900 text-xs font-semibold">
         {sender.name}
       </p>
-      <p className="text-xs text-midnight-gray-600">{sender.email}</p>
+      <p className="text-midnight-gray-600 text-xs">{sender.email}</p>
     </div>
   </div>
 );
 
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
-    status === "Pending" && "text-warning-500 bg-warning-100",
-    status === "Fully Signed" && "text-success-500 bg-success-100",
-    status === "Submitted" && "text-information-600 bg-information-100",
-    "px-[7px] py-[2px] rounded-full text-xs",
+    status === 'Pending' && 'text-warning-500 bg-warning-100',
+    status === 'Fully Signed' && 'text-success-500 bg-success-100',
+    status === 'Submitted' && 'text-information-600 bg-information-100',
+    'px-[7px] py-[2px] rounded-full text-xs',
   );
 
   return <span className={statusClasses}>{status}</span>;
 };
 
 const ActionsCell = () => (
-  <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-2">
     <Button variant="outline" className="text-silicon border-silicon">
       Edit
     </Button>
-    <div className="border border-midnight-gray-200 px-2 py-1 rounded-lg">
+    <div className="border-midnight-gray-200 rounded-lg border px-2 py-1">
       <EllipsisVertical size={20} />
     </div>
   </div>
@@ -106,12 +106,12 @@ const CustomAvatarsOverlay = ({
 };
 
 const formatDate = (date: Date) =>
-  date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  date.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
 /* -------------------------------------------------------------------------- */
@@ -120,8 +120,8 @@ const formatDate = (date: Date) =>
 
 export const columns: ColumnDef<Document>[] = [
   {
-    id: "select",
-    header: " ",
+    id: 'select',
+    header: ' ',
     cell: () => (
       <div className="pl-4">
         <Checkbox />
@@ -129,45 +129,45 @@ export const columns: ColumnDef<Document>[] = [
     ),
   },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: 'title',
+    header: 'Title',
     cell: ({ row }) => (
       <div className="flex gap-2 pl-3">
         <PdfIcon />
         <span className="text-midnight-gray-900 font-medium">
-          {row.getValue("title")}.pdf
+          {row.getValue('title')}.pdf
         </span>
       </div>
     ),
   },
   {
-    accessorKey: "sender",
-    header: "Sender",
-    cell: ({ row }) => <SenderCell sender={row.getValue("sender")} />,
+    accessorKey: 'sender',
+    header: 'Sender',
+    cell: ({ row }) => <SenderCell sender={row.getValue('sender')} />,
   },
   {
-    accessorKey: "recipents",
-    header: "Recipients",
+    accessorKey: 'recipents',
+    header: 'Recipients',
     cell: ({ row }) => {
-      const recipients = row.getValue("recipents") as Document["recipents"];
+      const recipients = row.getValue('recipents') as Document['recipents'];
       return <CustomAvatarsOverlay images={recipients.map((r) => r.image)} />;
     },
   },
   {
-    accessorKey: "createdDate",
-    header: "Created Date",
+    accessorKey: 'createdDate',
+    header: 'Created Date',
     cell: ({ row }) => (
-      <div>{formatDate(row.getValue("createdDate") as Date)}</div>
+      <div>{formatDate(row.getValue('createdDate') as Date)}</div>
     ),
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
   },
   {
-    id: "actions",
-    header: "Actions",
+    id: 'actions',
+    header: 'Actions',
     cell: () => <ActionsCell />,
   },
 ];
@@ -193,15 +193,15 @@ export default function DataTable() {
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className="text-xs text-midnight-gray-900 font-medium"
+                  className="text-midnight-gray-900 text-xs font-medium"
                 >
-                  <div className="flex gap-2 items-center">
+                  <div className="flex items-center gap-2">
                     {!header.isPlaceholder &&
                       flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-                    {header.column.columnDef.header !== " " && (
+                    {header.column.columnDef.header !== ' ' && (
                       <div className="flex flex-col leading-none">
                         <ChevronUp
                           size={12}
@@ -224,8 +224,8 @@ export default function DataTable() {
             table.getRowModel().rows.map((row, i) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className={i % 2 ? "bg-midnight-gray-50" : ""}
+                data-state={row.getIsSelected() && 'selected'}
+                className={i % 2 ? 'bg-midnight-gray-50' : ''}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -253,118 +253,118 @@ export default function DataTable() {
 
 const sampleData: Document[] = [
   {
-    title: "partnership_agreement",
+    title: 'partnership_agreement',
     sender: {
-      name: "John Doe",
-      email: "johndoe@example.com",
-      image: "https://i.pravatar.cc/64?u=johndoe@example.com",
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      image: 'https://i.pravatar.cc/64?u=johndoe@example.com',
     },
     recipents: [
       {
-        name: "Alice Smith",
-        email: "alice@example.com",
-        image: "https://i.pravatar.cc/64?u=alice@example.com",
+        name: 'Alice Smith',
+        email: 'alice@example.com',
+        image: 'https://i.pravatar.cc/64?u=alice@example.com',
       },
       {
-        name: "Alice Johnson",
-        email: "alic1234e@example.com",
-        image: "https://i.pravatar.cc/64?u=alic1234e@example.com",
+        name: 'Alice Johnson',
+        email: 'alic1234e@example.com',
+        image: 'https://i.pravatar.cc/64?u=alic1234e@example.com',
       },
     ],
-    createdDate: new Date("2025-09-21T12:00:00"),
-    status: "Pending",
+    createdDate: new Date('2025-09-21T12:00:00'),
+    status: 'Pending',
   },
   {
-    title: "nda_document",
+    title: 'nda_document',
     sender: {
-      name: "Sarah Connor",
-      email: "sarah@example.com",
-      image: "https://ui-avatars.com/api/?name=Sarah+Connor",
+      name: 'Sarah Connor',
+      email: 'sarah@example.com',
+      image: 'https://ui-avatars.com/api/?name=Sarah+Connor',
     },
     recipents: [
       {
-        name: "Tom Hanks",
-        email: "tom@example.com",
-        image: "https://i.pravatar.cc/64?u=tom@example.com",
+        name: 'Tom Hanks',
+        email: 'tom@example.com',
+        image: 'https://i.pravatar.cc/64?u=tom@example.com',
       },
       {
-        name: "Emily Blunt",
-        email: "emily@example.com",
-        image: "https://i.pravatar.cc/64?u=emily@example.com",
+        name: 'Emily Blunt',
+        email: 'emily@example.com',
+        image: 'https://i.pravatar.cc/64?u=emily@example.com',
       },
       {
-        name: "Rohan Kumar",
-        email: "rohankumar@example.com",
-        image: "https://i.pravatar.cc/64?u=rohankumar.com",
+        name: 'Rohan Kumar',
+        email: 'rohankumar@example.com',
+        image: 'https://i.pravatar.cc/64?u=rohankumar.com',
       },
     ],
-    createdDate: new Date("2025-10-03T10:00:00"),
-    status: "Fully Signed",
+    createdDate: new Date('2025-10-03T10:00:00'),
+    status: 'Fully Signed',
   },
   {
-    title: "service_contract",
+    title: 'service_contract',
     sender: {
-      name: "Michael Scott",
-      email: "michael@example.com",
-      image: "https://i.pravatar.cc/64?u=michael@example.com",
+      name: 'Michael Scott',
+      email: 'michael@example.com',
+      image: 'https://i.pravatar.cc/64?u=michael@example.com',
     },
     recipents: [
       {
-        name: "Jim Halpert",
-        email: "jim@example.com",
-        image: "https://i.pravatar.cc/64?u=mkheqerwers.com",
+        name: 'Jim Halpert',
+        email: 'jim@example.com',
+        image: 'https://i.pravatar.cc/64?u=mkheqerwers.com',
       },
       {
-        name: "Pam Beesly",
-        email: "pam@example.com",
-        image: "https://i.pravatar.cc/64?u=pam@example.com",
+        name: 'Pam Beesly',
+        email: 'pam@example.com',
+        image: 'https://i.pravatar.cc/64?u=pam@example.com',
       },
     ],
-    createdDate: new Date("2025-09-28T08:00:00"),
-    status: "Submitted",
+    createdDate: new Date('2025-09-28T08:00:00'),
+    status: 'Submitted',
   },
   {
-    title: "supplier_invoice",
+    title: 'supplier_invoice',
     sender: {
-      name: "Pam Beesly",
-      email: "pam@example.com",
-      image: "https://i.pravatar.cc/64?u=pam@example.com",
+      name: 'Pam Beesly',
+      email: 'pam@example.com',
+      image: 'https://i.pravatar.cc/64?u=pam@example.com',
     },
     recipents: [
       {
-        name: "Stanley Hudson",
-        email: "stanley@example.com",
-        image: "https://i.pravatar.cc/64?u=stanley@example.com",
+        name: 'Stanley Hudson',
+        email: 'stanley@example.com',
+        image: 'https://i.pravatar.cc/64?u=stanley@example.com',
       },
       {
-        name: "Rohan Kumar",
-        email: "rohankuma12341234r@example.com",
-        image: "https://i.pravatar.cc/64?u=rohankuma12341234r.com",
+        name: 'Rohan Kumar',
+        email: 'rohankuma12341234r@example.com',
+        image: 'https://i.pravatar.cc/64?u=rohankuma12341234r.com',
       },
     ],
-    createdDate: new Date("2025-10-06T09:00:00"),
-    status: "Fully Signed",
+    createdDate: new Date('2025-10-06T09:00:00'),
+    status: 'Fully Signed',
   },
   {
-    title: "employment_offer",
+    title: 'employment_offer',
     sender: {
-      name: "Dwight Schrute",
-      email: "dwight@example.com",
-      image: "https://i.pravatar.cc/64?u=dwight@example.com",
+      name: 'Dwight Schrute',
+      email: 'dwight@example.com',
+      image: 'https://i.pravatar.cc/64?u=dwight@example.com',
     },
     recipents: [
       {
-        name: "Rohan Kumar",
-        email: "rohankumarer313@example.com",
-        image: "https://i.pravatar.cc/64?u=rohankumarer313.com",
+        name: 'Rohan Kumar',
+        email: 'rohankumarer313@example.com',
+        image: 'https://i.pravatar.cc/64?u=rohankumarer313.com',
       },
       {
-        name: "Rohan Kumar 2",
-        email: "rohankum1234ar@example.com",
-        image: "https://i.pravatar.cc/64?u=rohankum1234ar.com",
+        name: 'Rohan Kumar 2',
+        email: 'rohankum1234ar@example.com',
+        image: 'https://i.pravatar.cc/64?u=rohankum1234ar.com',
       },
     ],
-    createdDate: new Date("2025-09-19T07:00:00"),
-    status: "Pending",
+    createdDate: new Date('2025-09-19T07:00:00'),
+    status: 'Pending',
   },
 ];

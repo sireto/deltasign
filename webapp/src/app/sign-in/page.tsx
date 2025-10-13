@@ -1,10 +1,10 @@
-"use client";
-import SignInCard from "./components/sign-in-card";
-import { useState } from "react";
-import VerifyEmailCard from "./components/verify-email-card";
+'use client';
+import SignInCard from './components/sign-in-card';
+import { useState } from 'react';
+import VerifyEmailCard from './components/verify-email-card';
 
 export default function Page() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
   const handleSubmit = ({ email }: { email: string }) => {

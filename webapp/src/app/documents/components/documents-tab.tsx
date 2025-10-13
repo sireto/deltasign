@@ -1,22 +1,22 @@
-"use client";
+'use client';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import CompletedIcon from "@/shared/icons/completed";
-import DraftsIcon from "@/shared/icons/drafts";
-import PendingIcon from "@/shared/icons/pending";
-import { Card } from "@/shared/ui/card";
-import { Input } from "@/shared/ui/input";
-import { SearchInput } from "@/shared/ui/search-input";
-import { Calendar, ChevronDown, Plus, Search } from "lucide-react";
-import { ColumnDef } from "@tanstack/react-table";
-import EmptyBoxCard from "./empty-box-card";
-import { Button } from "@/shared/ui/button";
-import DataTable from "./data-table";
+} from '@/shared/ui/dropdown-menu';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import CompletedIcon from '@/shared/icons/completed';
+import DraftsIcon from '@/shared/icons/drafts';
+import PendingIcon from '@/shared/icons/pending';
+import { Card } from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
+import { SearchInput } from '@/shared/ui/search-input';
+import { Calendar, ChevronDown, Plus, Search } from 'lucide-react';
+import { ColumnDef } from '@tanstack/react-table';
+import EmptyBoxCard from './empty-box-card';
+import { Button } from '@/shared/ui/button';
+import DataTable from './data-table';
 
 type Document = {
   title: string;
@@ -29,51 +29,50 @@ type Document = {
 
 const tabItems = [
   {
-    label: "All contracts",
+    label: 'All contracts',
     icon: null,
   },
   {
-    label: "Drafts",
+    label: 'Drafts',
     icon: DraftsIcon,
   },
   {
-    label: "Pending",
+    label: 'Pending',
     icon: PendingIcon,
   },
   {
-    label: "Completed",
+    label: 'Completed',
     icon: CompletedIcon,
   },
 ];
 
 export default function DocumentsTab() {
   return (
-    <div className="flex flex-1 h-full w-full flex-col border-[1.5px] border-gray-200 rounded-md overflow-hidden">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden rounded-md border-[1.5px] border-gray-200">
       {/* Tabs */}
       <Tabs
         defaultValue="All contracts"
-        className=" h-full flex flex-col flex-1 gap-0 "
+        className="flex h-full flex-1 flex-col gap-0"
       >
-        <TabsList className="bg-midnight-gray-50 w-full flex pt-3 h-[52px] pb-0 rounded-b-none justify-start border-b-0 border-midnight-gray-200">
-          <div className="flex w-5 h-full border-b-[1.5px] border-b-midnight-gray-200" />
+        <TabsList className="bg-midnight-gray-50 border-midnight-gray-200 flex h-[52px] w-full justify-start rounded-b-none border-b-0 pt-3 pb-0">
+          <div className="border-b-midnight-gray-200 flex h-full w-5 border-b-[1.5px]" />
           {tabItems.map((tab) => (
             <TabsTrigger
               key={tab.label}
               value={tab.label}
-              className="border-b-[1.5px] border-b-midnight-gray-200 gap-x-1 data-[state=active]:border-[1.5px] data-[state=active]:border-midnight-gray-200  data-[state=active]:border-b-0 data-[state=inactive]:border-b-[1.5px] data-[state=active]:font-[600] text-sm text-midnight-gray-900 px-3 py-[10px] data-[state=active]:text-silicon rounded-b-none data-[state=active]:bg-white rouded-b-0 
-              "
+              className="border-b-midnight-gray-200 data-[state=active]:border-midnight-gray-200 text-midnight-gray-900 data-[state=active]:text-silicon rouded-b-0 gap-x-1 rounded-b-none border-b-[1.5px] px-3 py-[10px] text-sm data-[state=active]:border-[1.5px] data-[state=active]:border-b-0 data-[state=active]:bg-white data-[state=active]:font-[600] data-[state=inactive]:border-b-[1.5px]"
             >
               {tab.icon && <tab.icon />}
               {tab.label}
-              <span className="text-midnight-gray-600 text-xs ml-2 font-[600] border-[1px] border-midnight-gray-200 px-1 rounded-xs">
+              <span className="text-midnight-gray-600 border-midnight-gray-200 ml-2 rounded-xs border-[1px] px-1 text-xs font-[600]">
                 12
               </span>
             </TabsTrigger>
           ))}
-          <div className="flex w-full h-full border-b-[1.5px] border-b-midnight-gray-200" />
+          <div className="border-b-midnight-gray-200 flex h-full w-full border-b-[1.5px]" />
         </TabsList>
         {/* Filters */}
-        <div className="flex w-full justify-between bg-white items-center px-5 pt-4">
+        <div className="flex w-full items-center justify-between bg-white px-5 pt-4">
           <div className="flex w-full gap-2">
             <SearchInput className="w-[250px]" placeholder="Search" />
             <DropdownMenu>
@@ -116,7 +115,7 @@ export default function DocumentsTab() {
             value={tab.label}
             className="flex flex-1"
           >
-            <Card className="flex flex-1 border-t-0 rounded-none border-none p-5">
+            <Card className="flex flex-1 rounded-none border-t-0 border-none p-5">
               <DataTable />
               {/* <EmptyBoxCard/> */}
             </Card>

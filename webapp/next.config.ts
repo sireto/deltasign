@@ -1,16 +1,16 @@
-import type { NextConfig } from "next";
-import { RemotePattern } from "next/dist/shared/lib/image-config";
+import type { NextConfig } from 'next';
+import { RemotePattern } from 'next/dist/shared/lib/image-config';
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "i.pravatar.cc",
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
       },
       {
-        protocol: "https",
-        hostname: "ui-avatars.com",
+        protocol: 'https',
+        hostname: 'ui-avatars.com',
       },
     ],
   },

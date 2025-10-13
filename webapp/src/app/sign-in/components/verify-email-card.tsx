@@ -1,7 +1,7 @@
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shared/ui/input-otp";
-import { useEffect, useState } from "react";
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/shared/ui/input-otp';
+import { useEffect, useState } from 'react';
 
 interface VerifyEmailCardProps {
   email: string;
@@ -29,15 +29,15 @@ export default function VerifyEmailCard({
   return (
     <Card className="items-center">
       <div className="flex flex-col gap-1">
-        <span className="block text-center text-midnight-gray-900 font-[700] text-lg leading-[27px] tracking-[-0.26px]">
+        <span className="text-midnight-gray-900 block text-center text-lg leading-[27px] font-[700] tracking-[-0.26px]">
           Verify your email
         </span>
         <div>
-          <span className="block text-center text-midnight-gray-900">
+          <span className="text-midnight-gray-900 block text-center">
             We've sent a 6-digit code to ({email})
           </span>
-          <span className="block text-center text-midnight-gray-900">
-            Please enter it below.{" "}
+          <span className="text-midnight-gray-900 block text-center">
+            Please enter it below.{' '}
             <span
               className="text-silicon font-[600] hover:cursor-pointer"
               onClick={onChangeEmail}
@@ -50,7 +50,7 @@ export default function VerifyEmailCard({
 
       <div>
         <InputOTP maxLength={6}>
-          <InputOTPGroup className="w-full flex justify-center gap-4">
+          <InputOTPGroup className="flex w-full justify-center gap-4">
             {[...Array(6)].map((_, index) => (
               <InputOTPSlot key={index} index={index} />
             ))}
@@ -58,16 +58,16 @@ export default function VerifyEmailCard({
         </InputOTP>
       </div>
 
-      <div className="w-[386px] gap-3 flex flex-col h-[96px] text-midnight-gray-600">
-        <Button className="w-full h-[40px]" disabled>
+      <div className="text-midnight-gray-600 flex h-[96px] w-[386px] flex-col gap-3">
+        <Button className="h-[40px] w-full" disabled>
           Verify
         </Button>
         <div>
-          <span className="text-silicon font-[600] block text-center">
+          <span className="text-silicon block text-center font-[600]">
             Resend OTP again:
           </span>
           <span className="block text-center">
-            You can request a new code in 00:{timer.toString().padStart(2, "0")}{" "}
+            You can request a new code in 00:{timer.toString().padStart(2, '0')}{' '}
             seconds
           </span>
         </div>

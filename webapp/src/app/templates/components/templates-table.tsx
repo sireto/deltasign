@@ -4,7 +4,7 @@ import {
   getCoreRowModel,
   getPaginationRowModel,
   flexRender,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -12,13 +12,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/ui/table";
-import Image from "next/image";
-import PdfIcon from "@/shared/icons/pdf";
-import { Checkbox } from "@/shared/ui/checkbox";
-import { Button } from "@/shared/ui/button";
-import { ChevronDown, ChevronUp, EllipsisVertical, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+} from '@/shared/ui/table';
+import Image from 'next/image';
+import PdfIcon from '@/shared/icons/pdf';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { Button } from '@/shared/ui/button';
+import { ChevronDown, ChevronUp, EllipsisVertical, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
@@ -36,22 +36,22 @@ type Template = {
 
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
-    status === "Pending" && "text-warning-500 bg-warning-100",
-    status === "Fully Signed" && "text-success-500 bg-success-100",
-    status === "Submitted" && "text-information-600 bg-information-100",
-    "px-[7px] py-[2px] rounded-full text-xs",
+    status === 'Pending' && 'text-warning-500 bg-warning-100',
+    status === 'Fully Signed' && 'text-success-500 bg-success-100',
+    status === 'Submitted' && 'text-information-600 bg-information-100',
+    'px-[7px] py-[2px] rounded-full text-xs',
   );
 
   return <span className={statusClasses}>{status}</span>;
 };
 
 const ActionsCell = () => (
-  <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-2">
     <Button variant="outline" className="text-silicon border-silicon">
       <Plus />
       Use template
     </Button>
-    <div className="border border-midnight-gray-200 px-2 py-1 rounded-lg">
+    <div className="border-midnight-gray-200 rounded-lg border px-2 py-1">
       <EllipsisVertical size={20} />
     </div>
   </div>
@@ -87,12 +87,12 @@ const CustomAvatarsOverlay = ({
 };
 
 const formatDate = (date: Date) =>
-  date.toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  date.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
 /* -------------------------------------------------------------------------- */
@@ -101,8 +101,8 @@ const formatDate = (date: Date) =>
 
 export const columns: ColumnDef<Template>[] = [
   {
-    id: "select",
-    header: " ",
+    id: 'select',
+    header: ' ',
     cell: () => (
       <div className="pl-4">
         <Checkbox />
@@ -110,32 +110,32 @@ export const columns: ColumnDef<Template>[] = [
     ),
   },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: 'title',
+    header: 'Title',
     cell: ({ row }) => (
       <div className="flex gap-2 pl-3">
         <PdfIcon />
         <span className="text-midnight-gray-900 font-medium">
-          {row.getValue("title")}.pdf
+          {row.getValue('title')}.pdf
         </span>
       </div>
     ),
   },
   {
-    accessorKey: "createdDate",
-    header: "Created Date",
+    accessorKey: 'createdDate',
+    header: 'Created Date',
     cell: ({ row }) => (
-      <div>{formatDate(row.getValue("createdDate") as Date)}</div>
+      <div>{formatDate(row.getValue('createdDate') as Date)}</div>
     ),
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
   },
   {
-    id: "actions",
-    header: "Actions",
+    id: 'actions',
+    header: 'Actions',
     cell: () => <ActionsCell />,
   },
 ];
@@ -161,15 +161,15 @@ export default function TemplatesTable() {
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
-                  className="text-xs text-midnight-gray-900 font-medium"
+                  className="text-midnight-gray-900 text-xs font-medium"
                 >
-                  <div className="flex gap-2 items-center">
+                  <div className="flex items-center gap-2">
                     {!header.isPlaceholder &&
                       flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-                    {header.column.columnDef.header !== " " && (
+                    {header.column.columnDef.header !== ' ' && (
                       <div className="flex flex-col leading-none">
                         <ChevronUp
                           size={12}
@@ -192,8 +192,8 @@ export default function TemplatesTable() {
             table.getRowModel().rows.map((row, i) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className={i % 2 ? "bg-midnight-gray-50" : ""}
+                data-state={row.getIsSelected() && 'selected'}
+                className={i % 2 ? 'bg-midnight-gray-50' : ''}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -221,28 +221,28 @@ export default function TemplatesTable() {
 
 const sampleData: Template[] = [
   {
-    title: "partnership_agreement",
-    createdDate: new Date("2025-09-21T12:00:00"),
-    status: "private",
+    title: 'partnership_agreement',
+    createdDate: new Date('2025-09-21T12:00:00'),
+    status: 'private',
   },
   {
-    title: "nda_document",
-    createdDate: new Date("2025-10-03T10:00:00"),
-    status: "private",
+    title: 'nda_document',
+    createdDate: new Date('2025-10-03T10:00:00'),
+    status: 'private',
   },
   {
-    title: "service_contract",
-    createdDate: new Date("2025-09-28T08:00:00"),
-    status: "private",
+    title: 'service_contract',
+    createdDate: new Date('2025-09-28T08:00:00'),
+    status: 'private',
   },
   {
-    title: "supplier_invoice",
-    createdDate: new Date("2025-10-06T09:00:00"),
-    status: "private",
+    title: 'supplier_invoice',
+    createdDate: new Date('2025-10-06T09:00:00'),
+    status: 'private',
   },
   {
-    title: "employment_offer",
-    createdDate: new Date("2025-09-19T07:00:00"),
-    status: "private2",
+    title: 'employment_offer',
+    createdDate: new Date('2025-09-19T07:00:00'),
+    status: 'private2',
   },
 ];

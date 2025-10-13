@@ -1,7 +1,7 @@
-import React from "react";
-import { Search } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Input } from "./input";
+import React from 'react';
+import { Search } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Input } from './input';
 
 export type SearchProps = React.InputHTMLAttributes<HTMLInputElement>;
 
@@ -10,7 +10,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchProps>(
     return (
       <div
         className={cn(
-          "flex items-center rounded-md border border-input bg-white pl-3 text-sm ring-offset-background border-[1.5px] border-midnight-gray-300",
+          'border-input ring-offset-background border-midnight-gray-300 flex items-center rounded-md border border-[1.5px] bg-white pl-3 text-sm',
           className,
         )}
       >
@@ -19,13 +19,13 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchProps>(
           {...props}
           type="search"
           ref={ref}
-          className="w-full pl-2 placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="placeholder:text-muted-foreground w-full pl-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
     );
   },
 );
 
-SearchInput.displayName = "Search";
+SearchInput.displayName = 'Search';
 
 export { SearchInput };

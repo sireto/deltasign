@@ -1,5 +1,5 @@
-"use client";
-import { motion } from "framer-motion";
+'use client';
+import { motion } from 'framer-motion';
 export default function PageAnimation({
   children,
 }: {
@@ -7,7 +7,7 @@ export default function PageAnimation({
 }) {
   return (
     <motion.div
-      className="flex h-full w-full flex-1 py-[32px] px-[160px] flex-col gap-[24px]"
+      className="flex h-full w-full flex-1 flex-col gap-[24px] px-[160px] py-[32px]"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{

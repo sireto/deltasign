@@ -1,29 +1,29 @@
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
-import { Input } from "@/shared/ui/input";
-import { Label } from "@radix-ui/react-label";
-import { useState } from "react";
-import emailvalidator from "email-validator";
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@radix-ui/react-label';
+import { useState } from 'react';
+import emailvalidator from 'email-validator';
 
 interface SignInCardProps {
   onSubmit: ({ email }: { email: string }) => void;
 }
 
 export default function SignInCard({ onSubmit }: SignInCardProps) {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   return (
-    <Card className="w-fit h-fit">
+    <Card className="h-fit w-fit">
       <div>
-        <span className="block text-center text-midnight-gray-900 font-[700] text-lg leading-[27px] tracking-[-0.26px]">
+        <span className="text-midnight-gray-900 block text-center text-lg leading-[27px] font-[700] tracking-[-0.26px]">
           Sign in to your account
         </span>
-        <span className="block text-center text-midnight-gray-600">
+        <span className="text-midnight-gray-600 block text-center">
           Get started with your email address.
         </span>
       </div>
       <div className="w-[386px]">
-        <Label className="mb-2 block text-sm text-midnight-gray-900">
+        <Label className="text-midnight-gray-900 mb-2 block text-sm">
           Email
         </Label>
         <Input
@@ -34,13 +34,13 @@ export default function SignInCard({ onSubmit }: SignInCardProps) {
         />
       </div>
       <Button
-        className="w-full h-[40px]"
+        className="h-[40px] w-full"
         onClick={() => onSubmit({ email })}
         disabled={!emailvalidator.validate(email)}
       >
         Continue
       </Button>
-      <span className="text-center w-full text-midnight-gray-600">
+      <span className="text-midnight-gray-600 w-full text-center">
         Dont have an account? <span className="text-silicon">Sign up</span>
       </span>
     </Card>
