@@ -4,12 +4,14 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@radix-ui/react-label';
 import { useState } from 'react';
 import emailvalidator from 'email-validator';
+import { LoaderCircle } from 'lucide-react';
 
 interface SignInCardProps {
   onSubmit: ({ email }: { email: string }) => void;
+  isLoading? : boolean
 }
 
-export default function SignInCard({ onSubmit }: SignInCardProps) {
+export default function SignInCard({ onSubmit , isLoading }: SignInCardProps) {
   const [email, setEmail] = useState('');
 
   return (
@@ -31,12 +33,14 @@ export default function SignInCard({ onSubmit }: SignInCardProps) {
           className="h-[40px]"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading}
         />
       </div>
       <Button
         className="h-[40px] w-full"
         onClick={() => onSubmit({ email })}
         disabled={!emailvalidator.validate(email)}
+        isLoading={isLoading}
       >
         Continue
       </Button>

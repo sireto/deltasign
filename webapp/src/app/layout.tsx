@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Layout from '@/layout/_layout';
+import Layout from '@/shared/layout/_layout';
+import ReduxProvider from '@/shared/store/provider/redux-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="enn no-scrollbar">
       <body className={`no-scrollbar antialiased`}>
-        <Layout>{children}</Layout>
+        <ReduxProvider>
+          <Layout>{children}</Layout>
+        </ReduxProvider>
       </body>
     </html>
   );

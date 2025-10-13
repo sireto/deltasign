@@ -1,7 +1,7 @@
 'use client';
 
 import Logo from '@/shared/icons/logo';
-import { Button } from '../../shared/ui/button';
+import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';

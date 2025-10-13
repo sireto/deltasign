@@ -5,14 +5,16 @@ import { useEffect, useState } from 'react';
 
 interface VerifyEmailCardProps {
   email: string;
-  onVerify: (integer: number) => void;
+  onVerify: (code: string) => void;
   onChangeEmail: () => void;
+  isLoading? : boolean
 }
 
 export default function VerifyEmailCard({
   email,
   onVerify,
   onChangeEmail,
+  isLoading
 }: VerifyEmailCardProps) {
   const [timer, setTimer] = useState(59);
 
@@ -23,8 +25,10 @@ export default function VerifyEmailCard({
       setTimer((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(interval); // cleanup to avoid multiple intervals
+    return () => clearInterval(interval); 
   }, [timer]);
+
+  const [otp, setOtp] = useState('');
 
   return (
     <Card className="items-center">
@@ -49,7 +53,7 @@ export default function VerifyEmailCard({
       </div>
 
       <div>
-        <InputOTP maxLength={6}>
+        <InputOTP maxLength={6} value={otp} onChange={setOtp}> 
           <InputOTPGroup className="flex w-full justify-center gap-4">
             {[...Array(6)].map((_, index) => (
               <InputOTPSlot key={index} index={index} />
@@ -59,8 +63,8 @@ export default function VerifyEmailCard({
       </div>
 
       <div className="text-midnight-gray-600 flex h-[96px] w-[386px] flex-col gap-3">
-        <Button className="h-[40px] w-full" disabled>
-          Verify
+        <Button className="h-[40px] w-full" onClick={() => onVerify(otp)} disabled={!otp} isLoading={isLoading}>
+         Verify
         </Button>
         <div>
           <span className="text-silicon block text-center font-[600]">

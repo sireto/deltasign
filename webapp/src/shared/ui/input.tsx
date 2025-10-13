@@ -9,6 +9,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 function Input({ className, type, ...props }: InputProps) {
   return (
     <input
+    {...props}
       type={type}
       data-slot="input"
       className={cn(
@@ -17,7 +18,6 @@ function Input({ className, type, ...props }: InputProps) {
         'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-[1.5px] text-sm font-[500] tracking-[-0.09px]',
         className,
       )}
-      {...props}
     />
   );
 }
