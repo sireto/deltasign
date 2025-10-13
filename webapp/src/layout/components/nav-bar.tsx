@@ -1,4 +1,5 @@
 "use client";
+
 import Logo from "@/shared/icons/logo";
 import { Button } from "../../shared/ui/button";
 import Link from "next/link";
@@ -7,29 +8,22 @@ import { cn } from "@/lib/utils";
 import DocumentIcon from "@/shared/icons/document";
 import InboxIcon from "@/shared/icons/inbox";
 import TemplatesIcon from "@/shared/icons/templates";
-import { Bell, ChevronDown, UserRound } from "lucide-react";
+import { Bell, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function NavBar() {
   const pathName = usePathname();
 
   const tabItems = [
-    {
-      label: "documents",
-      icon: DocumentIcon,
-    },
-    {
-      label: "inbox",
-      icon: InboxIcon,
-    },
-    {
-      label: "templates",
-      icon: TemplatesIcon,
-    },
+    { label: "documents", icon: DocumentIcon },
+    { label: "inbox", icon: InboxIcon },
+    { label: "templates", icon: TemplatesIcon },
   ];
 
   return (
-    <div className="w-full flex justify-between px-4 py-3 bg-white">
+    <div className="w-full flex justify-between px-4 py-3 bg-white relative">
+      {/* Left - Logo */}
       <div className="flex gap-2 items-center">
         <Logo />
         <Link href={"/"}>
@@ -38,26 +32,69 @@ export default function NavBar() {
           </span>
         </Link>
       </div>
-      {pathName != "/sign-in" && (
-        <div className="flex gap-4 justify-center items-center">
-          {tabItems.map((item, index) => (
-            <Link href={item.label} key={index}>
-              <div
-                className={cn(
-                  "flex gap-2 items-center font-[500] text-midnight-gray-600 text-sm tracking-[-0.26px] leading-5 capitalize tracking-[-0.09px]",
-                  pathName == "/" + item.label &&
-                    "text-silicon bg-silicon-100 p-2 rounded-[100px] font-[600]",
-                )}
-              >
-                {<item.icon />}
-                {item.label}
+
+      {/* Center - Tabs */}
+      {pathName !== "/sign-in" && (
+        <div className="flex gap-4 justify-center items-center absolute left-1/2 top-0 transform -translate-x-1/2 h-full">
+          {tabItems.map((item, index) => {
+            const isActive = pathName === "/" + item.label;
+
+            return (
+              <div key={index} className="h-full flex items-center relative">
+                <Link href={`/${item.label}`}>
+                  <div
+                    className={cn(
+                      "relative flex gap-2 items-center font-[500] text-midnight-gray-600 text-sm leading-5 capitalize px-3 py-2",
+                      isActive && "font-[600] text-silicon",
+                    )}
+                  >
+                    {<item.icon />}
+                    {item.label}
+
+                    {/* Grow/Shrink background animation */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          className="absolute inset-0 bg-silicon-100 rounded-[100px] z-[-1]"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 25,
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </Link>
+
+                {/* Underline scale animation */}
+                <AnimatePresence>
+                  {isActive && (
+                    <motion.div
+                      className="absolute bottom-0 h-[3px] w-full bg-silicon rounded-full"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      exit={{ scaleX: 0 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                      }}
+                    />
+                  )}
+                </AnimatePresence>
               </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
       )}
+
+      {/* Right - Profile / Buttons */}
       <div className="flex gap-2">
-        {pathName == "/sign-in" ? (
+        {pathName === "/sign-in" ? (
           <>
             <Button variant={"outline"}>Sign Up</Button>
             <Link href={"/sign-in"}>

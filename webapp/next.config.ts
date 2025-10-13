@@ -1,4 +1,4 @@
-import type { NextConfig  } from "next";
+import type { NextConfig } from "next";
 import { RemotePattern } from "next/dist/shared/lib/image-config";
 
 const nextConfig: NextConfig = {
@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "ui-avatars.com",
-      }
+      },
     ],
   },
 };

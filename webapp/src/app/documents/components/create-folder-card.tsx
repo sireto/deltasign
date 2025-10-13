@@ -1,7 +1,13 @@
 import PlusIcon from "@/shared/icons/plus";
 import { Card } from "@/shared/ui/card";
 
-export default function CreateFolderCard({title , description}:{ title? : string , description? : string}) {
+export default function CreateFolderCard({
+  title,
+  description,
+}: {
+  title?: string;
+  description?: string;
+}) {
   return (
     <Card className="gap-y-4 h-fit w-fit p-5 rounded-lg">
       <div className="border border-midnight-gray-200 rounded-sm p-1 border-[1.5px] w-[32px] h-[32px] flex items-center justify-center">

@@ -4,9 +4,14 @@ import { ArrowLeft, File, SendHorizonal } from "lucide-react";
 import { Share2 } from "lucide-react";
 import Link from "next/link";
 
-export default function NavBar({className}:{className?:string}) {
+export default function NavBar({ className }: { className?: string }) {
   return (
-    <div className={cn("bg-white py-3 px-5 w-full flex justify-between h-full" , className)}>
+    <div
+      className={cn(
+        "bg-white py-3 px-5 w-full flex justify-between h-full",
+        className,
+      )}
+    >
       <Link href={"/documents"}>
         <Button variant="secondary">
           <ArrowLeft />

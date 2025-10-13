@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "email-validator": "^2.0.4",
+    "framer-motion": "^12.23.23",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.544.0",
     "material-icon-theme": "^5.27.0",

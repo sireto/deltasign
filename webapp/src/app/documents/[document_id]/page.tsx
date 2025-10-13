@@ -48,7 +48,7 @@ export default function Page() {
 
   return (
     <div>
-      <NavBar className="sticky top-0"/>
+      <NavBar className="sticky top-0" />
       <div className="flex w-full h-full justify-between p-3">
         <PDFViewer file={"/sample.pdf"} />
         <div className="border-midnight-gray-200 border-[1px] rounded-lg overflow-clip">

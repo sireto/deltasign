@@ -799,10 +799,10 @@ body::-webkit-scrollbar {
 }
 
 .e-pv-viewer-container {
-    overflow: hidden !important;
+  overflow: hidden !important;
 }
 
-.rpv-thumbnail__list rpv-thumbnail__list--vertical{
+.rpv-thumbnail__list rpv-thumbnail__list--vertical {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }

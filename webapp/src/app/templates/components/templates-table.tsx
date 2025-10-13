@@ -34,7 +34,6 @@ type Template = {
 /*                              Helper Components                             */
 /* -------------------------------------------------------------------------- */
 
-
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
     status === "Pending" && "text-warning-500 bg-warning-100",
@@ -49,7 +48,7 @@ const StatusBadge = ({ status }: { status: string }) => {
 const ActionsCell = () => (
   <div className="flex gap-2 items-center">
     <Button variant="outline" className="text-silicon border-silicon">
-        <Plus/> 
+      <Plus />
       Use template
     </Button>
     <div className="border border-midnight-gray-200 px-2 py-1 rounded-lg">

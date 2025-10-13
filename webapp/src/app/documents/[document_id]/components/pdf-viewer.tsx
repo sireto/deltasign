@@ -6,9 +6,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/thumbnail/lib/styles/index.css";
 
 export default function PDFViewer({ file }: { file: string }) {
-  const thumbnailPluginInstance = thumbnailPlugin({
-    
-  });
+  const thumbnailPluginInstance = thumbnailPlugin({});
   const { Thumbnails } = thumbnailPluginInstance;
 
   return (
