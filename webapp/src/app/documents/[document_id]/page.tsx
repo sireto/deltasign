@@ -11,7 +11,7 @@ import {
 import NavBar from "./components/nav-bar";
 import { Label } from "@/shared/ui/label";
 import { Input } from "@/shared/ui/input";
-import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Button } from "@/shared/ui/button";
 import dynamic from "next/dynamic";
 

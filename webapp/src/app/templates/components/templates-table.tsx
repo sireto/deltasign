@@ -12,10 +12,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/shared/ui/table";
 import Image from "next/image";
 import PdfIcon from "@/shared/icons/pdf";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/shared/ui/checkbox";
 import { Button } from "@/shared/ui/button";
 import { ChevronDown, ChevronUp, EllipsisVertical, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
