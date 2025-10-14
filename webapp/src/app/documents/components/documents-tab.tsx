@@ -10,43 +10,38 @@ import CompletedIcon from '@/shared/icons/completed';
 import DraftsIcon from '@/shared/icons/drafts';
 import PendingIcon from '@/shared/icons/pending';
 import { Card } from '@/shared/ui/card';
-import { Input } from '@/shared/ui/input';
 import { SearchInput } from '@/shared/ui/search-input';
-import { Calendar, ChevronDown, Plus, Search } from 'lucide-react';
-import { ColumnDef } from '@tanstack/react-table';
-import EmptyBoxCard from './empty-box-card';
+import { Calendar, ChevronDown, Plus } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import DataTable from './data-table';
+import { Contract } from '../types/contract';
 
-type Document = {
-  title: string;
-  sender: string;
-  senderProfile: string;
-  RecipentsProfile: string[];
-  createdDate: Date;
-  status: string;
-};
 
-const tabItems = [
-  {
-    label: 'All contracts',
-    icon: null,
-  },
-  {
-    label: 'Drafts',
-    icon: DraftsIcon,
-  },
-  {
-    label: 'Pending',
-    icon: PendingIcon,
-  },
-  {
-    label: 'Completed',
-    icon: CompletedIcon,
-  },
-];
+export default function DocumentsTab({contracts}:{contracts: Contract[]}) {
 
-export default function DocumentsTab() {
+  const tabItems = [
+    {
+      label: 'All contracts',
+      icon: null,
+      value : contracts.length
+    },
+    {
+      label: 'Drafts',
+      icon: DraftsIcon,
+      value : 0
+    },
+    {
+      label: 'Pending',
+      icon: PendingIcon,
+      value : 0
+    },
+    {
+      label: 'Completed',
+      icon: CompletedIcon,
+      value : 0
+    },
+  ];
+
   return (
     <div className="flex h-full w-full flex-1 flex-col overflow-hidden rounded-md border-[1.5px] border-gray-200">
       {/* Tabs */}
@@ -65,7 +60,7 @@ export default function DocumentsTab() {
               {tab.icon && <tab.icon />}
               {tab.label}
               <span className="text-midnight-gray-600 border-midnight-gray-200 ml-2 rounded-xs border-[1px] px-1 text-xs font-[600]">
-                12
+                {tab.value}
               </span>
             </TabsTrigger>
           ))}
@@ -116,7 +111,7 @@ export default function DocumentsTab() {
             className="flex flex-1"
           >
             <Card className="flex flex-1 rounded-none border-t-0 border-none p-5">
-              <DataTable />
+              <DataTable contracts={contracts}/>
               {/* <EmptyBoxCard/> */}
             </Card>
           </TabsContent>

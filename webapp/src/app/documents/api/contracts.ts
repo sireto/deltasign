@@ -1,56 +1,55 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { customBaseQuery } from '../../src/shared/store/base-query';
+import { appBaseQuery } from '@/shared/store/base-query';
 import { Contract, PostContractRequest } from '../types/contract';
 
 export const contractsAPI = createApi({
   reducerPath: 'contractsAPI',
   tagTypes: ['Contract'],
-  baseQuery: customBaseQuery,
+  baseQuery: appBaseQuery,
   refetchOnReconnect: true,
   refetchOnFocus: true,
   endpoints: (builder) => ({
-    getContracts: builder.query<Contract[], { apikey: string }>({
-      query: ({ apikey }) => ({
-        url: '/contracts',
+    getContracts: builder.query<Contract[] , void>({
+      query: () => ({
+        url: 'users/self/contracts',
         method: 'GET',
-        headers: {
-          'api-key': apikey,
-        },
+        includeCredentials: true
       }),
     }),
-    getContractById: builder.query<Contract, { uuid: string; apikey: string }>({
-      query: ({ uuid, apikey }) => ({
+    getContractById: builder.query<Contract, { uuid : string}>({
+      query: ({ uuid }) => ({
         url: `/contracts/${uuid}`,
         method: 'GET',
-        headers: {
-          'api-key': apikey,
-        },
+        includeCredentials: true
       }),
     }),
     deleteContractById: builder.query<
       Contract,
-      { uuid: string; apikey: string }
+      { uuid: string }
     >({
-      query: ({ uuid, apikey }) => ({
+      query: ({ uuid}) => ({
         url: `/contracts/${uuid}`,
         method: 'DELETE',
-        headers: {
-          'api-key': apikey,
-        },
+        includeCredentials: true
       }),
     }),
     postContract: builder.query<
       Contract,
       { postContractRequest: PostContractRequest; apikey: string }
     >({
-      query: ({ postContractRequest, apikey }) => ({
+      query: ({ postContractRequest }) => ({
         url: '/contracts',
         method: 'POST',
-        headers: {
-          'api-key': apikey,
-        },
+        includeCredentials: true,
         body: postContractRequest,
       }),
     }),
   }),
 });
+
+export const {
+  useGetContractsQuery,
+  useGetContractByIdQuery,
+  useDeleteContractByIdQuery,
+  usePostContractQuery,
+} = contractsAPI;

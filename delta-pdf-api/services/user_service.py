@@ -112,3 +112,12 @@ def create_new_account(email: str):
         # Todo: Log the error here
         raise DatabaseError("Failed to create user account")
 
+@db_session
+def logout_user(api_key: str):
+    user = get_user_by_api_key(api_key)
+    if user is None:
+        raise UserNotFoundException("Invalid or expired API key")
+
+    user.api_key = f"key_{uuid.uuid4()}"
+    user.flush()
+    return {"message": "User logged out successfully"}

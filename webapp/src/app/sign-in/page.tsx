@@ -30,7 +30,7 @@ export default function Page() {
   const handleVerifyCode = async ( code: string ) => {
     try {
       const { full_name , uuid  } = await postLoginCode({ email , code}).unwrap();
-      dispatch(setUser({full_name , uuid}))
+      dispatch(setUser({full_name , uuid , email}));
       router.push('/documents');
     } catch (error) {
       console.log(error);
