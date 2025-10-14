@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { apiSlice } from './demo';
-import { authAPI } from '@/app/sign-in/api/user-auth';
+import { authAPI } from '@/shared/store/api/user-auth';
+import userReducer from './slice/user-slice';
 
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
   [authAPI.reducerPath]: authAPI.reducer,
+  user : userReducer
 });
 
 export const store = configureStore({
@@ -12,7 +14,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false })
       .concat(apiSlice.middleware)
-      .concat(authAPI.middleware),
+      .concat(authAPI.middleware)
 });
 
 // (Optional) Infer types for TypeScript

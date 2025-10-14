@@ -2,8 +2,10 @@
 import SignInCard from './components/sign-in-card';
 import { useState } from 'react';
 import VerifyEmailCard from './components/verify-email-card';
-import { usePostLoginCodeMutation, useRequestLoginCodeMutation } from './api/user-auth';
+import { usePostLoginCodeMutation, useRequestLoginCodeMutation } from '../../shared/store/api/user-auth';
 import { useRouter} from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/shared/store/slice/user-slice';
 
 export default function Page() {
   const [email, setEmail] = useState('');
@@ -13,6 +15,7 @@ export default function Page() {
   const [postLoginCode , { isLoading : postLoginCodeLoading }] = usePostLoginCodeMutation();
 
   const router = useRouter()
+  const dispatch = useDispatch()
 
   const handleRequestCode = async ({ email }: { email: string }) => {
     try {
@@ -26,7 +29,8 @@ export default function Page() {
 
   const handleVerifyCode = async ( code: string ) => {
     try {
-      const { full_name , uuid , api_key } = await postLoginCode({ email , code}).unwrap();
+      const { full_name , uuid  } = await postLoginCode({ email , code}).unwrap();
+      dispatch(setUser({full_name , uuid}))
       router.push('/documents');
     } catch (error) {
       console.log(error);

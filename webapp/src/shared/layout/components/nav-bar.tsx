@@ -1,16 +1,21 @@
-'use client';
+"use client";
 
 import Logo from '@/shared/icons/logo';
 import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import DocumentIcon from '@/shared/icons/document';
 import InboxIcon from '@/shared/icons/inbox';
 import TemplatesIcon from '@/shared/icons/templates';
-import { Bell, ChevronDown } from 'lucide-react';
+import { Bell, ChevronDown, Settings } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/shared/store/store';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
+import { LogOut } from 'lucide-react';
+import { useLogoutUserMutation } from '@/shared/store/api/user-auth';
 
 export default function NavBar() {
   const pathName = usePathname();
@@ -20,6 +25,21 @@ export default function NavBar() {
     { label: 'inbox', icon: InboxIcon },
     { label: 'templates', icon: TemplatesIcon },
   ];
+
+  const userName = useSelector((state: RootState) => state.user.name);
+
+  const [logout] = useLogoutUserMutation();
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout({});
+      router.push('/sign-in');
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div className="relative flex w-full justify-between bg-white px-4 py-3">
@@ -106,19 +126,37 @@ export default function NavBar() {
             <div className="border-midnight-gray-200 rounded-full border p-2">
               <Bell size={16} />
             </div>
-            <div className="flex items-center gap-2 rounded-[100px] border-[1.5px] p-[6px]">
-              <Image
-                src="/placeholder.png"
-                alt="placeholder"
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-              <p className="text-midnight-gray-900 text-sm font-[600]">
-                Bastion Zuid
-              </p>
-              <ChevronDown size={16} />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger className='border-none active:border-none active:ring-0 focus-visible:ring-0 focus-visible:shadow-none focus-visible:outline-none'>
+                <div className="flex items-center gap-2 rounded-[100px] border-[1.5px] p-[6px]">
+                  <Image
+                    src="/placeholder.png"
+                    alt="placeholder"
+                    width={24}
+                    height={24}
+                    className="rounded-full"
+                  />
+                  <p className="text-midnight-gray-900 text-sm font-[600]">
+                    {userName || "User"}
+                  </p>
+                  <ChevronDown size={16} />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem className='font-[500] text-sm text-midnight-gray-900 py-2 px-4 gap-2 flex items-center'>
+                  <Settings className='text-midnight-gray-900'/>
+                  <span>
+                    Settings
+                  </span>
+                  </DropdownMenuItem>
+                <DropdownMenuItem className='font-[500] text-sm text-midnight-gray-900 py-2 px-4 gap-2 flex items-center' onClick={handleLogout}>
+                  <LogOut className='text-midnight-gray-900'/>
+                  <span>
+                    Logout
+                  </span>
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>

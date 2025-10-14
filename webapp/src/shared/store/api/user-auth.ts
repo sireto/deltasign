@@ -1,7 +1,7 @@
 import {
   LoginCodeRequestResponse,
   PostLoginCodeRequestResponse,
-} from '../types/user-auth';
+} from '../../../app/sign-in/types/user-auth';
 import { appBaseQuery } from '@/shared/store/base-query';
 import { createApi } from '@reduxjs/toolkit/query/react';
 
@@ -36,12 +36,23 @@ export const authAPI = createApi({
           email,
           login_code: code,
         },
-        header : {
-          x_client_type: 'web'
-        }
+        headers : {
+          'x-client-type': 'web'
+        },
+        includeCredentials: true
       }),
     }),
-
+    logoutUser: builder.mutation<void , {}>({
+        query: () => ({
+          url: '/users/logout',
+          method: 'POST',
+          credentials: 'include', 
+          headers : {
+            'x-client-type': 'web'
+          },
+          includeCredentials: true
+        }),
+      }),
     getSelfUser: builder.query<User, { apikey: string }>({
       query: ({ apikey }) => ({
         url: '/users/me',
@@ -58,5 +69,6 @@ export const authAPI = createApi({
 export const {
   useRequestLoginCodeMutation,
   usePostLoginCodeMutation,
+  useLogoutUserMutation,
   useGetSelfUserQuery,
 } = authAPI;

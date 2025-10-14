@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useGetDemoApiQuery } from '../store/demo';
 import { useEffect } from 'react';
 import ReduxProvider from '../store/provider/redux-provider';
+import { cn } from '@/lib/utils';
 
 interface ILayoutProps {
   className?: string;
@@ -27,7 +28,7 @@ export default function Layout({
 
   return (
     <ReduxProvider>
-      <div className="flex min-h-screen flex-col">
+      <div className={cn("flex min-h-screen flex-col" , className)}>
         {!hideNavBar && <NavBar />}
         {children}
         {pathName === '/sign-in' && <Footer />}
