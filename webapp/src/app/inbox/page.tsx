@@ -1,5 +1,5 @@
 import PageAnimation from '@/shared/ui/page-animation';
-import EmptyBoxCard from '../documents/components/empty-box-card';
+import EmptyBoxCard from '../documents/components/cards/empty-box-card';
 
 export default function Page() {
   return (

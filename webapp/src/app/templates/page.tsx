@@ -1,6 +1,6 @@
 'use client';
 import { Card } from '@/shared/ui/card';
-import CreateFolderCard from '../documents/components/create-folder-card';
+import CreateFolderCard from '../documents/components/cards/create-folder-card';
 import { SearchInput } from '@/shared/ui/search-input';
 import { Button } from '@/shared/ui/button';
 import { Plus } from 'lucide-react';
