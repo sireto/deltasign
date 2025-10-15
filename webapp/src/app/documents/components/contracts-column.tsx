@@ -1,3 +1,4 @@
+'use client';
 import { ColumnDef } from "@tanstack/react-table";
 import { Contract } from "../types/contract";
 import { Checkbox } from "@/shared/ui/checkbox";
@@ -6,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { EllipsisVertical } from "lucide-react";
 import { formatDate } from "../utils/date";
+import { RootState } from "@/shared/store/store";
+import { useSelector } from "react-redux";
 
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
@@ -37,14 +40,15 @@ const CustomAvatarsOverlay = ({
 }) => {
   const displayed = images.slice(0, max);
   const extra = images.length - max;
-
+  
+  
   return (
     <div className="flex -space-x-1">
       {displayed.map((src, i) => (
         <img
-          key={i}
-          src={src}
-          alt={`Avatar ${i + 1}`}
+        key={i}
+        src={src}
+        alt={`Avatar ${i + 1}`}
           className="inline-block size-6 rounded-full ring-2 ring-white outline outline-white/10"
         />
       ))}
@@ -58,8 +62,10 @@ const CustomAvatarsOverlay = ({
 };
 
 
+// const username = useSelector((state: RootState) => state.user.name);
+// const email = useSelector((state: RootState) => state.user.email);
 
-export const contractColumn: ColumnDef<Contract>[] = [
+export const contractsColumn: ColumnDef<Contract>[] = [
     {
       id: 'select',
       header: ' ',
@@ -73,17 +79,17 @@ export const contractColumn: ColumnDef<Contract>[] = [
       accessorKey: 'document',
       header: 'Title',
       cell: ({ row }) => {
-        const doc = row.getValue('document') as Contract['document'];
+        const doc = row.original
         return (
-          <div className="flex gap-2">
+          <div className="flex gap-2 min-w-[200px]">
             <PdfIcon />
             <a
-              href={doc.s3_url}
+              href={doc.document.s3_url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-midnight-gray-900 font-[500] hover:underline"
             >
-              {doc.filename}
+              {doc.name}<span>.pdf</span>
             </a>
           </div>
         );
@@ -102,8 +108,8 @@ export const contractColumn: ColumnDef<Contract>[] = [
               className="inline-block size-6 rounded-full ring-2 ring-white outline outline-white/10"
             />
             <div className='text-midnight-gray-900 text-xs'> 
-              <p className='font-[600]'>{"User"}</p>
-              <p className='text-midnight-gray-600'>{"test@gmail.com"}</p>
+              <p className='font-[600]'>user</p>
+              <p className='text-midnight-gray-600'>test@gmail.com</p>
             </div>
   
           </div>

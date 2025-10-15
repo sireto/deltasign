@@ -4,8 +4,8 @@ import CreateFolderCard from '../documents/components/cards/create-folder-card';
 import { SearchInput } from '@/shared/ui/search-input';
 import { Button } from '@/shared/ui/button';
 import { Plus } from 'lucide-react';
-import TemplatesTable from './components/templates-table';
 import PageAnimation from '@/shared/ui/page-animation';
+import DataTable from '@/shared/ui/data-table';
 
 export default function Page() {
   return (
@@ -22,7 +22,6 @@ export default function Page() {
             Create Template
           </Button>
         </div>
-        <TemplatesTable />
       </Card>
     </PageAnimation>
   );

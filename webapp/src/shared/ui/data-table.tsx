@@ -1,4 +1,4 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { Card } from "./card";
 import {
   ColumnDef,
@@ -15,9 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/ui/table';
-import { formatDate } from "@/app/documents/utils/date";
 import { ChevronUp , ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import EmptyBoxCard from "@/app/documents/components/cards/empty-box-card";
 
 export interface DataTableProps<T> {
     defaultValue : string
@@ -28,32 +28,33 @@ export interface DataTableProps<T> {
         icon? : React.JSXElementConstructor<React.SVGProps<SVGSVGElement>>
     }[]
     filtersTab? : React.ReactNode
-    tableData : {
+    tableData? : {
         data: T[]
         columns: ColumnDef<T>[]
-    }
+    }|null,
+    onTabChange? : (value : string) => void
 }
 
 export default function DataTable<T>({
     defaultValue,
     items,
     filtersTab,
-    tableData
+    tableData,
+    onTabChange
 }: DataTableProps<T>) {
     
-    const table = useReactTable({
+    const table = tableData ? useReactTable({
         data : tableData.data,
         columns : tableData.columns,
         getCoreRowModel : getCoreRowModel(),
         getPaginationRowModel : getPaginationRowModel()
-    })
-
+    }) : null
 
     return (
 
 
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden border-[1.5px] border-gray-200 ">
-        <Tabs defaultValue={defaultValue} className="flex h-full flex-1 flex-col gap-0">
+    <div className="flex h-full w-full flex-col overflow-hidden border-[1.5px] border-gray-200 ">
+        <Tabs defaultValue={defaultValue} className="flex h-full flex-1 flex-col gap-0" onValueChange={onTabChange}>
             <TabsList className="pl-4 bg-midnight-gray-50 border-midnight-gray-200 flex h-[52px] w-full justify-start rounded-b-none border-b-0 pt-3 pb-0">
                 {
                     items.map((item) => (
@@ -75,6 +76,8 @@ export default function DataTable<T>({
                 filtersTab && filtersTab
             }
                 <Card className="flex flex-1 rounded-none border-t-0 border-none p-5">
+                    {
+                        table ?
                         <div className="overflow-hidden rounded-md border">
                             <Table>
                                 <TableHeader className="bg-midnight-gray-50">
@@ -128,6 +131,7 @@ export default function DataTable<T>({
                                 </TableBody>
                             </Table>
                         </div>
+                    : <EmptyBoxCard/>}
             </Card>
         </Tabs>
     </div>
