@@ -806,3 +806,13 @@ body::-webkit-scrollbar {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
+
+/* Single thumbnail item */
+.rpv-thumbnail__items.rpv-thumbnail__items--single {
+  width: fit-content !important;
+}
+
+/* Vertical thumbnail list */
+.rpv-thumbnail__list.rpv-thumbnail__list--vertical {
+  width: fit-content !important;
+}
