@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import CreateFolderCard from './components/cards/create-folder-card';
 import PageAnimation from '@/shared/ui/page-animation';
@@ -14,7 +13,7 @@ import DraftsIcon from '@/shared/icons/drafts';
 import PendingIcon from '@/shared/icons/pending';
 import CompletedIcon from '@/shared/icons/completed';
 import type { ColumnDef, Row } from '@tanstack/react-table';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import type { Contract } from './types/contract';
 import type { Document } from './types/document';
 
@@ -27,9 +26,12 @@ interface TableConfig<T> {
 export default function Page() {
   const { data: documents } = useGetDocumentsQuery();
   const { data: contracts } = useGetContractsQuery();
-
   const [postDocument] = usePostDocumentMutation();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Get active tab from URL or default to 'All Contracts'
+  const activeTab = searchParams.get('tab') || 'All Contracts';
 
   // --- Tab items ---
   const tabItems = [
@@ -49,9 +51,9 @@ export default function Page() {
   // --- State for current table data ---
   const [currentTable, setCurrentTable] = useState<TableConfig<any> | null>(null);
 
-  // --- Set default table once contracts load ---
+  // --- Update table based on active tab ---
   useEffect(() => {
-    if (contracts) {
+    if (activeTab === 'All Contracts' && contracts) {
       setCurrentTable({
         data: contracts,
         columns: contractsColumn,
@@ -59,30 +61,25 @@ export default function Page() {
           router.push(`/documents/${row.original.uuid}`);
         },
       });
+    } else if (activeTab === 'Drafts' && documents) {
+      setCurrentTable({
+        data: documents,
+        columns: draftsColumn,
+        onRowClick: (row: Row<Document>) => {
+          router.push(`/documents/${row.original.uuid}`);
+        },
+      });
+    } else if (activeTab === 'Pending' || activeTab === 'Completed') {
+      setCurrentTable(null);
     }
-  }, [contracts, router]);
+  }, [activeTab, contracts, documents, router]);
 
   // --- Handle tab switching ---
   const handleTabChange = (value: string) => {
-    if (value === 'All Contracts') {
-      setCurrentTable({
-        data: contracts || [],
-        columns: contractsColumn,
-        onRowClick: (row: Row<Contract>) => {
-          router.push(`/documents/${row.original.uuid}`);
-        },
-      });
-    } else if (value === 'Drafts') {
-      setCurrentTable({
-        data: documents || [],
-        columns: draftsColumn,
-        onRowClick: (row : Row<Document>) => {
-          router.push(`/documents/${row.original.uuid}`);
-        },
-      });
-    } else {
-      setCurrentTable(null);
-    }
+    // Update URL with new tab value
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', value);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   const handlePost = async (file: File) => {
@@ -96,11 +93,9 @@ export default function Page() {
       <p className="text-midnight-gray-900 text-2xl leading-[36px] font-[700]">
         All files
       </p>
-
       <CreateFolderCard />
-
       <DataTable
-        defaultValue="All Contracts"
+        defaultValue={activeTab}
         items={tabItems.map((t) => ({
           label: t.label,
           count: t.count,

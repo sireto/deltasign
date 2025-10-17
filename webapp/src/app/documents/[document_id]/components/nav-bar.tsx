@@ -1,10 +1,14 @@
+"use client";
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { ArrowLeft, File, SendHorizonal } from 'lucide-react';
 import { Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-export default function NavBar({ className }: { className?: string }) {
+export default function NavBar({ className , fileName }: { className?: string , fileName : string}) {
+
+  const router = useRouter();
   return (
     <div
       className={cn(
@@ -12,16 +16,14 @@ export default function NavBar({ className }: { className?: string }) {
         className,
       )}
     >
-      <Link href={'/documents'}>
-        <Button variant="secondary">
+        <Button variant="secondary" onClick={() => router.back()}>
           <ArrowLeft />
           <span className="font-[500]">Back</span>
         </Button>
-      </Link>
       <div className="flex items-center gap-2">
         <File size={16} className="text-midnight-gray-900" />
         <span className="text-midnight-gray-900 text-sm font-[500]">
-          lawyers_term_and_condition.pdf
+          {fileName}
         </span>
         <span className="text-midnight-gray-300">|</span>
         <span className="text-midnight-gray-600 border-midnight-gray-300 rounded-sm border px-1 py-[2px] text-xs font-[500]">

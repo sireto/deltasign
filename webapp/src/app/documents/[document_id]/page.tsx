@@ -59,7 +59,7 @@ export default function Page() {
   return (
       data ? 
       <div>
-        <NavBar className="sticky top-0" />
+        <NavBar className="sticky top-0" fileName={data.filename}/>
         <div className="flex h-full w-full justify-between p-3">
           <PDFViewer file={data?.s3_url || ""}/>
           <div className="border-midnight-gray-200 overflow-clip rounded-lg border-[1px]">
@@ -77,7 +77,7 @@ export default function Page() {
             <div className="border-midnight-gray-200 flex flex-col gap-3 border-t-[1px] border-b-[1px] bg-white p-4">
               <div className="flex flex-col gap-2">
                 <Label>Title</Label>
-                <Input defaultValue={'Lawyers Term and condition'} />
+               <Input defaultValue={data.filename.replace('.pdf', '')} />
               </div>
               <div className="flex flex-col gap-2">
                 <Label>Language</Label>
