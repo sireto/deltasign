@@ -52,10 +52,8 @@ async def login_with_code(email: str, login_code: str , x_client_type : str | No
         if user_service.verify_login_code(email, login_code):
             user = user_service.get_user_by_email(email)
             if x_client_type == "mobile":
-                print("mobile detected")
                 return user.json(api_key=True)
             else:
-                print("web detected")
                 response = JSONResponse(
                     content={**user.json(api_key=True)} 
                 )

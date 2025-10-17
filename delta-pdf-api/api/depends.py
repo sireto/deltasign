@@ -69,7 +69,6 @@ async def get_logged_user(
     if DEPLOYMENT == "TEST" and api_key.startswith("test"):
         return user_service.create_new_account(f"{api_key}@deltasign.io")
 
-    print("API KEY:", api_key)
     user = user_service.get_user_by_api_key(api_key)
     if user:
         return user
