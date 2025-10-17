@@ -13,12 +13,23 @@ import { ChevronDown, Calendar } from 'lucide-react';
 import DraftsIcon from '@/shared/icons/drafts';
 import PendingIcon from '@/shared/icons/pending';
 import CompletedIcon from '@/shared/icons/completed';
-import type { ColumnDef } from '@tanstack/react-table';
-import { useDispatch } from 'react-redux';
+import type { ColumnDef, Row } from '@tanstack/react-table';
+import { useRouter } from 'next/navigation';
+import type { Contract } from './types/contract';
+import type { Document } from './types/document';
+
+interface TableConfig<T> {
+  data: T[];
+  columns: ColumnDef<T>[];
+  onRowClick: (row: Row<T>) => void;
+}
 
 export default function Page() {
   const { data: documents } = useGetDocumentsQuery();
   const { data: contracts } = useGetContractsQuery();
+
+  const [postDocument] = usePostDocumentMutation();
+  const router = useRouter();
 
   // --- Tab items ---
   const tabItems = [
@@ -36,48 +47,49 @@ export default function Page() {
   ];
 
   // --- State for current table data ---
-  const [currentTable, setCurrentTable] = useState<{
-    data: unknown[];
-    columns: ColumnDef<unknown>[];
-  }|null>({
-    data: [],
-    columns: [],
-  });
+  const [currentTable, setCurrentTable] = useState<TableConfig<any> | null>(null);
 
   // --- Set default table once contracts load ---
   useEffect(() => {
     if (contracts) {
       setCurrentTable({
         data: contracts,
-        columns: contractsColumn as ColumnDef<unknown>[],
+        columns: contractsColumn,
+        onRowClick: (row: Row<Contract>) => {
+          router.push(`/documents/${row.original.uuid}`);
+        },
       });
     }
-  }, [contracts]);
+  }, [contracts, router]);
 
   // --- Handle tab switching ---
   const handleTabChange = (value: string) => {
     if (value === 'All Contracts') {
       setCurrentTable({
         data: contracts || [],
-        columns: contractsColumn as ColumnDef<unknown>[],
+        columns: contractsColumn,
+        onRowClick: (row: Row<Contract>) => {
+          router.push(`/documents/${row.original.uuid}`);
+        },
       });
     } else if (value === 'Drafts') {
       setCurrentTable({
         data: documents || [],
-        columns: draftsColumn as ColumnDef<unknown>[],
+        columns: draftsColumn,
+        onRowClick: (row : Row<Document>) => {
+          router.push(`/documents/${row.original.uuid}`);
+        },
       });
     } else {
       setCurrentTable(null);
     }
   };
 
-  const [postDocument , {isLoading , isSuccess , error }] = usePostDocumentMutation();
-
   const handlePost = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
     await postDocument(formData);
-  }
+  };
 
   return (
     <PageAnimation>
@@ -95,7 +107,7 @@ export default function Page() {
           value: t.value,
           icon: t.icon,
         }))}
-        filtersTab={<FiltersTab filters={filters} showUploadButton onUpload={handlePost}/>}
+        filtersTab={<FiltersTab filters={filters} showUploadButton onUpload={handlePost} />}
         tableData={currentTable}
         onTabChange={handleTabChange}
       />

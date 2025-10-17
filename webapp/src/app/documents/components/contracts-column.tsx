@@ -7,8 +7,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { EllipsisVertical } from "lucide-react";
 import { formatDate } from "../utils/date";
-import { RootState } from "@/shared/store/store";
-import { useSelector } from "react-redux";
 
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
