@@ -55,13 +55,14 @@ export default function DataTable<T>({
 
     <div className="flex h-full w-full flex-col overflow-hidden border-[1.5px] border-gray-200 ">
         <Tabs defaultValue={defaultValue} className="flex h-full flex-1 flex-col gap-0" onValueChange={onTabChange}>
-            <TabsList className="pl-4 bg-midnight-gray-50 border-midnight-gray-200 flex h-[52px] w-full justify-start rounded-b-none border-b-0 pt-3 pb-0">
+            <TabsList className="border-none bg-midnight-gray-50 flex h-[52px] w-full justify-start rounded-b-none border-b-0 pt-3 !pb-0">
+                <div className="w-8 border-b-[1.5px] border-midnight-gray-200 h-full flex"/>
                 {
                     items.map((item) => (
                         <TabsTrigger
                             key={item.value}
                             value={item.value}
-                            className="border-b-midnight-gray-200 data-[state=active]:border-midnight-gray-200 text-midnight-gray-900 data-[state=active]:text-silicon rouded-b-0 gap-x-1 rounded-b-none border-b-[1.5px] px-3 py-[10px] text-sm data-[state=active]:border-[1.5px] data-[state=active]:border-b-0 data-[state=active]:bg-white data-[state=active]:font-[600] data-[state=inactive]:border-b-[1.5px]"
+                            className={cn("border-b-midnight-gray-200 data-[state=active]:border-midnight-gray-200 data-[state=active]:border-b-none h-full text-midnight-gray-900 data-[state=active]:text-silicon rouded-b-0 gap-x-1 rounded-b-none px-3 py-[10px] text-sm data-[state=active]:border-[1.5px] data-[state=active]:border-b-0 data-[state=active]:bg-white data-[state=active]:font-[600] data-[state=inactive]:border-b-[1.5px]")}
                         >
                         {item.icon && <item.icon/>}
                             {item.label}
@@ -71,11 +72,12 @@ export default function DataTable<T>({
                         </TabsTrigger>
                     ))
                 }
+                <div className="w-full flex h-full border-b-[1.5px] border-midnight-gray-200"/>
             </TabsList>
             {
                 filtersTab && filtersTab
             }
-                <Card className="flex flex-1 rounded-none border-t-0 border-none p-5">
+                <Card className="flex flex-1 rounded-none border-t-0 border-none p-5 min-h-[300px]">
                     {
                         table ?
                         <div className="overflow-hidden rounded-md border">
