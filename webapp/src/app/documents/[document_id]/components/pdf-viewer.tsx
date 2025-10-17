@@ -25,7 +25,7 @@ export default function PDFViewer({ file }: { file: string }) {
     return (
         <>
             <div className="flex overflow-clip rounded-[8px]">
-                <div className="p-2 bg-white">
+                <div className="p-2 bg-white min-w-[130px]">
                     <Thumbnails
                         renderThumbnailItem={(thumbnail) => (
                             <div

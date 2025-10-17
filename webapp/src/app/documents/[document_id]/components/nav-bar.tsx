@@ -31,7 +31,7 @@ export default function NavBar({ className , fileName }: { className?: string , 
         </span>
       </div>
       <div className="flex gap-3">
-        <Button variant="secondary">
+        <Button variant="outline">
           <Share2 />
           Share
         </Button>

@@ -62,7 +62,7 @@ export default function Page() {
         <NavBar className="sticky top-0" fileName={data.filename}/>
         <div className="flex h-full w-full justify-between p-3">
           <PDFViewer file={data?.s3_url || ""}/>
-          <div className="border-midnight-gray-200 overflow-clip rounded-lg border-[1px]">
+          <div className="border-midnight-gray-200 overflow-clip rounded-lg border-[1.5px]">
             <div className="bg-midnight-gray-50 flex items-center gap-4 px-5 py-4">
               <div>
                 <p className="text-midnight-gray-900 text-lg font-[600]">
