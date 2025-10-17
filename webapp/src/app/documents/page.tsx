@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import CreateFolderCard from './components/cards/create-folder-card';
 import PageAnimation from '@/shared/ui/page-animation';
-import { useGetDocumentsQuery } from './api/documents';
+import { useGetDocumentsQuery, usePostDocumentMutation } from './api/documents';
 import { useGetContractsQuery } from './api/contracts';
 import { contractsColumn } from './components/contracts-column';
 import { draftsColumn } from './components/drafts-column';
@@ -14,6 +14,7 @@ import DraftsIcon from '@/shared/icons/drafts';
 import PendingIcon from '@/shared/icons/pending';
 import CompletedIcon from '@/shared/icons/completed';
 import type { ColumnDef } from '@tanstack/react-table';
+import { useDispatch } from 'react-redux';
 
 export default function Page() {
   const { data: documents } = useGetDocumentsQuery();
@@ -70,6 +71,14 @@ export default function Page() {
     }
   };
 
+  const [postDocument , {isLoading , isSuccess , error }] = usePostDocumentMutation();
+
+  const handlePost = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    await postDocument(formData);
+  }
+
   return (
     <PageAnimation>
       <p className="text-midnight-gray-900 text-2xl leading-[36px] font-[700]">
@@ -86,7 +95,7 @@ export default function Page() {
           value: t.value,
           icon: t.icon,
         }))}
-        filtersTab={<FiltersTab filters={filters} />}
+        filtersTab={<FiltersTab filters={filters} showUploadButton onUpload={handlePost}/>}
         tableData={currentTable}
         onTabChange={handleTabChange}
       />

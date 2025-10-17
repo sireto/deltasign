@@ -1,3 +1,4 @@
+import { useRef } from "react"
 import { SearchInput } from "@/shared/ui/search-input"
 import { DropdownMenu , DropdownMenuItem , DropdownMenuTrigger , DropdownMenuContent } from "@/shared/ui/dropdown-menu"
 import { Button } from "@/shared/ui/button"
@@ -8,7 +9,21 @@ interface filter {
     icon: React.JSXElementConstructor<React.SVGProps<SVGSVGElement>>
 }
 
-export const FiltersTab = ({filters}: { filters : filter[]  } ) => {
+export const FiltersTab = ({filters , showUploadButton , onUpload }: { filters : filter[] , showUploadButton? : boolean , onUpload? : (file: File) => void } ) => {
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file && onUpload) {
+            onUpload(file)
+        }
+        e.target.value = "" // reset to allow re-upload of same file
+    }
+
     return (
          <div className="flex w-full items-center justify-between bg-white px-5 pt-4">
           <div className="flex w-full gap-2">
@@ -27,18 +42,23 @@ export const FiltersTab = ({filters}: { filters : filter[]  } ) => {
               ))
             }
           </div>
-          <div>
-            <input
-            //   ref={fileInputRef}
-              type="file"
-              accept="application/pdf"
-              className="hidden"
-            />
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              <span>Upload Document</span>
-            </Button>
-          </div>
+          {
+            showUploadButton && (
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <Button onClick={handleButtonClick}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  <span>Upload Document</span>
+                </Button>
+              </div>
+            )
+          }
         </div>
     )
 }

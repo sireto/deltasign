@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { appBaseQuery } from '@/shared/store/base-query';
-import {Document} from "../types/document"
+import { Document } from "../types/document";
 
 export const documentsAPI = createApi({
   reducerPath: 'documentsAPI',
@@ -9,60 +9,68 @@ export const documentsAPI = createApi({
   refetchOnReconnect: true,
   refetchOnFocus: true,
   endpoints: (builder) => ({
+    // ✅ GET all documents
     getDocuments: builder.query<Document[], void>({
       query: () => ({
         url: '/documents',
         method: 'GET',
-        includeCredentials: true
+        includeCredentials: true,
       }),
+      providesTags: ['Document'],
     }),
-    getDocumentByUUID: builder.query<
-      Document,
-      { uuid: string  }
-    >({
-      query: ({uuid}:{uuid : string}) => ({
+
+    // ✅ GET one document
+    getDocumentByUUID: builder.query<Document, { uuid: string }>({
+      query: ({ uuid }) => ({
         url: `/documents/${uuid}`,
         method: 'GET',
-        includeCredentials: true
+        includeCredentials: true,
       }),
+      providesTags: ['Document'],
     }),
-    postDocument: builder.query<Document, { file: File; }>({
-      query: ({file} : {file : File }) => ({
+
+    // ✅ POST (upload) a new document
+    postDocument: builder.mutation<Document, FormData>({
+      query: (formData) => ({
         url: '/documents',
         method: 'POST',
-        body: file,
-        includeCredentials: true
+        body: formData,
+        includeCredentials: true,
       }),
+      invalidatesTags: ['Document'],
     }),
-    deleteDocumentById: builder.query<
-      Document,
-      { uuid: string; apikey: string }
-    >({
+
+    // ✅ DELETE
+    deleteDocumentById: builder.mutation<Document, { uuid: string }>({
       query: ({ uuid }) => ({
         url: `/documents/${uuid}`,
         method: 'DELETE',
-        includeCredentials: true
+        includeCredentials: true,
       }),
+      invalidatesTags: ['Document'],
     }),
-    patchDocumentById: builder.query<
-      Document,
-      { uuid: string; file: File; apikey: string }
-    >({
-      query: ({ uuid, file }) => ({
-        url: `/documents/${uuid}`,
-        method: 'PATCH',
-        body: file,
-        includeCredentials: true
-      }),
+
+    // ✅ PATCH (update)
+    patchDocumentById: builder.mutation<Document, { uuid: string; file: File }>({
+      query: ({ uuid, file }) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return {
+          url: `/documents/${uuid}`,
+          method: 'PATCH',
+          body: formData,
+          includeCredentials: true,
+        };
+      },
+      invalidatesTags: ['Document'],
     }),
   }),
 });
 
-
 export const {
   useGetDocumentsQuery,
   useGetDocumentByUUIDQuery,
-  usePostDocumentQuery,
-  useDeleteDocumentByIdQuery,
-  usePatchDocumentByIdQuery,
+  usePostDocumentMutation,
+  useDeleteDocumentByIdMutation,
+  usePatchDocumentByIdMutation,
 } = documentsAPI;
