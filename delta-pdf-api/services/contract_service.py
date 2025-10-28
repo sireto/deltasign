@@ -32,15 +32,7 @@ lock = Lock()
 
 @db_session
 def create_new_contract(contract_request: ContractCreationRequest, user: User):
-    document = document_service.get_document_by_uuid(contract_request.document_uuid)
-    if not document:
-        raise BadRequest(f"Document[{contract_request.document_uuid}] does not exist")
-
-    # Check if the user has rights to create contract
-    if document.user.id != user.id:
-        raise UnauthorizedError("You do not have permission to create contract on the document.")
-
-    contract = Contract.create(document, contract_request.name, contract_request.message)
+    contract = create_default_contract(contract_request , user)
 
     for signer_email in contract_request.signers:
         signer_user = user_service.get_user_by_email(signer_email)
@@ -70,6 +62,22 @@ def create_new_contract(contract_request: ContractCreationRequest, user: User):
 
     contract.signed_doc_url = s3_url.replace(source_key, contract_key)
     return Contract.get(uuid=contract.uuid)
+
+#for web implementation
+@db_session
+def create_default_contract(contract_request: ContractCreationRequest, user: User):
+    document = document_service.get_document_by_uuid(contract_request.document_uuid)
+
+    if not document:
+        raise BadRequest(f"Document[{contract_request.document_uuid}] does not exist")
+
+    # Check if the user has rights to create contract
+    if document.user.id != user.id:
+        raise UnauthorizedError("You do not have permission to create contract on the document.")
+
+    contract = Contract.create(document, contract_request.name, contract_request.message)
+
+    return contract
 
 
 @db_session

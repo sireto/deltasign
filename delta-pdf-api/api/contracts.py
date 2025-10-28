@@ -13,6 +13,7 @@ from services import document_service, contract_service
 from services.contract_service import ContractCreationRequest
 from services.contract_service import validate_contract
 from services.file_service import save_file
+from db import Contract
 
 contracts_api = APIRouter()
 """
