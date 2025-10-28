@@ -8,6 +8,7 @@ from pony.orm import PrimaryKey, db_session
 
 from env import DB_PROVIDER, DB_NAME, DB_HOST, DB_USER, DB_PASSWORD, DEPLOYMENT, DB_DIR
 from model.annotation import Annotation
+from enum import Enum
 
 database = orm.Database()
 
@@ -89,6 +90,11 @@ class Document(database.Entity):
             "owner_uuid": User[self.user.id].uuid
         }
 
+class ContactStatus(Enum):
+    DRAFT = "draft"
+    PENDING = "pending"
+    FULLY_SIGNED = "fully signed"
+
 
 class Contract(database.Entity):
     _table_ = 'contracts'
@@ -99,7 +105,6 @@ class Contract(database.Entity):
     message = orm.Optional(str, default='')
 
     signed_doc_url = orm.Optional(str)
-    status = orm.Required(str)
 
     signature_hash = orm.Optional(str)
     blockchain_tx_hash = orm.Optional(str)
@@ -114,8 +119,10 @@ class Contract(database.Entity):
     signed_by_all = orm.Optional(bool, sql_default=0)
     signed_number = orm.Required(int, sql_default=0)
 
+    status = orm.Required(str , default=ContactStatus.DRAFT.value)
+
     @classmethod
-    def create(cls, document, name, message=''):
+    def create(cls, document, name, message='' , status=ContactStatus.DRAFT.value):
         # if contract name is not given then use document name for the contract name
         contract_name = document.filename
         if name:
@@ -125,7 +132,7 @@ class Contract(database.Entity):
                         name=contract_name,
                         document=document,
                         message=message,
-                        status="NEW",
+                        status=status,
                         signed_doc_url=document.s3_url,
                         created_date=datetime.now(),
                         signed_number=0)
@@ -162,7 +169,6 @@ class Contract(database.Entity):
                 "signed_number": self.signed_number,
                 "blockchain_tx_hash" : self.blockchain_tx_hash
             }
-
 
 class SignatureAnnotation(database.Entity):
     _table_ = 'contract_annotations'
