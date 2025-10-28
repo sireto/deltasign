@@ -1,8 +1,7 @@
 'use client';
 
 
-import { usePathname, useRouter } from 'next/navigation';
-import { useGetDocumentByUUIDQuery, useGetDocumentsQuery } from '../api/documents';
+import { usePathname } from 'next/navigation';
 import {
   Calendar,
   ChevronDown,
@@ -18,6 +17,7 @@ import { Input } from '@/shared/ui/input';
 import { Select, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
 import dynamic from 'next/dynamic';
+import { useGetContractByIdQuery } from '../api/contracts';
 
 export default function Page() {
   const tools = [
@@ -48,20 +48,20 @@ export default function Page() {
 
   const pathName = usePathname()
 
-  const documentId = pathName.split('/')[2]
+  const contractId = pathName.split('/')[2]
 
-  const {data} = useGetDocumentByUUIDQuery({uuid : documentId});
+  const { data: contract } = useGetContractByIdQuery({uuid : contractId});
 
   const PDFViewer = dynamic(() => import('./components/pdf-viewer'), {
     ssr: false,
   });
 
   return (
-      data ? 
+      contract ? 
       <div>
-        <NavBar className="sticky top-0" fileName={data.filename}/>
+        <NavBar className="sticky top-0" fileName={contract.name}/>
         <div className="flex h-full w-full justify-between p-3">
-          <PDFViewer file={data?.s3_url || ""}/>
+          <PDFViewer file={contract.document.s3_url || ""}/>
           <div className="border-midnight-gray-200 overflow-clip rounded-lg border-[1.5px]">
             <div className="bg-midnight-gray-50 flex items-center gap-4 px-5 py-4">
               <div>
@@ -77,7 +77,7 @@ export default function Page() {
             <div className="border-midnight-gray-200 flex flex-col gap-3 border-t-[1px] border-b-[1px] bg-white p-4">
               <div className="flex flex-col gap-2">
                 <Label>Title</Label>
-               <Input defaultValue={data.filename.replace('.pdf', '')} />
+               <Input defaultValue={contract.name}/>
               </div>
               <div className="flex flex-col gap-2">
                 <Label>Language</Label>

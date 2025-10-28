@@ -109,7 +109,7 @@ async def delete_user(user: User = Depends(get_logged_user)):
 @users_api.get("/users/self/contracts", tags=["User API"])
 async def get_self_user_contracts(
     user: User = Depends(get_logged_user),
-    status: Optional[ContractStatus] = Query(None)
+    status: Optional[ContractStatus] = Query(None),
 ):
     with db_session:
         print(status)
