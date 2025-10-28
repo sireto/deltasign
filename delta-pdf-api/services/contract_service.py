@@ -23,6 +23,9 @@ from services.file_service import delete_file, check_file, save_file
 from services.kuber_service import kuber_service
 from services.blockfrost_service import blockfrost_service
 
+from typing import Optional
+from db import ContractStatus
+
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -121,10 +124,53 @@ def get_user_contracts(user, sent: bool = True, received: bool = False):
             contracts = select(sr.contract for sr in SignRequest if sr.requester == user)[:]
         elif received:
             contracts = select(sr.contract for sr in SignRequest if sr.signer == user)[:]
+        
     except Exception as ex:
         logger.exception(ex)
     return contracts
 
+
+#todo : refactor this code.
+@db_session
+def get_self_user_contracts(user, contract_status: Optional[ContractStatus] = None):
+    contracts = []
+
+    try:
+        if contract_status != None:
+            user_contracts = list(select(
+                contract for contract in Contract 
+                if contract.document.user.id == user.id and contract.status == contract_status.value
+            )[:])
+            return user_contracts
+            
+        # Base query: all contracts related to the user
+        else: 
+            contracts = list(select(
+                sr.contract for sr in SignRequest 
+                if sr.signer == user or sr.requester == user
+            )[:])
+
+            # Optionally filter by contract_status
+            if contract_status:
+                contracts = [c for c in contracts if c.status == contract_status]
+
+            # Include contracts where user owns the document
+            user_contracts = list(select(
+                contract for contract in Contract 
+                if contract.document.user.id == user.id
+            )[:])
+
+            # Combine lists, avoiding duplicates
+            contracts_ids = {c.id for c in contracts}
+            for c in user_contracts:
+                if c.id not in contracts_ids:
+                    contracts.append(c)
+
+            return contracts
+
+    except Exception as e:
+        print(f"Error fetching contracts: {e}")
+        return []
 
 @db_session
 def get_sign_request(contract: Contract, user: User):

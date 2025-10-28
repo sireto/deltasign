@@ -6,9 +6,11 @@ from api.depends import get_logged_user
 from api.exceptions import UnauthorizedError, BadRequest
 from db import User
 from services import user_service, contract_service
-from fastapi import Header , HTTPException 
+from fastapi import Header , HTTPException , Query  
 from fastapi.responses import JSONResponse
 from datetime import datetime, timedelta, timezone
+from db import ContractStatus
+from typing import Optional
 
 users_api = APIRouter()
 """
@@ -18,7 +20,6 @@ GET     /users/login
 POST    /users/login
 DELETE  /users/:uuid
 """
-
 
 @users_api.get("/users", tags=["User API"])
 async def get_users():
@@ -105,15 +106,20 @@ async def delete_user(user: User = Depends(get_logged_user)):
         user_service.delete_user_by_uuid(user.uuid)
 
 
+@users_api.get("/users/self/contracts", tags=["User API"])
+async def get_self_user_contracts(
+    user: User = Depends(get_logged_user),
+    status: Optional[ContractStatus] = Query(None)
+):
+    with db_session:
+        print(status)
+        contracts = contract_service.get_self_user_contracts(user, contract_status=status)
+        return [c.json() for c in contracts]
+
+
 #todo : to deprecate
 @users_api.get("/users/{uuid}/contracts", tags=["User API"])
 async def get_user_contracts(uuid: str, user: User = Depends(get_logged_user), sent: bool = True,
-                             received: bool = False):
-    with db_session:
-        return [c.json() for c in contract_service.get_user_contracts(user, sent, received)]
-
-@users_api.get("/users/self/contracts", tags=["User API"])
-async def get_self_user_contracts(user: User = Depends(get_logged_user), sent: bool = True,
                              received: bool = False):
     with db_session:
         return [c.json() for c in contract_service.get_user_contracts(user, sent, received)]

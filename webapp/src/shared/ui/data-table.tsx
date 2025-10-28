@@ -81,7 +81,7 @@ export default function DataTable<T>({
             }
                 <Card className="flex flex-1 rounded-none border-t-0 border-none p-5 min-h-[300px]">
                     {
-                        table ?
+                        table && table.getRowCount() != 0 ?
                         <div className="overflow-hidden rounded-md border">
                             <Table>
                                 <TableHeader className="bg-midnight-gray-50">
@@ -92,13 +92,14 @@ export default function DataTable<T>({
                                         key={header.id}
                                         className="text-midnight-gray-900 text-xs font-[500] py-[6px] h-fit"
                                         >
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 !text-midnight-gray-900">
                                             {!header.isPlaceholder &&
                                             flexRender(
                                                 header.column.columnDef.header,
                                                 header.getContext()
                                             )}
-                                            {header.column.columnDef.header !== ' ' && (
+                                            {header.column.columnDef.header !== ' '
+                                             && (
                                             <div className="flex flex-col leading-none">
                                                 <ChevronUp size={12} className="text-midnight-gray-600 mb-[-6px]"/>
                                                 <ChevronDown size={12} className="text-midnight-gray-600" />

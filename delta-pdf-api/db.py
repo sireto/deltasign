@@ -90,7 +90,7 @@ class Document(database.Entity):
             "owner_uuid": User[self.user.id].uuid
         }
 
-class ContactStatus(Enum):
+class ContractStatus(Enum):
     DRAFT = "draft"
     PENDING = "pending"
     FULLY_SIGNED = "fully signed"
@@ -119,10 +119,10 @@ class Contract(database.Entity):
     signed_by_all = orm.Optional(bool, sql_default=0)
     signed_number = orm.Required(int, sql_default=0)
 
-    status = orm.Required(str , default=ContactStatus.DRAFT.value)
+    status = orm.Required(str , default=ContractStatus.DRAFT.value)
 
     @classmethod
-    def create(cls, document, name, message='' , status=ContactStatus.DRAFT.value):
+    def create(cls, document, name, message='' , status=ContractStatus.DRAFT.value):
         # if contract name is not given then use document name for the contract name
         contract_name = document.filename
         if name:

@@ -2,20 +2,18 @@
 import { useState, useEffect } from 'react';
 import CreateFolderCard from './components/cards/create-folder-card';
 import PageAnimation from '@/shared/ui/page-animation';
-import { useGetDocumentsQuery, usePostDocumentMutation } from './api/documents';
-import { useGetContractsQuery } from './api/contracts';
+import { usePostDocumentMutation } from './api/documents';
+import { ContractStatus, useGetContractsQuery } from './api/contracts';
 import { contractsColumn } from './components/contracts-column';
-import { draftsColumn } from './components/drafts-column';
 import DataTable from '@/shared/ui/data-table';
 import { FiltersTab } from './components/filters-tab';
 import { ChevronDown, Calendar } from 'lucide-react';
-import DraftsIcon from '@/shared/icons/drafts';
 import PendingIcon from '@/shared/icons/pending';
 import CompletedIcon from '@/shared/icons/completed';
 import type { ColumnDef, Row } from '@tanstack/react-table';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { Contract } from './types/contract';
-import type { Document } from './types/document';
+import DraftsIcon from '@/shared/icons/drafts';
 
 interface TableConfig<T> {
   data: T[];
@@ -24,8 +22,10 @@ interface TableConfig<T> {
 }
 
 export default function Page() {
-  const { data: documents } = useGetDocumentsQuery();
-  const { data: contracts } = useGetContractsQuery();
+  const { data: draftContracts } = useGetContractsQuery(ContractStatus.DRAFT);
+  const { data : pendingContracts } = useGetContractsQuery(ContractStatus.PENDING)
+  const { data : completedContracts } = useGetContractsQuery(ContractStatus.FULLY_SIGNED)
+  const { data: allContracts } = useGetContractsQuery();
   const [postDocument] = usePostDocumentMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -35,10 +35,10 @@ export default function Page() {
 
   // --- Tab items ---
   const tabItems = [
-    { label: 'All Contracts', count: contracts?.length ?? 0, value: 'All Contracts' },
-    { label: 'Drafts', count: documents?.length ?? 0, value: 'Drafts', icon: DraftsIcon },
-    { label: 'Pending', count: 0, value: 'Pending', icon: PendingIcon },
-    { label: 'Completed', count: 0, value: 'Completed', icon: CompletedIcon },
+    { label: 'All Contracts', count: allContracts?.length ?? 0, value: 'All Contracts' },
+    { label: 'Drafts', count: draftContracts?.length ?? 0, value: 'Drafts', icon: DraftsIcon },
+    { label: 'Pending', count: pendingContracts?.length ?? 0 , value: 'Pending', icon: PendingIcon },
+    { label: 'Completed', count: completedContracts?.length ?? 0, value: 'Completed', icon: CompletedIcon },
   ];
 
   // --- Filters ---
@@ -51,28 +51,38 @@ export default function Page() {
   // --- State for current table data ---
   const [currentTable, setCurrentTable] = useState<TableConfig<any> | null>(null);
 
-  // --- Update table based on active tab ---
-  useEffect(() => {
-    if (activeTab === 'All Contracts' && contracts) {
+    useEffect(() => {
+    let data: Contract[] | undefined;
+
+    switch (activeTab) {
+      case 'All Contracts':
+        data = allContracts;
+        break;
+      case 'Drafts':
+        data = draftContracts;
+        break;
+      case 'Pending':
+        data = pendingContracts;
+        break;
+      case 'Completed':
+        data = completedContracts;
+        break;
+      default:
+        data = [];
+    }
+
+    if (data && data.length > 0) {
       setCurrentTable({
-        data: contracts,
+        data,
         columns: contractsColumn,
         onRowClick: (row: Row<Contract>) => {
           router.push(`/documents/${row.original.uuid}`);
         },
       });
-    } else if (activeTab === 'Drafts' && documents) {
-      setCurrentTable({
-        data: documents,
-        columns: draftsColumn,
-        onRowClick: (row: Row<Document>) => {
-          router.push(`/documents/${row.original.uuid}`);
-        },
-      });
-    } else if (activeTab === 'Pending' || activeTab === 'Completed') {
+    } else {
       setCurrentTable(null);
     }
-  }, [activeTab, contracts, documents, router]);
+  }, [activeTab, allContracts, draftContracts, pendingContracts, completedContracts, router]);
 
   // --- Handle tab switching ---
   const handleTabChange = (value: string) => {
@@ -102,7 +112,7 @@ export default function Page() {
           value: t.value,
           icon: t.icon,
         }))}
-        filtersTab={<FiltersTab filters={filters} showUploadButton onUpload={handlePost} />}
+        filtersTab={<FiltersTab filters={filters} showUploadButton onUpload={handlePost} hideFilters />}
         tableData={currentTable}
         onTabChange={handleTabChange}
       />

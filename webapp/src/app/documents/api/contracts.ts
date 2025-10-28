@@ -2,6 +2,12 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { appBaseQuery } from '@/shared/store/base-query';
 import { Contract, PostContractRequest } from '../types/contract';
 
+export enum ContractStatus {
+  DRAFT = "draft",
+  FULLY_SIGNED = "fully signed",
+  PENDING = "pending"
+}
+
 export const contractsAPI = createApi({
   reducerPath: 'contractsAPI',
   tagTypes: ['Contract'],
@@ -9,10 +15,11 @@ export const contractsAPI = createApi({
   refetchOnReconnect: true,
   refetchOnFocus: true,
   endpoints: (builder) => ({
-    getContracts: builder.query<Contract[] , void>({
-      query: () => ({
+    getContracts: builder.query<Contract[] , ContractStatus | void>({
+      query: (status) => ({
         url: 'users/self/contracts',
         method: 'GET',
+        params: status ? { status } : undefined,
         includeCredentials: true
       }),
     }),

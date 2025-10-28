@@ -7,24 +7,26 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { EllipsisVertical } from "lucide-react";
 import { formatDate } from "../utils/date";
+import { capitalize } from "@/shared/utils";
 
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
-    status === 'NEW' && 'text-warning-500 bg-warning-100',
-    status === 'SIGNED' && 'text-success-500 bg-success-100',
+    status === 'Draft' && 'text-midnight-gray-900 bg-midnight-gray-100',
+    status === 'Pending' && 'text-warning-500 bg-warning-100' ,
+    status === 'Fully signed' && 'text-success-500 bg-success-100',
     'px-[7px] py-[2px] rounded-full text-xs font-medium'
   );
 
-  return <span className={statusClasses}>{status}</span>;
+  return <span className={cn(statusClasses , "px-[7px]")}>{status}</span>;
 };
 
 const ActionsCell = () => (
   <div className="flex items-center gap-2">
-    <Button variant="outline" className="text-silicon border-silicon px-2 rounded-[8px] text-sm font-[600]">
+    <Button variant="outline" className="text-silicon border-silicon px-2  rounded-[8px] text-sm font-[600] h-7">
       Edit
     </Button>
-    <div className="border-midnight-gray-200 rounded-lg border px-2 py-1">
-      <EllipsisVertical size={20} />
+    <div className="border-midnight-gray-200 rounded-[8px] border px-2 py-1">
+      <EllipsisVertical size={16} />
     </div>
   </div>
 );
@@ -87,7 +89,7 @@ export const contractsColumn: ColumnDef<Contract>[] = [
               rel="noopener noreferrer"
               className="text-midnight-gray-900 font-[500] hover:underline"
             >
-              {doc.name}<span>.pdf</span>
+              {doc.name}
             </a>
           </div>
         );
@@ -124,21 +126,33 @@ export const contractsColumn: ColumnDef<Contract>[] = [
           (email) =>
             `https://ui-avatars.com/api/?name=${encodeURIComponent(email)}&background=random`
         );
-        return <CustomAvatarsOverlay images={avatars} />;
+        return (
+        <div className="min-w-[108px]">
+          <CustomAvatarsOverlay images={avatars} />
+        </div>
+        )
       },
     },
     {
       accessorKey: 'created_date',
-      header: 'Created Date',
+      header: 'Created date',
       cell: ({ row }) => (
         <div className='text-midnight-gray-600'>{formatDate(row.getValue('created_date') as string)}</div>
       ),
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
-    },
+    accessorKey: 'status',
+        header: () => (
+          <div className="text-center font-bold p-2 pl-10">
+            Status
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="w-full items-center flex justify-center">
+            <StatusBadge status={capitalize(row.getValue('status') as string)} />
+          </div>
+        ),
+      },
     {
       id: 'actions',
       header: 'Actions',

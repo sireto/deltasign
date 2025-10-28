@@ -3,13 +3,14 @@ import { SearchInput } from "@/shared/ui/search-input"
 import { DropdownMenu , DropdownMenuItem , DropdownMenuTrigger , DropdownMenuContent } from "@/shared/ui/dropdown-menu"
 import { Button } from "@/shared/ui/button"
 import { Plus } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface filter {
     label: string,
     icon: React.JSXElementConstructor<React.SVGProps<SVGSVGElement>>
 }
 
-export const FiltersTab = ({filters , showUploadButton , onUpload }: { filters : filter[] , showUploadButton? : boolean , onUpload? : (file: File) => void } ) => {
+export const FiltersTab = ({filters , showUploadButton , onUpload , hideFilters = false }: { filters : filter[] , showUploadButton? : boolean , onUpload? : (file: File) => void , hideFilters? : boolean }) => {
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleButtonClick = () => {
@@ -27,12 +28,12 @@ export const FiltersTab = ({filters , showUploadButton , onUpload }: { filters :
     return (
          <div className="flex w-full items-center justify-between bg-white px-5 pt-4">
           <div className="flex w-full gap-2">
-            <SearchInput className="w-[250px]" placeholder="Search" />
-            {
+            <SearchInput className="w-[250px] h-[36px]" placeholder="Search" />
+            { !hideFilters &&
               filters.map((filter , index) => (
                 <DropdownMenu key={index}>
-                  <DropdownMenuTrigger>
-                    <span className="text-midnight-gray-900">{filter.label}</span>
+                  <DropdownMenuTrigger >
+                    <span className={cn("text-midnight-gray-900")}>{filter.label}</span>
                     <filter.icon  className="text-midnight-gray-900 w-4 h-4" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -52,8 +53,8 @@ export const FiltersTab = ({filters , showUploadButton , onUpload }: { filters :
                   className="hidden"
                   onChange={handleFileChange}
                 />
-                <Button onClick={handleButtonClick}>
-                  <Plus className="w-4 h-4 mr-2" />
+                <Button onClick={handleButtonClick} className="flex gap-1">
+                  <Plus className="w-4 h-4 mr-2 text-[1.5px] text-white font-[600]" />
                   <span>Upload Document</span>
                 </Button>
               </div>
