@@ -1,29 +1,34 @@
 "use client";
 
-import Logo from '@/shared/icons/logo';
-import { Button } from '@/shared/ui/button';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import DocumentIcon from '@/shared/icons/document';
-import InboxIcon from '@/shared/icons/inbox';
-import TemplatesIcon from '@/shared/icons/templates';
-import { Bell, ChevronDown, Settings } from 'lucide-react';
-import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/shared/store/store';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import { LogOut } from 'lucide-react';
-import { useLogoutUserMutation } from '@/shared/store/api/user-auth';
+import Logo from "@/shared/icons/logo";
+import { Button } from "@/shared/ui/button";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import DocumentIcon from "@/shared/icons/document";
+import InboxIcon from "@/shared/icons/inbox";
+import TemplatesIcon from "@/shared/icons/templates";
+import { Bell, ChevronDown, Settings } from "lucide-react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
+import { RootState } from "@/shared/store/store";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
+import { LogOut } from "lucide-react";
+import { useLogoutUserMutation } from "@/shared/store/api/user-auth";
 
 export default function NavBar() {
   const pathName = usePathname();
 
   const tabItems = [
-    { label: 'documents', icon: DocumentIcon },
-    { label: 'inbox', icon: InboxIcon },
-    { label: 'templates', icon: TemplatesIcon },
+    { label: "documents", icon: DocumentIcon },
+    { label: "inbox", icon: InboxIcon },
+    { label: "templates", icon: TemplatesIcon },
   ];
 
   const userName = useSelector((state: RootState) => state.user.name);
@@ -35,18 +40,18 @@ export default function NavBar() {
   const handleLogout = async () => {
     try {
       await logout({});
-      router.push('/sign-in');
+      router.push("/sign-in");
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
     <div className="relative flex w-full justify-between bg-white px-4 py-3">
       {/* Left - Logo */}
       <div className="flex items-center gap-2">
         <Logo />
-        <Link href={'/'}>
+        <Link href={"/"}>
           <span className="text-silicon text-xl font-[700] tracking-[-0.26px]">
             Delta Sign
           </span>
@@ -54,18 +59,18 @@ export default function NavBar() {
       </div>
 
       {/* Center - Tabs */}
-      {pathName !== '/sign-in' && (
+      {pathName !== "/sign-in" && (
         <div className="absolute top-0 left-1/2 flex h-full -translate-x-1/2 transform items-center justify-center gap-4">
           {tabItems.map((item, index) => {
-            const isActive = pathName === '/' + item.label;
+            const isActive = pathName === "/" + item.label;
 
             return (
               <div key={index} className="relative flex h-full items-center">
                 <Link href={`/${item.label}`}>
                   <div
                     className={cn(
-                      'text-midnight-gray-600 relative flex items-center gap-2 px-3 py-2 text-sm leading-5 font-[500] capitalize',
-                      isActive && 'text-silicon font-[600]',
+                      "text-midnight-gray-600 relative flex items-center gap-2 px-3 py-2 text-sm leading-5 font-[500] capitalize",
+                      isActive && "text-silicon font-[600]",
                     )}
                   >
                     {<item.icon />}
@@ -80,7 +85,7 @@ export default function NavBar() {
                           animate={{ scale: 1 }}
                           exit={{ scale: 0 }}
                           transition={{
-                            type: 'spring',
+                            type: "spring",
                             stiffness: 300,
                             damping: 25,
                           }}
@@ -99,7 +104,7 @@ export default function NavBar() {
                       animate={{ scaleX: 1 }}
                       exit={{ scaleX: 0 }}
                       transition={{
-                        type: 'spring',
+                        type: "spring",
                         stiffness: 300,
                         damping: 25,
                       }}
@@ -114,10 +119,10 @@ export default function NavBar() {
 
       {/* Right - Profile / Buttons */}
       <div className="flex gap-2">
-        {pathName === '/sign-in' ? (
+        {pathName === "/sign-in" ? (
           <>
-            <Button variant={'outline'}>Sign Up</Button>
-            <Link href={'/sign-in'}>
+            <Button variant={"outline"}>Sign Up</Button>
+            <Link href={"/sign-in"}>
               <Button>Login</Button>
             </Link>
           </>
@@ -127,7 +132,7 @@ export default function NavBar() {
               <Bell size={16} />
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger className='border-none active:border-none active:ring-0 focus-visible:ring-0 focus-visible:shadow-none focus-visible:outline-none'>
+              <DropdownMenuTrigger className="border-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none active:border-none active:ring-0">
                 <div className="flex items-center gap-2 rounded-[100px] border-[1.5px] p-[6px]">
                   <Image
                     src="/placeholder.png"
@@ -143,18 +148,17 @@ export default function NavBar() {
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem className='font-[500] text-sm text-midnight-gray-900 py-2 px-4 gap-2 flex items-center'>
-                  <Settings className='text-midnight-gray-900'/>
-                  <span>
-                    Settings
-                  </span>
-                  </DropdownMenuItem>
-                <DropdownMenuItem className='font-[500] text-sm text-midnight-gray-900 py-2 px-4 gap-2 flex items-center' onClick={handleLogout}>
-                  <LogOut className='text-midnight-gray-900'/>
-                  <span>
-                    Logout
-                  </span>
-                  </DropdownMenuItem>
+                <DropdownMenuItem className="text-midnight-gray-900 flex items-center gap-2 px-4 py-2 text-sm font-[500]">
+                  <Settings className="text-midnight-gray-900" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-midnight-gray-900 flex items-center gap-2 px-4 py-2 text-sm font-[500]"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="text-midnight-gray-900" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

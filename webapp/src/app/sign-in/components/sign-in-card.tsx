@@ -1,18 +1,18 @@
-import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
-import { Input } from '@/shared/ui/input';
-import { Label } from '@radix-ui/react-label';
-import { useState } from 'react';
-import emailvalidator from 'email-validator';
-import { LoaderCircle } from 'lucide-react';
+import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@radix-ui/react-label";
+import { useState } from "react";
+import emailvalidator from "email-validator";
+import { LoaderCircle } from "lucide-react";
 
 interface SignInCardProps {
   onSubmit: ({ email }: { email: string }) => void;
-  isLoading? : boolean
+  isLoading?: boolean;
 }
 
-export default function SignInCard({ onSubmit , isLoading }: SignInCardProps) {
-  const [email, setEmail] = useState('');
+export default function SignInCard({ onSubmit, isLoading }: SignInCardProps) {
+  const [email, setEmail] = useState("");
 
   return (
     <Card className="h-fit w-fit">

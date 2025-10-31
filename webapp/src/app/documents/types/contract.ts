@@ -1,4 +1,4 @@
-import {Document} from "../types/document";
+import { Document } from "../types/document";
 
 interface Annotation {
   x1: number;
@@ -31,4 +31,20 @@ export interface PostContractRequest {
   message: string;
   signers: string[];
   annotations: Annotation[];
+}
+
+
+export interface PatchContractRequest {
+  name : string;
+  annotations : {
+    x1 : number,
+    x2 : number,
+    y1 : number,
+    y2 : number,
+    signer : string,
+    page : number,
+    color : string
+  }[];
+  signers : string [];
+  message : string;
 }

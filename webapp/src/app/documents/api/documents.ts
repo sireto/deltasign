@@ -1,10 +1,10 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { appBaseQuery } from '@/shared/store/base-query';
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { appBaseQuery } from "@/shared/store/base-query";
 import { Document } from "../types/document";
 
 export const documentsAPI = createApi({
-  reducerPath: 'documentsAPI',
-  tagTypes: ['Document' , 'Contract'],
+  reducerPath: "documentsAPI",
+  tagTypes: ["Document", "Contract"],
   baseQuery: appBaseQuery,
   refetchOnReconnect: true,
   refetchOnFocus: true,
@@ -12,58 +12,60 @@ export const documentsAPI = createApi({
     // ✅ GET all documents
     getDocuments: builder.query<Document[], void>({
       query: () => ({
-        url: '/documents',
-        method: 'GET',
+        url: "/documents",
+        method: "GET",
         includeCredentials: true,
       }),
-      providesTags: ['Document'],
+      providesTags: ["Document"],
     }),
 
     // ✅ GET one document
     getDocumentByUUID: builder.query<Document, { uuid: string }>({
       query: ({ uuid }) => ({
         url: `/documents/${uuid}`,
-        method: 'GET',
+        method: "GET",
         includeCredentials: true,
       }),
-      providesTags: ['Document'],
+      providesTags: ["Document"],
     }),
 
     // ✅ POST (upload) a new document
     postDocument: builder.mutation<Document, FormData>({
       query: (formData) => ({
-        url: '/documents',
-        method: 'POST',
+        url: "/documents",
+        method: "POST",
         body: formData,
         includeCredentials: true,
       }),
-      invalidatesTags: ['Contract'],
+      invalidatesTags: ["Contract"],
     }),
 
     // ✅ DELETE
     deleteDocumentById: builder.mutation<Document, { uuid: string }>({
       query: ({ uuid }) => ({
         url: `/documents/${uuid}`,
-        method: 'DELETE',
+        method: "DELETE",
         includeCredentials: true,
       }),
-      invalidatesTags: ['Document'],
+      invalidatesTags: ["Document"],
     }),
 
     // ✅ PATCH (update)
-    patchDocumentById: builder.mutation<Document, { uuid: string; file: File }>({
-      query: ({ uuid, file }) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        return {
-          url: `/documents/${uuid}`,
-          method: 'PATCH',
-          body: formData,
-          includeCredentials: true,
-        };
+    patchDocumentById: builder.mutation<Document, { uuid: string; file: File }>(
+      {
+        query: ({ uuid, file }) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          return {
+            url: `/documents/${uuid}`,
+            method: "PATCH",
+            body: formData,
+            includeCredentials: true,
+          };
+        },
+        invalidatesTags: ["Document"],
       },
-      invalidatesTags: ['Document'],
-    }),
+    ),
   }),
 });
 

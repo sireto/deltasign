@@ -1,25 +1,34 @@
 "use client";
-import { cn } from '@/lib/utils';
-import { Button } from '@/shared/ui/button';
-import { ArrowLeft, File, SendHorizonal } from 'lucide-react';
-import { Share2 } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { cn } from "@/lib/utils";
+import { Button } from "@/shared/ui/button";
+import { ArrowLeft, File, SendHorizonal } from "lucide-react";
+import { Share2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function NavBar({ className , fileName }: { className?: string , fileName : string}) {
-
+export default function NavBar({
+  className,
+  fileName,
+  onSendDocument,
+  disabledSendDocument
+}: {
+  className?: string;
+  fileName: string;
+  onSendDocument : () => void,
+  disabledSendDocument : boolean
+}) {
   const router = useRouter();
   return (
     <div
       className={cn(
-        'flex h-full w-full justify-between bg-white px-5 py-3',
+        "flex h-full w-full justify-between bg-white px-5 py-3",
         className,
       )}
     >
-        <Button variant="secondary" onClick={() => router.back()}>
-          <ArrowLeft />
-          <span className="font-[500]">Back</span>
-        </Button>
+      <Button variant="secondary" onClick={() => router.back()}>
+        <ArrowLeft />
+        <span className="font-[500]">Back</span>
+      </Button>
       <div className="flex items-center gap-2">
         <File size={16} className="text-midnight-gray-900" />
         <span className="text-midnight-gray-900 text-sm font-[500]">
@@ -35,7 +44,7 @@ export default function NavBar({ className , fileName }: { className?: string , 
           <Share2 />
           Share
         </Button>
-        <Button>
+        <Button disabled={disabledSendDocument} onClick={onSendDocument}>
           <SendHorizonal />
           Send Document
         </Button>

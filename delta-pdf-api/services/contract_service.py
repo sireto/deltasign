@@ -226,15 +226,39 @@ def sign_contract(contract: Contract, user: User, file: bytes):
 
 
 @db_session
-def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User):
+def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User , alert_users : bool = False):
     contract = Contract.get(uuid=uuid)
-    if not contract.documet:
+    print('alert users')
+    print(alert_users.__str__())
+    if not contract.document:
         raise BadRequest(f"The document of contract {contract.id} does not exist.")
 
     if contract.document.user.id != user.id:
         raise UnauthorizedError("You do not have permission to patch this document.")
 
     contract.name = patch_request.name
+
+    for signer_email in patch_request.signers:
+        signer_user = user_service.get_user_by_email(signer_email)
+        if not signer_user:
+            signer_user = user_service.create_new_account(signer_email)
+        contract.create_sign_request(user, signer_user)
+
+    for annotation in patch_request.annotations:
+        contract.create_annotation(annotation)
+
+    if alert_users:
+        contract.status = ContractStatus.PENDING.value
+        try:
+            email_service = EmailService()
+            sender = User[user.id].email
+            contract_name = contract.name
+            contract_message = patch_request.message or "Please review the contract and sign"
+            for receiver in patch_request.signers:
+                email_service.email_contract(sender, receiver, contract_name, contract_message)
+        except Exception as e:
+            print(e)
+
     return Contract.get(uuid=uuid)
 
 

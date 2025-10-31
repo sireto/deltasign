@@ -3,9 +3,9 @@
   The custom colors and typography are defined as CSS variables in the :root selector and the @theme block,
   and the @theme block maps them for use as utility classes.
 */
-@import 'tailwindcss';
-@import 'tw-animate-css';
-@import 'tailwindcss/utilities';
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "tailwindcss/utilities";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -760,13 +760,13 @@
   }
 }
 
-input[type='search']::-webkit-search-cancel-button,
-input[type='search']::-webkit-search-decoration,
-input[type='search']::-webkit-search-results-button,
-input[type='search']::-webkit-search-results-decoration {
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
   display: none;
 }
-input[type='search']::-ms-clear {
+input[type="search"]::-ms-clear {
   display: none;
   height: 0;
   width: 0;
@@ -816,3 +816,7 @@ body::-webkit-scrollbar {
 .rpv-thumbnail__list.rpv-thumbnail__list--vertical {
   width: fit-content !important;
 }
+/* .rpv-core__inner-page {
+  width: fit-content;
+  background-color: #001e19;
+} */

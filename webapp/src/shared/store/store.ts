@@ -1,11 +1,11 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
-import { persistReducer, persistStore } from 'redux-persist';
-import { apiSlice } from './demo';
-import { authAPI } from '@/shared/store/api/user-auth';
-import userReducer from './slice/user-slice';
-import { documentsAPI } from '@/app/documents/api/documents';
-import { contractsAPI } from '@/app/documents/api/contracts';
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+import { persistReducer, persistStore } from "redux-persist";
+import { apiSlice } from "./demo";
+import { authAPI } from "@/shared/store/api/user-auth";
+import userReducer from "./slice/user-slice";
+import { documentsAPI } from "@/app/documents/api/documents";
+import { contractsAPI } from "@/app/documents/api/contracts";
 
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
@@ -16,9 +16,9 @@ const rootReducer = combineReducers({
 });
 
 const persistConfig = {
-  key: 'root', // key for localStorage
+  key: "root", // key for localStorage
   storage,
-  whitelist: ['user'], // only persist this slice
+  whitelist: ["user"], // only persist this slice
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

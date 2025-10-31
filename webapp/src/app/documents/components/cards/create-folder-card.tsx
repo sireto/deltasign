@@ -1,5 +1,5 @@
-import PlusIcon from '@/shared/icons/plus';
-import { Card } from '@/shared/ui/card';
+import PlusIcon from "@/shared/icons/plus";
+import { Card } from "@/shared/ui/card";
 
 export default function CreateFolderCard({
   title,
@@ -15,10 +15,10 @@ export default function CreateFolderCard({
       </div>
       <div>
         <p className="text-midnight-gray-900 text-sm font-[600]">
-          {title || 'Create a Folder'}
+          {title || "Create a Folder"}
         </p>
         <p className="text-midnight-gray-600 text-sm">
-          {description || 'Organize your documents'}
+          {description || "Organize your documents"}
         </p>
       </div>
     </Card>

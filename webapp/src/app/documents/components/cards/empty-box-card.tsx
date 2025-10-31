@@ -1,5 +1,5 @@
-import EmptyBox from '@/shared/icons/empty-box';
-import { Card } from '@/shared/ui/card';
+import EmptyBox from "@/shared/icons/empty-box";
+import { Card } from "@/shared/ui/card";
 
 export default function EmptyBoxCard() {
   return (

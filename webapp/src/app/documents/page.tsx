@@ -1,19 +1,19 @@
-'use client';
-import { useState, useEffect } from 'react';
-import CreateFolderCard from './components/cards/create-folder-card';
-import PageAnimation from '@/shared/ui/page-animation';
-import { usePostDocumentMutation } from './api/documents';
-import { ContractStatus, useGetContractsQuery } from './api/contracts';
-import { contractsColumn } from './components/contracts-column';
-import DataTable from '@/shared/ui/data-table';
-import { FiltersTab } from './components/filters-tab';
-import { ChevronDown, Calendar } from 'lucide-react';
-import PendingIcon from '@/shared/icons/pending';
-import CompletedIcon from '@/shared/icons/completed';
-import type { ColumnDef, Row } from '@tanstack/react-table';
-import { useRouter, useSearchParams } from 'next/navigation';
-import type { Contract } from './types/contract';
-import DraftsIcon from '@/shared/icons/drafts';
+"use client";
+import { useState, useEffect } from "react";
+import CreateFolderCard from "./components/cards/create-folder-card";
+import PageAnimation from "@/shared/ui/page-animation";
+import { usePostDocumentMutation } from "./api/documents";
+import { ContractStatus, useGetContractsQuery } from "./api/contracts";
+import { contractsColumn } from "./components/contracts-column";
+import DataTable from "@/shared/ui/data-table";
+import { FiltersTab } from "./components/filters-tab";
+import { ChevronDown, Calendar } from "lucide-react";
+import PendingIcon from "@/shared/icons/pending";
+import CompletedIcon from "@/shared/icons/completed";
+import type { ColumnDef, Row } from "@tanstack/react-table";
+import { useRouter, useSearchParams } from "next/navigation";
+import type { Contract } from "./types/contract";
+import DraftsIcon from "@/shared/icons/drafts";
 
 interface TableConfig<T> {
   data: T[];
@@ -23,48 +23,73 @@ interface TableConfig<T> {
 
 export default function Page() {
   const { data: draftContracts } = useGetContractsQuery(ContractStatus.DRAFT);
-  const { data : pendingContracts } = useGetContractsQuery(ContractStatus.PENDING)
-  const { data : completedContracts } = useGetContractsQuery(ContractStatus.FULLY_SIGNED)
+  const { data: pendingContracts } = useGetContractsQuery(
+    ContractStatus.PENDING,
+  );
+  const { data: completedContracts } = useGetContractsQuery(
+    ContractStatus.FULLY_SIGNED,
+  );
   const { data: allContracts } = useGetContractsQuery();
   const [postDocument] = usePostDocumentMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Get active tab from URL or default to 'All Contracts'
-  const activeTab = searchParams.get('tab') || 'All Contracts';
+  const activeTab = searchParams.get("tab") || "All Contracts";
 
   // --- Tab items ---
   const tabItems = [
-    { label: 'All Contracts', count: allContracts?.length ?? 0, value: 'All Contracts' },
-    { label: 'Drafts', count: draftContracts?.length ?? 0, value: 'Drafts', icon: DraftsIcon },
-    { label: 'Pending', count: pendingContracts?.length ?? 0 , value: 'Pending', icon: PendingIcon },
-    { label: 'Completed', count: completedContracts?.length ?? 0, value: 'Completed', icon: CompletedIcon },
+    {
+      label: "All Contracts",
+      count: allContracts?.length ?? 0,
+      value: "All Contracts",
+    },
+    {
+      label: "Drafts",
+      count: draftContracts?.length ?? 0,
+      value: "Drafts",
+      icon: DraftsIcon,
+    },
+    {
+      label: "Pending",
+      count: pendingContracts?.length ?? 0,
+      value: "Pending",
+      icon: PendingIcon,
+    },
+    {
+      label: "Completed",
+      count: completedContracts?.length ?? 0,
+      value: "Completed",
+      icon: CompletedIcon,
+    },
   ];
 
   // --- Filters ---
   const filters = [
-    { label: 'Sender', icon: ChevronDown },
-    { label: 'Status', icon: ChevronDown },
-    { label: 'All time', icon: Calendar },
+    { label: "Sender", icon: ChevronDown },
+    { label: "Status", icon: ChevronDown },
+    { label: "All time", icon: Calendar },
   ];
 
   // --- State for current table data ---
-  const [currentTable, setCurrentTable] = useState<TableConfig<any> | null>(null);
+  const [currentTable, setCurrentTable] = useState<TableConfig<any> | null>(
+    null,
+  );
 
-    useEffect(() => {
+  useEffect(() => {
     let data: Contract[] | undefined;
 
     switch (activeTab) {
-      case 'All Contracts':
+      case "All Contracts":
         data = allContracts;
         break;
-      case 'Drafts':
+      case "Drafts":
         data = draftContracts;
         break;
-      case 'Pending':
+      case "Pending":
         data = pendingContracts;
         break;
-      case 'Completed':
+      case "Completed":
         data = completedContracts;
         break;
       default:
@@ -82,19 +107,26 @@ export default function Page() {
     } else {
       setCurrentTable(null);
     }
-  }, [activeTab, allContracts, draftContracts, pendingContracts, completedContracts, router]);
+  }, [
+    activeTab,
+    allContracts,
+    draftContracts,
+    pendingContracts,
+    completedContracts,
+    router,
+  ]);
 
   // --- Handle tab switching ---
   const handleTabChange = (value: string) => {
     // Update URL with new tab value
     const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', value);
+    params.set("tab", value);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
   const handlePost = async (file: File) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     await postDocument(formData);
   };
 
@@ -112,7 +144,14 @@ export default function Page() {
           value: t.value,
           icon: t.icon,
         }))}
-        filtersTab={<FiltersTab filters={filters} showUploadButton onUpload={handlePost} hideFilters />}
+        filtersTab={
+          <FiltersTab
+            filters={filters}
+            showUploadButton
+            onUpload={handlePost}
+            hideFilters
+          />
+        }
         tableData={currentTable}
         onTabChange={handleTabChange}
       />

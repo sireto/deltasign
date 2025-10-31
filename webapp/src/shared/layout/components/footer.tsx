@@ -1,18 +1,18 @@
-import { link } from 'fs';
+import { link } from "fs";
 
 export default function Footer() {
   const items = [
     {
-      label: '2025 @ Delta Sign',
-      link: '#',
+      label: "2025 @ Delta Sign",
+      link: "#",
     },
     {
-      label: 'Privacy Policy',
-      link: '#',
+      label: "Privacy Policy",
+      link: "#",
     },
     {
-      label: 'Terms and Conditions',
-      link: '#',
+      label: "Terms and Conditions",
+      link: "#",
     },
   ];
 

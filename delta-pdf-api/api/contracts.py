@@ -69,10 +69,9 @@ async def create_new_contract(contract_request: ContractCreationRequest, user: U
 
 
 @contracts_api.patch("/contracts/{uuid}", tags=["Contracts API"])
-async def patch_contract_with_uuid(uuid: str, contract_request: ContractPatchRequest,
-                                   user: User = Depends(get_logged_user)):
+async def patch_contract_with_uuid(uuid: str, contract_request: ContractPatchRequest, user: User = Depends(get_logged_user),  alert_users: bool | None = Header(default=False, alias="alert-users"),):
     with db_session:
-        contract = contract_service.patch_contract(uuid, contract_request, user)
+        contract = contract_service.patch_contract(uuid, contract_request, user , alert_users)
         return contract.json()
 
 

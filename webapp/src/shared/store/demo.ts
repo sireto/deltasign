@@ -1,10 +1,10 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { appBaseQuery } from './base-query';
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { appBaseQuery } from "./base-query";
 
 export const apiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: "api",
   baseQuery: appBaseQuery,
-  tagTypes: ['Post'],
+  tagTypes: ["Post"],
   endpoints: (builder) => ({
     getDemoApi: builder.query<string, { name: string }>({
       query: ({ name }) => ({

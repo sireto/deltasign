@@ -1,13 +1,13 @@
 import {
   LoginCodeRequestResponse,
   PostLoginCodeRequestResponse,
-} from '../../../app/sign-in/types/user-auth';
-import { appBaseQuery } from '@/shared/store/base-query';
-import { createApi } from '@reduxjs/toolkit/query/react';
+} from "../../../app/sign-in/types/user-auth";
+import { appBaseQuery } from "@/shared/store/base-query";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const authAPI = createApi({
-  reducerPath: 'authAPI',
-  tagTypes: ['authenticatedUser'],
+  reducerPath: "authAPI",
+  tagTypes: ["authenticatedUser"],
   baseQuery: appBaseQuery,
   refetchOnReconnect: true,
   refetchOnFocus: true,
@@ -18,9 +18,9 @@ export const authAPI = createApi({
     >({
       query: ({ email }) => ({
         url: `/users/login`,
-        method: 'GET',
+        method: "GET",
         params: {
-          email: email, 
+          email: email,
         },
       }),
     }),
@@ -30,33 +30,33 @@ export const authAPI = createApi({
       { email: string; code: string }
     >({
       query: ({ email, code }) => ({
-        url: '/users/login',
-        method: 'POST',
+        url: "/users/login",
+        method: "POST",
         params: {
           email,
           login_code: code,
         },
-        headers : {
-          'x-client-type': 'web'
+        headers: {
+          "x-client-type": "web",
         },
-        includeCredentials: true
+        includeCredentials: true,
       }),
     }),
-    logoutUser: builder.mutation<void , {}>({
-        query: () => ({
-          url: '/users/logout',
-          method: 'POST',
-          credentials: 'include', 
-          headers : {
-            'x-client-type': 'web'
-          },
-          includeCredentials: true
-        }),
+    logoutUser: builder.mutation<void, {}>({
+      query: () => ({
+        url: "/users/logout",
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "x-client-type": "web",
+        },
+        includeCredentials: true,
       }),
+    }),
     getSelfUser: builder.query<User, { apikey: string }>({
       query: ({ apikey }) => ({
-        url: '/users/me',
-        method: 'GET',
+        url: "/users/me",
+        method: "GET",
         headers: {
           api_key: apikey,
         },

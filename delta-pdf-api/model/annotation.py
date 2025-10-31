@@ -23,3 +23,8 @@ class ContractCreationRequest(BaseModel):
 
 class ContractPatchRequest(BaseModel):
     name: str = Field(..., example="Contract01")
+    annotations : List[Annotation] = Field(...)
+    message: str = Field(..., example="Please review the contract and sign.")
+    signers: List[str] = Field(..., example=["testuser1@deltasign.io", "testuser2@deltasign.io"])
+
+

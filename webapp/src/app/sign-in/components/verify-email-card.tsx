@@ -1,20 +1,20 @@
-import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/shared/ui/input-otp';
-import { useEffect, useState } from 'react';
+import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shared/ui/input-otp";
+import { useEffect, useState } from "react";
 
 interface VerifyEmailCardProps {
   email: string;
   onVerify: (code: string) => void;
   onChangeEmail: () => void;
-  isLoading? : boolean
+  isLoading?: boolean;
 }
 
 export default function VerifyEmailCard({
   email,
   onVerify,
   onChangeEmail,
-  isLoading
+  isLoading,
 }: VerifyEmailCardProps) {
   const [timer, setTimer] = useState(59);
 
@@ -25,10 +25,10 @@ export default function VerifyEmailCard({
       setTimer((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, [timer]);
 
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
 
   return (
     <Card className="items-center">
@@ -41,7 +41,7 @@ export default function VerifyEmailCard({
             We've sent a 6-digit code to ({email})
           </span>
           <span className="text-midnight-gray-900 block text-center">
-            Please enter it below.{' '}
+            Please enter it below.{" "}
             <span
               className="text-silicon font-[600] hover:cursor-pointer"
               onClick={onChangeEmail}
@@ -53,7 +53,7 @@ export default function VerifyEmailCard({
       </div>
 
       <div>
-        <InputOTP maxLength={6} value={otp} onChange={setOtp}> 
+        <InputOTP maxLength={6} value={otp} onChange={setOtp}>
           <InputOTPGroup className="flex w-full justify-center gap-4">
             {[...Array(6)].map((_, index) => (
               <InputOTPSlot key={index} index={index} />
@@ -63,15 +63,20 @@ export default function VerifyEmailCard({
       </div>
 
       <div className="text-midnight-gray-600 flex h-[96px] w-[386px] flex-col gap-3">
-        <Button className="h-[40px] w-full" onClick={() => onVerify(otp)} disabled={!otp} isLoading={isLoading}>
-         Verify
+        <Button
+          className="h-[40px] w-full"
+          onClick={() => onVerify(otp)}
+          disabled={!otp}
+          isLoading={isLoading}
+        >
+          Verify
         </Button>
         <div>
           <span className="text-silicon block text-center font-[600]">
             Resend OTP again:
           </span>
           <span className="block text-center">
-            You can request a new code in 00:{timer.toString().padStart(2, '0')}{' '}
+            You can request a new code in 00:{timer.toString().padStart(2, "0")}{" "}
             seconds
           </span>
         </div>

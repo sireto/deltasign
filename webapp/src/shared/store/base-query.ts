@@ -1,13 +1,11 @@
-import {
-  fetchBaseQuery,
-} from '@reduxjs/toolkit/query';
+import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 
 export const appBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  mode: 'cors',
+  mode: "cors",
   prepareHeaders(headers) {
-    headers.set('x-client-type' , 'web');
+    headers.set("x-client-type", "web");
     return headers;
   },
-  credentials: 'include',
+  credentials: "include",
 });
