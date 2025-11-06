@@ -1,21 +1,19 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
-import { ArrowLeft, File, SendHorizonal } from "lucide-react";
+import { ArrowLeft, File  } from "lucide-react";
 import { Share2 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ComponentType } from "react";
 
 export default function NavBar({
   className,
   fileName,
-  onSendDocument,
-  disabledSendDocument
+  RenderButton
 }: {
   className?: string;
   fileName: string;
-  onSendDocument : () => void,
-  disabledSendDocument : boolean
+  RenderButton : ComponentType 
 }) {
   const router = useRouter();
   return (
@@ -25,7 +23,7 @@ export default function NavBar({
         className,
       )}
     >
-      <Button variant="secondary" onClick={() => router.back()}>
+      <Button variant="secondary" onClick={() => router.back()} className="hover:cursor-pointer">
         <ArrowLeft />
         <span className="font-[500]">Back</span>
       </Button>
@@ -44,10 +42,7 @@ export default function NavBar({
           <Share2 />
           Share
         </Button>
-        <Button disabled={disabledSendDocument} onClick={onSendDocument}>
-          <SendHorizonal />
-          Send Document
-        </Button>
+        < RenderButton/>
       </div>
     </div>
   );

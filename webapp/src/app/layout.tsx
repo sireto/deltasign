@@ -26,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="enn no-scrollbar">
+      <head>
+        <link rel="preload" href="/fonts/Madeva Suarte Signature Font.ttf" as="font" type="font/tff" crossOrigin="anonymous" />
+      </head>
       <body className={`no-scrollbar antialiased`}>
         <ReduxProvider>
           <Layout>{children}</Layout>

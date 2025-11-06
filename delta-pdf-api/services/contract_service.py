@@ -292,7 +292,7 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
 
         if not contract.signed_by_all and _check_if_all_signer_have_signed(Contract[contract.id].annotations):
             contract_db.signed_by_all = True
-            contract_db.status = "SIGNED"
+            contract_db.status = ContractStatus.FULLY_SIGNED.value
 
 
 def _check_if_all_signer_have_signed(annotations):

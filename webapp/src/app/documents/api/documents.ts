@@ -4,7 +4,7 @@ import { Document } from "../types/document";
 
 export const documentsAPI = createApi({
   reducerPath: "documentsAPI",
-  tagTypes: ["Document", "Contract"],
+  tagTypes: ["Document"],
   baseQuery: appBaseQuery,
   refetchOnReconnect: true,
   refetchOnFocus: true,
@@ -37,7 +37,6 @@ export const documentsAPI = createApi({
         body: formData,
         includeCredentials: true,
       }),
-      invalidatesTags: ["Contract"],
     }),
 
     // ✅ DELETE

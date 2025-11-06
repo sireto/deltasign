@@ -55,7 +55,6 @@ export const contractsAPI = createApi({
       }),
       invalidatesTags: ["Contract"],
     }),
-
     patchContract: builder.mutation<
       Contract,
       {
@@ -75,6 +74,23 @@ export const contractsAPI = createApi({
       }),
       invalidatesTags: ["Contract"],
     }),
+    signContract: builder.mutation<
+    string,
+        {
+            uuid: string;
+            formData: FormData;
+        }
+    >({
+        query: ({ uuid, formData }) => ({
+            url: `/contracts/${uuid}/sign`,
+            method: "POST",
+            body: formData,
+            credentials: "include",
+            // Don't set Content-Type header - let the browser set it with boundary
+        }),
+        invalidatesTags: ["Contract"],
+    }),
+   
   }),
 });
 
@@ -84,4 +100,5 @@ export const {
   useDeleteContractByIdMutation,
   usePostContractMutation,
   usePatchContractMutation,
+  useSignContractMutation
 } = contractsAPI;

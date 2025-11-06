@@ -20,19 +20,34 @@ const StatusBadge = ({ status }: { status: string }) => {
   return <span className={cn(statusClasses, "px-[7px]")}>{status}</span>;
 };
 
-const ActionsCell = () => (
-  <div className="flex items-center gap-2">
-    <Button
-      variant="outline"
-      className="text-silicon border-silicon h-7 rounded-[8px] px-2 text-sm font-[600]"
-    >
-      Edit
-    </Button>
-    <div className="border-midnight-gray-200 rounded-[8px] border px-2 py-1">
-      <EllipsisVertical size={16} />
+const ActionsCell = ({ status }: { status: string }) => {
+  const getButtonText = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return "Sign";
+      case "Fully signed":
+        return "View";
+      case "Draft":
+        return "Edit";
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        className="text-silicon border-silicon h-7 rounded-[8px] px-2 text-sm font-[600]"
+      >
+        {getButtonText(status)}
+      </Button>
+      <div className="border-midnight-gray-200 rounded-[8px] border px-2 py-1">
+        <EllipsisVertical size={16} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const CustomAvatarsOverlay = ({
   images,
@@ -84,14 +99,11 @@ export const contractsColumn: ColumnDef<Contract>[] = [
       return (
         <div className="flex min-w-[200px] gap-2">
           <PdfIcon />
-          <a
-            href={doc.document.s3_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-midnight-gray-900 font-[500] hover:underline"
+          <span
+            className="text-midnight-gray-900 font-[500]"
           >
             {doc.name}
-          </a>
+          </span>
         </div>
       );
     },
@@ -154,6 +166,6 @@ export const contractsColumn: ColumnDef<Contract>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: () => <ActionsCell />,
+    cell: ({row}) => <ActionsCell status={capitalize(row.getValue("status") as string)}/>,
   },
 ];

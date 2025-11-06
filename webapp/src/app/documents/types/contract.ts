@@ -11,6 +11,8 @@ interface Annotation {
   signed: string | null;
 }
 
+
+
 export interface Contract {
   uuid: string;
   name: string;

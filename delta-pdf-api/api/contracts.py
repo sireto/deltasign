@@ -91,7 +91,7 @@ async def sign_contract(file: UploadFile = File(...),
                         user: User = Depends(get_logged_user)):
     if not contract_service.has_contract_rights(contract, user):
         raise BadRequest("Insufficient permissions to read the contract")
-
+    
     return contract_service.sign_contract(contract, user, file.file.read())
 
 

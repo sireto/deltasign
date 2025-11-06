@@ -112,7 +112,6 @@ async def get_self_user_contracts(
     status: Optional[ContractStatus] = Query(None),
 ):
     with db_session:
-        print(status)
         contracts = contract_service.get_self_user_contracts(user, contract_status=status)
         return [c.json() for c in contracts]
 
