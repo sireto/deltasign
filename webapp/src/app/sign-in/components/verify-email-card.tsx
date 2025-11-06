@@ -2,19 +2,24 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shared/ui/input-otp";
 import { useEffect, useState } from "react";
+import {toast , Bounce} from "react-toastify";
 
 interface VerifyEmailCardProps {
   email: string;
   onVerify: (code: string) => void;
   onChangeEmail: () => void;
+  onResendEmail: (email : string) => void; 
   isLoading?: boolean;
+  disableVerifyBtn : boolean
 }
 
 export default function VerifyEmailCard({
   email,
   onVerify,
   onChangeEmail,
+  onResendEmail,
   isLoading,
+  disableVerifyBtn
 }: VerifyEmailCardProps) {
   const [timer, setTimer] = useState(59);
 
@@ -29,6 +34,23 @@ export default function VerifyEmailCard({
   }, [timer]);
 
   const [otp, setOtp] = useState("");
+
+   const handleResendEmail = () => {
+    if (timer <= 0) {
+      onResendEmail(email);
+      toast.success("✅ A new verification code has been sent to your email.", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+      setTimer(59); // reset timer after resending
+    }
+  };
 
   return (
     <Card className="items-center">
@@ -66,13 +88,13 @@ export default function VerifyEmailCard({
         <Button
           className="h-[40px] w-full"
           onClick={() => onVerify(otp)}
-          disabled={!otp}
+          disabled={!(otp.length == 6) || isLoading || disableVerifyBtn}
           isLoading={isLoading}
         >
           Verify
         </Button>
         <div>
-          <span className="text-midnight-gray-400 block text-center font-[600]">
+          <span className="text-midnight-gray-400 block text-center font-[600]" onClick={handleResendEmail}>
             Resend OTP again:
           </span>
           <span className="block text-center">
