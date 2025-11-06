@@ -19,6 +19,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { Contract } from "./types/contract";
 import DraftsIcon from "@/shared/icons/drafts";
 import { useDispatch } from "react-redux";
+import {toast} from "react-toastify";
 
 interface TableConfig<T> {
   data: T[];
@@ -35,7 +36,7 @@ export default function Page() {
     ContractStatus.FULLY_SIGNED,
   );
   const { data: allContracts } = useGetContractsQuery();
-  const [postDocument] = usePostDocumentMutation();
+  const [postDocument , {isLoading : postingDocument , isSuccess : onDocumentPostSuccess , isError , error }] = usePostDocumentMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -121,6 +122,48 @@ export default function Page() {
     router,
   ]);
 
+    useEffect(() => {
+  if (onDocumentPostSuccess) {
+    toast.success("Document posted successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+    });
+  } else if (isError) {
+    toast.error(
+      `Failed to post document. ${(error as any)?.data.detail || "Unknown error"}`,
+      {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      }
+    );
+  }
+  console.log(error)
+}, [onDocumentPostSuccess, isError, error]);
+
+useEffect(() => {
+  if (postingDocument) {
+    toast.info("Uploading document...", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+    });
+  }
+}, [postingDocument]);
+
   // --- Handle tab switching ---
   const handleTabChange = (value: string) => {
     // Update URL with new tab value
@@ -157,6 +200,7 @@ export default function Page() {
             filters={filters}
             showUploadButton
             onUpload={handlePost}
+            disableUploadButton={postingDocument}
             hideFilters
           />
         }
