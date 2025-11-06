@@ -9,6 +9,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/shared/store/slice/user-slice";
+import { toast, Bounce } from "react-toastify";
 
 export default function Page() {
   const [email, setEmail] = useState("");
@@ -37,8 +38,22 @@ export default function Page() {
       const { full_name, uuid } = await postLoginCode({ email, code }).unwrap();
       dispatch(setUser({ full_name, uuid, email }));
       router.push("/documents");
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      const message =
+        error?.data?.detail ||
+        error?.message ||
+        "Something went wrong while verifying the code.";
+
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 

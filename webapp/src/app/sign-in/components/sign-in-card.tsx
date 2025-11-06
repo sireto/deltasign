@@ -14,6 +14,19 @@ interface SignInCardProps {
 export default function SignInCard({ onSubmit, isLoading }: SignInCardProps) {
   const [email, setEmail] = useState("");
 
+  const handleSubmit = () => {
+    if (!isLoading && emailvalidator.validate(email)) {
+      onSubmit({ email });
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
   return (
     <Card className="h-fit w-fit">
       <div>
@@ -34,11 +47,12 @@ export default function SignInCard({ onSubmit, isLoading }: SignInCardProps) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading}
+          onKeyDown={handleKeyDown}
         />
       </div>
       <Button
         className="h-[40px] w-full"
-        onClick={() => onSubmit({ email })}
+        onClick={handleSubmit}
         disabled={!emailvalidator.validate(email)}
         isLoading={isLoading}
       >

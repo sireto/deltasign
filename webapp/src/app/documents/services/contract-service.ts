@@ -1,5 +1,10 @@
 import { toPng } from "html-to-image";
-import { PDFAnnotation, PatchContractRequest, Contract, PDF_CONSTANTS } from "../types/index";
+import {
+  PDFAnnotation,
+  PatchContractRequest,
+  Contract,
+  PDF_CONSTANTS,
+} from "../types/index";
 // import Signer
 
 export class ContractService {
@@ -9,7 +14,7 @@ export class ContractService {
   static preparePatchData(
     contract: Contract,
     annotations: PDFAnnotation[],
-    signers: any[]
+    signers: any[],
   ): PatchContractRequest {
     return {
       name: contract.name,
@@ -31,7 +36,7 @@ export class ContractService {
    * Export signature as PNG and convert to FormData
    */
   static async exportSignatureAsFormData(
-    signatureRef: React.RefObject<HTMLDivElement>
+    signatureRef: React.RefObject<HTMLDivElement>,
   ): Promise<FormData | null> {
     if (!signatureRef.current) {
       console.error("Signature ref is not available");
@@ -43,12 +48,12 @@ export class ContractService {
         cacheBust: true,
         skipFonts: false,
       });
-      
+
       const blob = await (await fetch(dataUrl)).blob();
-      
+
       const formData = new FormData();
       formData.append("file", blob, "signature.png");
-      
+
       return formData;
     } catch (error) {
       console.error("Failed to export signature:", error);
@@ -61,7 +66,7 @@ export class ContractService {
    */
   static calculateGhostPosition(
     e: React.MouseEvent,
-    containerRef: React.RefObject<HTMLDivElement>
+    containerRef: React.RefObject<HTMLDivElement>,
   ): { x: number; y: number } | null {
     if (!containerRef.current) return null;
 
@@ -75,10 +80,10 @@ export class ContractService {
   /**
    * Calculate annotation position from ghost position
    */
-  static calculateAnnotationPosition(ghostPos: {
+  static calculateAnnotationPosition(ghostPos: { x: number; y: number }): {
     x: number;
     y: number;
-  }): { x: number; y: number } {
+  } {
     // Offset by half of annotation dimensions to center it
     return {
       x: ghostPos.x - PDF_CONSTANTS.ANNOTATION_WIDTH / 2,

@@ -17,12 +17,12 @@ export function useContractAnnotations(contract: any) {
         contract.annotations.map((annotation: any, index: number) => ({
           id: index + 1,
           x: annotation.x1,
-          y: PDF_CONSTANTS.HEIGHT -  annotation.y1,
+          y: PDF_CONSTANTS.HEIGHT - annotation.y1,
           height: 44,
           width: 154,
           page: annotation.page,
           signer: annotation.signer,
-        }))
+        })),
       );
       setNextId(contract.annotations.length + 1);
     }
@@ -37,16 +37,16 @@ export function useContractAnnotations(contract: any) {
       setAnnotations((prev) => [...prev, newAnnotation]);
       setNextId((prev) => prev + 1);
     },
-    [nextId]
+    [nextId],
   );
 
   const updateAnnotation = useCallback(
     (id: number, x: number, y: number, width: number, height: number) => {
       setAnnotations((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, x, y, width, height } : a))
+        prev.map((a) => (a.id === id ? { ...a, x, y, width, height } : a)),
       );
     },
-    []
+    [],
   );
 
   const deleteAnnotation = useCallback((id: number) => {
@@ -62,7 +62,11 @@ export function useContractAnnotations(contract: any) {
 }
 
 // Hook for managing contract signers
-export function useContractSigners(contract: any, userEmail: string, userName: string) {
+export function useContractSigners(
+  contract: any,
+  userEmail: string,
+  userName: string,
+) {
   const [signers, setSigners] = useState<Signer[]>([]);
   const [addMyselfChecked, setAddMyselfChecked] = useState(false);
 
@@ -73,8 +77,10 @@ export function useContractSigners(contract: any, userEmail: string, userName: s
         email: signer,
       }));
       setSigners(signersList);
-      
-      setAddMyselfChecked(signersList.some((s: Signer) => s.email === userEmail));
+
+      setAddMyselfChecked(
+        signersList.some((s: Signer) => s.email === userEmail),
+      );
     }
   }, [contract, userEmail]);
 
@@ -97,7 +103,7 @@ export function useContractSigners(contract: any, userEmail: string, userName: s
       }
       setAddMyselfChecked(checked);
     },
-    [userEmail, userName]
+    [userEmail, userName],
   );
 
   return {
@@ -112,7 +118,9 @@ export function useContractSigners(contract: any, userEmail: string, userName: s
 export function useSignatureMode() {
   const [isSignatureMode, setIsSignatureMode] = useState(false);
   const [selectedTool, setSelectedTool] = useState("");
-  const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(null);
+  const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(
+    null,
+  );
 
   const enableSignatureMode = useCallback(() => {
     setIsSignatureMode(true);
@@ -145,9 +153,12 @@ export function usePendingAnnotation() {
     pageIndex: number;
   } | null>(null);
 
-  const setPendingPosition = useCallback((pos: { x: number; y: number; pageIndex: number }) => {
-    setPendingAnnotationPos(pos);
-  }, []);
+  const setPendingPosition = useCallback(
+    (pos: { x: number; y: number; pageIndex: number }) => {
+      setPendingAnnotationPos(pos);
+    },
+    [],
+  );
 
   const clearPendingPosition = useCallback(() => {
     setPendingAnnotationPos(null);

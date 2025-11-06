@@ -10,18 +10,24 @@ export interface PDFViewerProps {
   annotations: PDFAnnotation[];
   currentPage: number;
   onPageChange: (page: number) => void;
-  updateAnnotation: (id: number, x: number, y: number, width: number, height: number) => void;
+  updateAnnotation: (
+    id: number,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) => void;
   deleteAnnotation: (id: number) => void;
   ghostPos: { x: number; y: number } | null;
   userHasSigned: boolean;
   previewSignature: string;
   userEmail: string;
-  signatureRef: React.RefObject<HTMLDivElement|null>;
+  signatureRef: React.RefObject<HTMLDivElement | null>;
   onPdfClick: (e: React.MouseEvent) => void;
   onMouseMove: (e: React.MouseEvent) => void;
   thumbnailPluginInstance: ReturnType<typeof thumbnailPlugin>;
   pageNavigationPluginInstance: ReturnType<typeof pageNavigationPlugin>;
-  containerRef: React.RefObject<HTMLDivElement|null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function PDFViewer({
@@ -58,7 +64,7 @@ export default function PDFViewer({
               renderPage={(props: RenderPageProps) => (
                 <CustomPdfPage
                   annotations={annotations.filter(
-                    (a) => a.page === props.pageIndex
+                    (a) => a.page === props.pageIndex,
                   )}
                   props={props}
                   updateAnnotation={updateAnnotation}

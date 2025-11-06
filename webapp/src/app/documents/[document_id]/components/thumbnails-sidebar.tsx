@@ -35,7 +35,7 @@ export default function ThumbnailsSidebar({
                   thumbnail.pageIndex === currentPage - 1
                     ? "border-silicon-400 border-[1px]"
                     : "border-midnight-gray-200 border-[1px]",
-                  "mb-2 overflow-hidden rounded-[4px]"
+                  "mb-2 overflow-hidden rounded-[4px]",
                 )}
               >
                 {thumbnail.renderPageThumbnail}

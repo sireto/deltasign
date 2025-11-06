@@ -82,7 +82,7 @@ export default function ContractSidebar({
                 <Button
                   className={cn(
                     "w-full gap-2 px-[10px] py-[20px] active:border-blue-200",
-                    selectedTool === tool.label && "border-blue-400"
+                    selectedTool === tool.label && "border-blue-400",
                   )}
                   variant={"outline"}
                   onClick={tool.onClick}
@@ -141,7 +141,7 @@ export default function ContractSidebar({
                     {signer.email === userEmail && "(You)"}
                   </span>
                 </span>
-                <span className="text-midnight-gray-600 text-xs truncate">
+                <span className="text-midnight-gray-600 truncate text-xs">
                   {signer.email}
                 </span>
               </div>

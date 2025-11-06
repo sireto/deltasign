@@ -43,7 +43,7 @@ export default function VerifyEmailCard({
           <span className="text-midnight-gray-900 block text-center">
             Please enter it below.{" "}
             <span
-              className="text-silicon font-[600] hover:cursor-pointer"
+              className="text-silicon font-[600] hover:cursor-pointer hover:underline"
               onClick={onChangeEmail}
             >
               Change Email?
@@ -72,7 +72,7 @@ export default function VerifyEmailCard({
           Verify
         </Button>
         <div>
-          <span className="text-silicon block text-center font-[600]">
+          <span className="text-midnight-gray-400 block text-center font-[600]">
             Resend OTP again:
           </span>
           <span className="block text-center">

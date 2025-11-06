@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import CreateFolderCard from "./components/cards/create-folder-card";
 import PageAnimation from "@/shared/ui/page-animation";
 import { usePostDocumentMutation } from "./api/documents";
-import { contractsAPI, ContractStatus, useGetContractsQuery } from "./api/contracts";
+import {
+  contractsAPI,
+  ContractStatus,
+  useGetContractsQuery,
+} from "./api/contracts";
 import { contractsColumn } from "./components/contracts-column";
 import DataTable from "@/shared/ui/data-table";
 import { FiltersTab } from "./components/filters-tab";
@@ -125,13 +129,13 @@ export default function Page() {
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handlePost = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     await postDocument(formData);
-    dispatch(contractsAPI.util.invalidateTags(["Contract"]))
+    dispatch(contractsAPI.util.invalidateTags(["Contract"]));
   };
 
   return (

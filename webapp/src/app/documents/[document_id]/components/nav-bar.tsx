@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
-import { ArrowLeft, File  } from "lucide-react";
+import { ArrowLeft, File } from "lucide-react";
 import { Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ComponentType } from "react";
@@ -9,11 +9,11 @@ import { ComponentType } from "react";
 export default function NavBar({
   className,
   fileName,
-  RenderButton
+  RenderButton,
 }: {
   className?: string;
   fileName: string;
-  RenderButton : ComponentType 
+  RenderButton: ComponentType;
 }) {
   const router = useRouter();
   return (
@@ -23,7 +23,11 @@ export default function NavBar({
         className,
       )}
     >
-      <Button variant="secondary" onClick={() => router.back()} className="hover:cursor-pointer">
+      <Button
+        variant="secondary"
+        onClick={() => router.back()}
+        className="hover:cursor-pointer"
+      >
         <ArrowLeft />
         <span className="font-[500]">Back</span>
       </Button>
@@ -42,7 +46,7 @@ export default function NavBar({
           <Share2 />
           Share
         </Button>
-        < RenderButton/>
+        <RenderButton />
       </div>
     </div>
   );

@@ -11,8 +11,6 @@ interface Annotation {
   signed: string | null;
 }
 
-
-
 export interface Contract {
   uuid: string;
   name: string;
@@ -35,18 +33,17 @@ export interface PostContractRequest {
   annotations: Annotation[];
 }
 
-
 export interface PatchContractRequest {
-  name : string;
-  annotations : {
-    x1 : number,
-    x2 : number,
-    y1 : number,
-    y2 : number,
-    signer : string,
-    page : number,
-    color : string
+  name: string;
+  annotations: {
+    x1: number;
+    x2: number;
+    y1: number;
+    y2: number;
+    signer: string;
+    page: number;
+    color: string;
   }[];
-  signers : string [];
-  message : string;
+  signers: string[];
+  message: string;
 }

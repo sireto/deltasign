@@ -37,13 +37,18 @@ export default function ContractPage() {
   const pathName = usePathname();
   const contractId = pathName.split("/")[2];
 
-  const [pdfDimensions , setPdfDimensions] = useState({width: 612 , height: 792})
-  const [scaleFactor , setScaleFactor] = useState(0.75)
-  const annotationDimensions = {height : 44 , width : 154}
-  
+  const [pdfDimensions, setPdfDimensions] = useState({
+    width: 612,
+    height: 792,
+  });
+  const [scaleFactor, setScaleFactor] = useState(0.75);
+  const annotationDimensions = { height: 44, width: 154 };
+
   // API queries
-  const { data: contract, isLoading: isLoadingContract } = useGetContractByIdQuery({ uuid: contractId });
-  const [patchContract, { isLoading: isPatchingContract }] = usePatchContractMutation();
+  const { data: contract, isLoading: isLoadingContract } =
+    useGetContractByIdQuery({ uuid: contractId });
+  const [patchContract, { isLoading: isPatchingContract }] =
+    usePatchContractMutation();
   const [signContract] = useSignContractMutation();
 
   // Redux state
@@ -144,7 +149,7 @@ export default function ContractPage() {
     const patchData = ContractService.preparePatchData(
       contract,
       annotations,
-      signers
+      signers,
     );
 
     try {
@@ -160,7 +165,8 @@ export default function ContractPage() {
   };
 
   const handleSign = async (signature: string) => {
-    const formData = await ContractService.exportSignatureAsFormData(signatureRef);
+    const formData =
+      await ContractService.exportSignatureAsFormData(signatureRef);
     if (!formData) {
       console.error("Failed to export signature");
       return;
@@ -193,7 +199,9 @@ export default function ContractPage() {
   }
 
   const fileUrl = ContractService.getFileUrl(contract);
-  const visibleAnnotations = ContractService.shouldShowAnnotations(contract.status)
+  const visibleAnnotations = ContractService.shouldShowAnnotations(
+    contract.status,
+  )
     ? annotations
     : [];
 

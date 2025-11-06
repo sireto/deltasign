@@ -1,5 +1,10 @@
 import { toPng } from "html-to-image";
-import { PDFAnnotation, PatchContractRequest, Contract, PDF_CONSTANTS } from "../../types/index";
+import {
+  PDFAnnotation,
+  PatchContractRequest,
+  Contract,
+  PDF_CONSTANTS,
+} from "../../types/index";
 // import Signer
 
 export class ContractService {
@@ -9,16 +14,15 @@ export class ContractService {
   static preparePatchData(
     contract: Contract,
     annotations: PDFAnnotation[],
-    signers: any[]
+    signers: any[],
   ): PatchContractRequest {
     return {
       name: contract.name,
-      annotations: annotations.map((annotation) => (
-        {
+      annotations: annotations.map((annotation) => ({
         x1: annotation.x,
         y1: PDF_CONSTANTS.HEIGHT - annotation.y,
         x2: annotation.x + annotation.width,
-        y2: (PDF_CONSTANTS.HEIGHT - annotation.y ) + annotation.width,
+        y2: PDF_CONSTANTS.HEIGHT - annotation.y + annotation.width,
         signer: annotation.signer,
         color: "#000",
         page: annotation.page,
@@ -29,7 +33,7 @@ export class ContractService {
   }
 
   static async exportSignatureAsFormData(
-    signatureRef: React.RefObject<HTMLDivElement|null>
+    signatureRef: React.RefObject<HTMLDivElement | null>,
   ): Promise<FormData | null> {
     if (!signatureRef.current) {
       console.error("Signature ref is not available");
@@ -41,12 +45,12 @@ export class ContractService {
         cacheBust: true,
         skipFonts: false,
       });
-      
+
       const blob = await (await fetch(dataUrl)).blob();
-      
+
       const formData = new FormData();
       formData.append("file", blob, "signature.png");
-      
+
       return formData;
     } catch (error) {
       console.error("Failed to export signature:", error);
@@ -59,7 +63,7 @@ export class ContractService {
    */
   static calculateGhostPosition(
     e: React.MouseEvent,
-    containerRef: React.RefObject<HTMLDivElement|null>
+    containerRef: React.RefObject<HTMLDivElement | null>,
   ): { x: number; y: number } | null {
     if (!containerRef.current) return null;
 
@@ -73,10 +77,10 @@ export class ContractService {
   /**
    * Calculate annotation position from ghost position
    */
-  static calculateAnnotationPosition(ghostPos: {
+  static calculateAnnotationPosition(ghostPos: { x: number; y: number }): {
     x: number;
     y: number;
-  }): { x: number; y: number } {
+  } {
     // Offset by half of annotation dimensions to center it
     return {
       x: ghostPos.x,

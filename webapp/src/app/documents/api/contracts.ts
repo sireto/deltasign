@@ -1,6 +1,10 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { appBaseQuery } from "@/shared/store/base-query";
-import { Contract, PatchContractRequest, PostContractRequest } from "../types/contract";
+import {
+  Contract,
+  PatchContractRequest,
+  PostContractRequest,
+} from "../types/contract";
 
 export enum ContractStatus {
   DRAFT = "draft",
@@ -75,22 +79,21 @@ export const contractsAPI = createApi({
       invalidatesTags: ["Contract"],
     }),
     signContract: builder.mutation<
-    string,
-        {
-            uuid: string;
-            formData: FormData;
-        }
+      string,
+      {
+        uuid: string;
+        formData: FormData;
+      }
     >({
-        query: ({ uuid, formData }) => ({
-            url: `/contracts/${uuid}/sign`,
-            method: "POST",
-            body: formData,
-            credentials: "include",
-            // Don't set Content-Type header - let the browser set it with boundary
-        }),
-        invalidatesTags: ["Contract"],
+      query: ({ uuid, formData }) => ({
+        url: `/contracts/${uuid}/sign`,
+        method: "POST",
+        body: formData,
+        credentials: "include",
+        // Don't set Content-Type header - let the browser set it with boundary
+      }),
+      invalidatesTags: ["Contract"],
     }),
-   
   }),
 });
 
@@ -100,5 +103,5 @@ export const {
   useDeleteContractByIdMutation,
   usePostContractMutation,
   usePatchContractMutation,
-  useSignContractMutation
+  useSignContractMutation,
 } = contractsAPI;

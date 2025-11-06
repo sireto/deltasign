@@ -99,11 +99,7 @@ export const contractsColumn: ColumnDef<Contract>[] = [
       return (
         <div className="flex min-w-[200px] gap-2">
           <PdfIcon />
-          <span
-            className="text-midnight-gray-900 font-[500]"
-          >
-            {doc.name}
-          </span>
+          <span className="text-midnight-gray-900 font-[500]">{doc.name}</span>
         </div>
       );
     },
@@ -166,6 +162,8 @@ export const contractsColumn: ColumnDef<Contract>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({row}) => <ActionsCell status={capitalize(row.getValue("status") as string)}/>,
+    cell: ({ row }) => (
+      <ActionsCell status={capitalize(row.getValue("status") as string)} />
+    ),
   },
 ];
