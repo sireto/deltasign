@@ -228,7 +228,6 @@ def sign_contract(contract: Contract, user: User, file: bytes):
 @db_session
 def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User , alert_users : bool = False):
     contract = Contract.get(uuid=uuid)
-    print('alert users')
     print(alert_users.__str__())
     if not contract.document:
         raise BadRequest(f"The document of contract {contract.id} does not exist.")
