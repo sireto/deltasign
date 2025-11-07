@@ -500,15 +500,15 @@ export default function Page() {
       });
       const blob = await (await fetch(dataUrl)).blob();
 
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `debug-signature-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // const url = window.URL.createObjectURL(blob);
+      // const a = document.createElement("a");
+      // a.style.display = "none";
+      // a.href = url;
+      // a.download = `debug-signature-${Date.now()}.png`;
+      // document.body.appendChild(a);
+      // a.click();
+      // window.URL.revokeObjectURL(url);
+      // document.body.removeChild(a);
 
       console.log("Signature dimensions:", {
         width: signatureRef.current.offsetWidth,
@@ -732,6 +732,7 @@ export default function Page() {
                   setPreviewSignature("");
                   setShowAddSignerDialog(false);
                 }}
+                disabled={isSigningDocument}
               >
                 <Trash />
                 <span>Clear</span>

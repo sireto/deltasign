@@ -11,7 +11,7 @@ import TemplatesIcon from "@/shared/icons/templates";
 import { Bell, ChevronDown, Settings } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/shared/store/store";
 import {
   DropdownMenu,
@@ -21,6 +21,9 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { LogOut } from "lucide-react";
 import { useLogoutUserMutation } from "@/shared/store/api/user-auth";
+import { contractsAPI } from "@/app/documents/api/contracts";
+import { documentsAPI } from "@/app/documents/api/documents";
+import { usersAPI } from "../../../../state/api/users";
 
 export default function NavBar() {
   const pathName = usePathname();
@@ -37,10 +40,15 @@ export default function NavBar() {
 
   const router = useRouter();
 
+  const dispatch = useDispatch();
+
   const handleLogout = async () => {
     try {
       await logout({});
       router.push("/sign-in");
+      dispatch(usersAPI.util.resetApiState())
+      dispatch(contractsAPI.util.resetApiState())
+      dispatch(documentsAPI.util.resetApiState())
     } catch (error) {
       console.log(error);
     }
