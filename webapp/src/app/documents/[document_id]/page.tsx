@@ -37,6 +37,9 @@ import { SendHorizonal } from "lucide-react";
 import "react-pdf/dist/Page/TextLayer.js";
 import { toSvg, toPng } from "html-to-image";
 import localFont from "next/font/local";
+import { capitalize } from "@/shared/utils";
+import { Textarea } from "@/components/ui/textarea";
+import {toast , Bounce} from "react-toastify";
 
 interface Annotation {
   id: number;
@@ -87,7 +90,7 @@ const CustomPageRender = React.memo(
               top: ghostPos.y,
             }}
           >
-            <span className="text-midnight-gray-900 text-sm font-[500]">
+            <span className="text-midnight-gray-900 text-sm font-[500] text-silicon">
               Signature
             </span>
           </div>
@@ -110,7 +113,6 @@ const CustomPageRender = React.memo(
             </div>
             <div
               className={`${signatureFont.className} itallic flex h-full w-full items-center justify-center text-4xl text-black`}
-              ref={signatureRef}
             >
               {userHasSigned && ann.signer == userEmail && (
                 <span>{previewSignature}</span>
@@ -231,30 +233,20 @@ export default function Page() {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const addRemoveSelfToSignersList = (checked: boolean) => {
-    if (checked) {
-      setSigners((prev) => {
-        if (prev.some((s) => s.email === userEmail)) return prev;
-        return [...prev, { email: userEmail, name: userName }];
-      });
-    } else {
-      setSigners((prev) => prev.filter((s) => s.email !== userEmail));
-    }
-    setAddMyselfChecked(!addMyselfChecked);
-  };
-
   const thumbnailPluginInstance = thumbnailPlugin({});
   const { Thumbnails } = thumbnailPluginInstance;
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const { jumpToPage } = pageNavigationPluginInstance;
 
-  const [patchContract, { isLoading, isSuccess, error }] =
+  const [patchContract, { isLoading : patchingContract, isSuccess, error }] =
     usePatchContractMutation();
 
   const [previewSignature, setPreviewSignature] = useState("");
 
   const [userHasSigned, setUserHasSigned] = useState(false);
+
+  const [emailMessage , setEmailMessage] = useState("")
 
   const handleSendDocument = async () => {
     if (!contract) return;
@@ -287,21 +279,43 @@ export default function Page() {
         };
       }),
       signers: signers.map((signer) => signer.email),
-      message: "",
+      message: emailMessage,
     };
 
+    
+    
     console.log("Final PDF coordinates:", patchContractData.annotations);
-
+    
     try {
       const result = await patchContract({
         uuid: contract.uuid,
         patchContractRequest: patchContractData,
         alert_users: true,
       }).unwrap();
-      console.log("Patch successful:", result);
+      setEmailMessage("");
+      toast.success("🎉 Document has been created and shared successfully with recipents.", {
+       position: "top-right",
+       autoClose: 4000,
+       hideProgressBar: false,
+       closeOnClick: true,
+       pauseOnHover: true,
+       draggable: true,
+       theme: "light",
+       transition: Bounce,
+     });
     } catch (err) {
-      console.error("Failed to patch contract:", err);
+      toast.error("Failed to create and share document.", {
+       position: "top-right",
+       autoClose: 4000,
+       hideProgressBar: false,
+       closeOnClick: true,
+       pauseOnHover: true,
+       draggable: true,
+       theme: "light",
+       transition: Bounce,
+     });
     }
+    setShowShareDocumentDialog(false)
   };
 
   const tools = [
@@ -463,10 +477,14 @@ export default function Page() {
     }
   };
 
-  const [signContract] = useSignContractMutation();
+  const [signContract , {isLoading : isSigningDocument}] = useSignContractMutation();
 
-  const handleExport = async () => {
-    if (!signatureRef.current) return;
+  const handleSignDocument = async () => {
+    setUserHasSigned(true)
+    if (!signatureRef.current) {
+      console.error("Signature Ref is NULL")
+      return
+    };
     try {
       const dataUrl = await toPng(signatureRef.current, {
         cacheBust: true,
@@ -482,7 +500,6 @@ export default function Page() {
       });
       const blob = await (await fetch(dataUrl)).blob();
 
-      // Download the PNG locally for debugging
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.style.display = "none";
@@ -508,16 +525,35 @@ export default function Page() {
         formData,
       }).unwrap();
       console.log("Server response:", result);
+
+      toast.success("🎉 Document has been signed successfully.", {
+       position: "top-right",
+       autoClose: 4000,
+       hideProgressBar: false,
+       closeOnClick: true,
+       pauseOnHover: true,
+       draggable: true,
+       theme: "light",
+       transition: Bounce,
+     });
     } catch (error) {
+      toast.error("Failed to sign document.", {
+       position: "top-right",
+       autoClose: 4000,
+       hideProgressBar: false,
+       closeOnClick: true,
+       pauseOnHover: true,
+       draggable: true,
+       theme: "light",
+       transition: Bounce,
+     });
       console.error("Error:", error);
     }
-  };
-
-  const handleAcceptAndSignDocument = async () => {
     setUserHasSigned(true);
     setShowSignContractDialog(false);
-    await handleExport();
   };
+
+  const [showShareDocumentDialog , setShowShareDocumentDialog] = useState(false)
 
   if (!contract) {
     return (
@@ -529,7 +565,7 @@ export default function Page() {
 
   const ShareDocumentButton = () => {
     return (
-      <Button disabled={annotations.length === 0} onClick={handleSendDocument}>
+      <Button disabled={annotations.length === 0} onClick={()=>{setShowShareDocumentDialog(true)}}>
         <SendHorizonal />
         Send Document
       </Button>
@@ -560,6 +596,47 @@ export default function Page() {
 
   return (
     <div>
+      <Dialog open={showShareDocumentDialog} onOpenChange={setShowShareDocumentDialog}>
+        <DialogContent className="w-[400px] gap-0 overflow-hidden p-0">
+          <DialogTitle className="text-md text-midnight-gray-900 bg-[#F9F9FC] px-4 py-3">
+            Send Document
+          </DialogTitle>
+          <div className="flex flex-col gap-[20px] py-4 px-5 bg-white border-y-[1px] border-midnight-gray-200">
+              <div className="flex flex-col gap-2">
+                <Label className="text-midnight-gray-900">Subject (Optional)</Label>
+                <Input
+                  placeholder="Subject"
+                  className="bg-midnight-gray-100"
+                />
+              </div>
+               <div className="flex flex-col gap-2">
+                <Label className="text-midnight-gray-900">Message (Optional)</Label>
+                <Textarea
+                  className="bg-midnight-gray-100"
+                  placeholder="Message"
+                  value={emailMessage}
+                  onChange={(event) => setEmailMessage(event.target.value)}
+                />
+              </div>
+          </div>
+           <div className="grid grid-cols-2 gap-3 bg-[#F9F9FC] p-4">
+              <Button
+                onClick={() => setShowShareDocumentDialog(false)}
+                variant={"outline"}
+                disabled={patchingContract}
+              >
+                <span>Cancel</span>
+              </Button>
+              <Button
+                onClick={handleSendDocument}
+                isLoading={patchingContract}
+              >
+                <SendHorizonal/>
+                Send
+              </Button>
+            </div>
+        </DialogContent>
+      </Dialog>
       {/* Add Signer Dialog */}
       <Dialog open={showAddSignerDialog} onOpenChange={setShowAddSignerDialog}>
         <DialogContent className="w-[400px] gap-0 overflow-hidden p-0">
@@ -621,6 +698,7 @@ export default function Page() {
                     {previewSignature ? (
                       <p
                         className={`${signatureFont.className} text-5xl text-black italic`}
+                        ref={signatureRef}
                       >
                         {previewSignature}
                       </p>
@@ -661,9 +739,10 @@ export default function Page() {
 
               <Button
                 onClick={async () => {
-                  await handleAcceptAndSignDocument();
+                  await handleSignDocument();
                 }}
                 disabled={previewSignature.length == 0}
+                isLoading={isSigningDocument}
                 className="gap-1"
               >
                 <Check />
@@ -677,6 +756,7 @@ export default function Page() {
       <NavBar
         className="sticky top-0"
         fileName={contract.name}
+        contractStatus={capitalize(contract.status)}
         RenderButton={
           contract.status == "draft"
             ? ShareDocumentButton
@@ -761,7 +841,7 @@ export default function Page() {
         </div>
 
         {/* Sidebar */}
-        <div className="border-midnight-gray-200 overflow-clip rounded-lg border-[1.5px] bg-white">
+        <div className="border-midnight-gray-200 overflow-clip rounded-lg border-[1.5px] bg-white min-w-[320px]">
           {contract.status === "draft" && (
             <>
               <div className="bg-midnight-gray-50 flex items-center gap-4 px-5 py-4">
@@ -828,7 +908,7 @@ export default function Page() {
           </div>
 
           <div className="flex flex-col gap-3 bg-white px-5 py-3">
-            {contract.status === "draft" && (
+            {/* {contract.status === "draft" && (
               <div className="bg-midnight-gray-50 border-midnight-gray-200 flex justify-between rounded-[8px] border-[1px] p-[10px]">
                 <span className="text-midnight-gray-900 text-sm font-[600]">
                   Add yourself
@@ -840,7 +920,7 @@ export default function Page() {
                   checked={addMyselfChecked}
                 />
               </div>
-            )}
+            )} */}
 
             {signers.map((signer, index) => (
               <div className="flex justify-between" key={index}>

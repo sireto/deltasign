@@ -90,7 +90,6 @@ export const contractsAPI = createApi({
         method: "POST",
         body: formData,
         credentials: "include",
-        // Don't set Content-Type header - let the browser set it with boundary
       }),
       invalidatesTags: ["Contract"],
     }),

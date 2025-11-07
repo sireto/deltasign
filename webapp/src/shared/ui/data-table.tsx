@@ -54,7 +54,7 @@ export default function DataTable<T>({
     : null;
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden border-[1.5px] border-gray-200">
+    <div className="flex h-full w-full flex-col overflow-hidden border-[1.5px] rounded-[8px] border-gray-200">
       <Tabs
         defaultValue={defaultValue}
         className="flex h-full flex-1 flex-col gap-0"
