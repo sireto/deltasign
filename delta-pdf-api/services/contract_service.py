@@ -23,6 +23,9 @@ from services.file_service import delete_file, check_file, save_file
 from services.kuber_service import kuber_service
 from services.blockfrost_service import blockfrost_service
 
+from typing import Optional
+from db import ContractStatus
+
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -32,15 +35,7 @@ lock = Lock()
 
 @db_session
 def create_new_contract(contract_request: ContractCreationRequest, user: User):
-    document = document_service.get_document_by_uuid(contract_request.document_uuid)
-    if not document:
-        raise BadRequest(f"Document[{contract_request.document_uuid}] does not exist")
-
-    # Check if the user has rights to create contract
-    if document.user.id != user.id:
-        raise UnauthorizedError("You do not have permission to create contract on the document.")
-
-    contract = Contract.create(document, contract_request.name, contract_request.message)
+    contract = create_default_contract(contract_request , user)
 
     for signer_email in contract_request.signers:
         signer_user = user_service.get_user_by_email(signer_email)
@@ -70,6 +65,22 @@ def create_new_contract(contract_request: ContractCreationRequest, user: User):
 
     contract.signed_doc_url = s3_url.replace(source_key, contract_key)
     return Contract.get(uuid=contract.uuid)
+
+#for web implementation
+@db_session
+def create_default_contract(contract_request: ContractCreationRequest, user: User):
+    document = document_service.get_document_by_uuid(contract_request.document_uuid)
+
+    if not document:
+        raise BadRequest(f"Document[{contract_request.document_uuid}] does not exist")
+
+    # Check if the user has rights to create contract
+    if document.user.id != user.id:
+        raise UnauthorizedError("You do not have permission to create contract on the document.")
+
+    contract = Contract.create(document, contract_request.name, contract_request.message)
+
+    return contract
 
 
 @db_session
@@ -113,10 +124,53 @@ def get_user_contracts(user, sent: bool = True, received: bool = False):
             contracts = select(sr.contract for sr in SignRequest if sr.requester == user)[:]
         elif received:
             contracts = select(sr.contract for sr in SignRequest if sr.signer == user)[:]
+        
     except Exception as ex:
         logger.exception(ex)
     return contracts
 
+
+#todo : refactor this code.
+@db_session
+def get_self_user_contracts(user, contract_status: Optional[ContractStatus] = None):
+    contracts = []
+
+    try:
+        if contract_status != None:
+            user_contracts = list(select(
+                contract for contract in Contract 
+                if contract.document.user.id == user.id and contract.status == contract_status.value
+            )[:])
+            return user_contracts
+            
+        # Base query: all contracts related to the user
+        else: 
+            contracts = list(select(
+                sr.contract for sr in SignRequest 
+                if sr.signer == user or sr.requester == user
+            )[:])
+
+            # Optionally filter by contract_status
+            if contract_status:
+                contracts = [c for c in contracts if c.status == contract_status]
+
+            # Include contracts where user owns the document
+            user_contracts = list(select(
+                contract for contract in Contract 
+                if contract.document.user.id == user.id
+            )[:])
+
+            # Combine lists, avoiding duplicates
+            contracts_ids = {c.id for c in contracts}
+            for c in user_contracts:
+                if c.id not in contracts_ids:
+                    contracts.append(c)
+
+            return contracts
+
+    except Exception as e:
+        print(f"Error fetching contracts: {e}")
+        return []
 
 @db_session
 def get_sign_request(contract: Contract, user: User):
@@ -172,15 +226,38 @@ def sign_contract(contract: Contract, user: User, file: bytes):
 
 
 @db_session
-def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User):
+def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User , alert_users : bool = False):
     contract = Contract.get(uuid=uuid)
-    if not contract.documet:
+    print(alert_users.__str__())
+    if not contract.document:
         raise BadRequest(f"The document of contract {contract.id} does not exist.")
 
     if contract.document.user.id != user.id:
         raise UnauthorizedError("You do not have permission to patch this document.")
 
     contract.name = patch_request.name
+
+    for signer_email in patch_request.signers:
+        signer_user = user_service.get_user_by_email(signer_email)
+        if not signer_user:
+            signer_user = user_service.create_new_account(signer_email)
+        contract.create_sign_request(user, signer_user)
+
+    for annotation in patch_request.annotations:
+        contract.create_annotation(annotation)
+
+    if alert_users:
+        contract.status = ContractStatus.PENDING.value
+        try:
+            email_service = EmailService()
+            sender = User[user.id].email
+            contract_name = contract.name
+            contract_message = patch_request.message or "Please review the contract and sign"
+            for receiver in patch_request.signers:
+                email_service.email_contract(sender, receiver, contract_name, contract_message)
+        except Exception as e:
+            print(e)
+
     return Contract.get(uuid=uuid)
 
 
@@ -214,7 +291,7 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
 
         if not contract.signed_by_all and _check_if_all_signer_have_signed(Contract[contract.id].annotations):
             contract_db.signed_by_all = True
-            contract_db.status = "SIGNED"
+            contract_db.status = ContractStatus.FULLY_SIGNED.value
 
 
 def _check_if_all_signer_have_signed(annotations):

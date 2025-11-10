@@ -6,6 +6,11 @@ from api.depends import get_logged_user
 from api.exceptions import UnauthorizedError, BadRequest
 from db import User
 from services import user_service, contract_service
+from fastapi import Header , HTTPException , Query  
+from fastapi.responses import JSONResponse
+from datetime import datetime, timedelta, timezone
+from db import ContractStatus
+from typing import Optional
 
 users_api = APIRouter()
 """
@@ -15,7 +20,6 @@ GET     /users/login
 POST    /users/login
 DELETE  /users/:uuid
 """
-
 
 @users_api.get("/users", tags=["User API"])
 async def get_users():
@@ -38,7 +42,7 @@ async def email_login_code(email: str):
 
 
 @users_api.post("/users/login", tags=["User API"])
-async def login_with_code(email: str, login_code: str):
+async def login_with_code(email: str, login_code: str , x_client_type : str | None = Header(default="mobile")):
     """
     Log user in if successful and send the API key.
     :param email: User email address
@@ -48,8 +52,38 @@ async def login_with_code(email: str, login_code: str):
     with db_session:
         if user_service.verify_login_code(email, login_code):
             user = user_service.get_user_by_email(email)
-            return user.json(api_key=True)
+            if x_client_type == "mobile":
+                return user.json(api_key=True)
+            else:
+                response = JSONResponse(
+                    content={**user.json(api_key=True)} 
+                )
+                response.set_cookie(
+                    key="access_token",
+                    value=user.api_key,
+                    httponly=True,
+                    samesite="lax",
+                    secure=False
+                )
+                return response
         raise UnauthorizedError("Invalid email or login code")
+
+@users_api.post("/users/logout", tags=["User API"])
+async def logout(x_client_type : str | None = Header(default="mobile")):
+    if x_client_type == "mobile":
+        # todo : to implement later
+        return {"message": "User logged out successfully"}
+    else:
+        response = JSONResponse(
+            content={"message": "User logged out successfully"}
+        )
+        response.delete_cookie(
+            key="access_token",
+            httponly=True,
+            samesite="Lax",
+            secure=False
+        )
+        return response
 
 
 @users_api.get("/users/me", tags=["User API"])
@@ -72,6 +106,17 @@ async def delete_user(user: User = Depends(get_logged_user)):
         user_service.delete_user_by_uuid(user.uuid)
 
 
+@users_api.get("/users/self/contracts", tags=["User API"])
+async def get_self_user_contracts(
+    user: User = Depends(get_logged_user),
+    status: Optional[ContractStatus] = Query(None),
+):
+    with db_session:
+        contracts = contract_service.get_self_user_contracts(user, contract_status=status)
+        return [c.json() for c in contracts]
+
+
+#todo : to deprecate
 @users_api.get("/users/{uuid}/contracts", tags=["User API"])
 async def get_user_contracts(uuid: str, user: User = Depends(get_logged_user), sent: bool = True,
                              received: bool = False):

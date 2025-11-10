@@ -14,6 +14,7 @@ from api.contracts import contracts_api
 from api.document import doc_api
 from api.users import users_api
 from api.web import web_api
+from api.demo import demo_api
 from common.util import env_to_list
 
 load_dotenv()
@@ -26,8 +27,9 @@ app.include_router(doc_api)
 app.include_router(users_api)
 app.include_router(contracts_api)
 app.include_router(web_api)
+app.include_router(demo_api)
 
-ALLOWED_ORIGINS = env_to_list(os.environ.get('ALLOWED_ORIGINS', '*'))
+ALLOWED_ORIGINS = env_to_list(os.environ.get('ALLOWED_ORIGINS', "http://localhost:3000"))
 ALLOWED_METHODS = env_to_list(os.environ.get('ALLOWED_METHODS', '*'))
 ALLOWED_HEADERS = env_to_list(os.environ.get('ALLOWED_HEADERS', '*'))
 

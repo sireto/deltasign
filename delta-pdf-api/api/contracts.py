@@ -13,6 +13,8 @@ from services import document_service, contract_service
 from services.contract_service import ContractCreationRequest
 from services.contract_service import validate_contract
 from services.file_service import save_file
+from db import Contract
+from fastapi import Header
 
 contracts_api = APIRouter()
 """
@@ -50,10 +52,11 @@ def get_contract(uuid: str):
         raise BadRequest(f"Contract[{uuid}] does not exist.")
 
 
+#todo: need to update permisssions for webclient
 @contracts_api.get("/contracts/{uuid}", tags=["Contracts API"])
-async def get_contract_by_uuid(contract: Contract = Depends(get_contract), user: User = Depends(get_logged_user)):
+async def get_contract_by_uuid(contract: Contract = Depends(get_contract), user: User = Depends(get_logged_user),  x_client_type : str| None = Header(default= "mobile")):
     with db_session:
-        if not contract_service.has_contract_rights(contract, user):
+        if x_client_type == "mobile " and not contract_service.has_contract_rights(contract, user):
             raise BadRequest("Insufficient permissions to read the contract")
         return contract.json()
 
@@ -66,10 +69,9 @@ async def create_new_contract(contract_request: ContractCreationRequest, user: U
 
 
 @contracts_api.patch("/contracts/{uuid}", tags=["Contracts API"])
-async def patch_contract_with_uuid(uuid: str, contract_request: ContractPatchRequest,
-                                   user: User = Depends(get_logged_user)):
+async def patch_contract_with_uuid(uuid: str, contract_request: ContractPatchRequest, user: User = Depends(get_logged_user),  alert_users: bool | None = Header(default=False, alias="alert-users"),):
     with db_session:
-        contract = contract_service.patch_contract(uuid, contract_request, user)
+        contract = contract_service.patch_contract(uuid, contract_request, user , alert_users)
         return contract.json()
 
 
@@ -89,7 +91,7 @@ async def sign_contract(file: UploadFile = File(...),
                         user: User = Depends(get_logged_user)):
     if not contract_service.has_contract_rights(contract, user):
         raise BadRequest("Insufficient permissions to read the contract")
-
+    
     return contract_service.sign_contract(contract, user, file.file.read())
 
 

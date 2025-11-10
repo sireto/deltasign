@@ -6,6 +6,8 @@ from api.exceptions import BadRequest
 from db import User
 from model.document import DocumentPatchRequest
 from services import document_service
+from services import contract_service
+from fastapi import Header
 
 doc_api = APIRouter()
 """
@@ -32,9 +34,17 @@ async def get_doc_by_uuid(uuid: str, user: User = Depends(get_logged_user)):
 
 
 @doc_api.post("/documents", tags=["Doc API"])
-async def post_doc(file: UploadFile = File(...), user: User = Depends(get_logged_user)):
+async def post_doc(file: UploadFile = File(...), user: User = Depends(get_logged_user) , x_client_type : str| None = Header(default= "mobile")):
     with db_session:
         doc = document_service.save_new_document(file, user, public=True)
+        if x_client_type == "web":
+            contract_data = contract_service.ContractCreationRequest(
+                name=doc.filename,
+                document_uuid=doc.uuid,                    
+                message="",
+                signers=[],
+                annotations=[])
+            contract = contract_service.create_default_contract(contract_data , user)
         return doc.json()
 
 

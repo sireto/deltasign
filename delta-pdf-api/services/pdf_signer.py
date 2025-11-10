@@ -24,19 +24,87 @@ class PDFSigner:
 
     # signing using pyhanko
     def writeImageBasedStamp(self, pdf_file, signature_file, annotation):
-        box_dimension = (annotation.x1, annotation.y1, annotation.x2, annotation.y2)
-
+        box_dimension = (round(annotation.x1), round(annotation.y1), round(annotation.x2), round(annotation.y2))
+        box_width = annotation.x2 - annotation.x1
+        box_height = annotation.y2 - annotation.y1
+        
+        # ========================
+        # COMPREHENSIVE DEBUG LOGGING
+        # ========================
+        print("\n" + "="*50)
+        print("📝 ANNOTATION DEBUG INFORMATION")
+        print("="*50)
+        print(f"📄 Page: {annotation.page}")
+        print(f"👤 Signer: {annotation.signer}")
+        print(f"📍 Box Coordinates:")
+        print(f"   x1 (left): {annotation.x1}")
+        print(f"   y1 (bottom): {annotation.y1}")
+        print(f"   x2 (right): {annotation.x2}")
+        print(f"   y2 (top): {annotation.y2}")
+        print(f"📏 Box Dimensions:")
+        print(f"   Width: {box_width} (x2 - x1 = {annotation.x2} - {annotation.x1})")
+        print(f"   Height: {box_height} (y2 - y1 = {annotation.y2} - {annotation.y1})")
+        print(f"🎯 Box Area: {box_width} x {box_height} units")
+        
+        # Check if coordinates make sense
+        if box_width <= 0:
+            print("❌ WARNING: Box width is zero or negative!")
+        if box_height <= 0:
+            print("❌ WARNING: Box height is zero or negative!")
+        if annotation.y2 < annotation.y1:
+            print("❌ WARNING: y2 < y1 - coordinates might be inverted!")
+        
+        signature_path = f"/tmp/signature_{annotation.signer or 'unknown'}.png"
+        with open(signature_path, "wb") as f:
+            f.write(signature_file)
+        
+        print(f"💾 Signature saved to: {signature_path}")
+        
         signature_image = Image.open(io.BytesIO(signature_file))
+
+        signature_image = signature_image.resize(
+        (int(box_width), int(box_height)), 
+        Image.Resampling.LANCZOS
+        )
+        print(f"🖼️  Resized image: {signature_image.size}")
+        
+        # ========================
+        # IMAGE DEBUG INFORMATION
+        # ========================
+        print(f"🖼️  Signature Image Info:")
+        print(f"   Original size: {signature_image.size}")
+        print(f"   Format: {signature_image.format}")
+        print(f"   Mode: {signature_image.mode}")
+        
+        # Check image vs box size ratio
+        img_width, img_height = signature_image.size
+        if box_width > 0 and box_height > 0:
+            width_ratio = img_width / box_width
+            height_ratio = img_height / box_height
+            print(f"   Size Ratios (image/box):")
+            print(f"     Width ratio: {width_ratio:.2f}")
+            print(f"     Height ratio: {height_ratio:.2f}")
+            
+            if width_ratio > 2 or height_ratio > 2:
+                print("⚠️  Image is significantly larger than box - may be scaled down")
+            elif width_ratio < 0.5 or height_ratio < 0.5:
+                print("⚠️  Image is significantly smaller than box - may be scaled up")
+        
+        # ========================
+        # PDF SIGNING PROCESS
+        # ========================
         with open(pdf_file, 'rb+') as docs:
             w = IncrementalPdfFileWriter(docs, strict=False)
+            random_signature_field = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
-            random_signature_field  =''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-
+            print(f"🔧 Creating signature field: {random_signature_field}")
+            
             fields.append_signature_field(w, sig_field_spec=fields.SigFieldSpec(
                 random_signature_field,
-                box= (box_dimension[0], box_dimension[1], box_dimension[2], box_dimension[3]),
+                box=box_dimension,
                 on_page=annotation.page
             ))
+            
             meta = signers.PdfSignatureMetadata(field_name=random_signature_field)
             pdfSigner = signers.PdfSigner(
                 meta,
@@ -45,20 +113,36 @@ class PDFSigner:
                     text_box_style=text.TextBoxStyle(
                         font_size=0
                     ),
-                    background=images.PdfImage(signature_image),
-                    border_width=0
+                    background=images.PdfImage(signature_image , opacity=1),
+                    border_width=0,
                 )
             )
-            # output filename
+            
+            # ========================
+            # FINAL VERIFICATION
+            # ========================
+            print(f"✅ Final Configuration:")
+            print(f"   Signature field box: {box_dimension}")
+            print(f"   Image size: {signature_image.size}")
+            print(f"   Stamp style: {pdfSigner.stamp_style}")
+            print(f"   Page: {annotation.page}")
+            
+            # Output filename
             signed_file = pdf_file
             if not pdf_file.__contains__("_signed.pdf"):
                 signed_file = util.get_signed_url(pdf_file)
                 with open(signed_file, 'wb') as outf:
+                    print(f"💫 Signing PDF...")
                     pdfSigner.sign_pdf(w, output=outf)
                     outf.close()
+                    print(f"✅ Signed PDF saved to: {signed_file}")
             else:
+                print(f"💫 Signing PDF in place...")
                 pdfSigner.sign_pdf(w, in_place=True)
-            print("Finish signing pdf.")
+                print(f"✅ PDF signed in place")
+            
+            print("🎉 Finish signing pdf.")
+            print("="*50 + "\n")
             return signed_file
 
     def validate_signed_pdf(self, signed_pdf_path: str, hashes):
