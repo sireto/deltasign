@@ -592,7 +592,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future _deleteDoc(int index) async {
     var result = await _serverOp.deleteDoc(_documents[index]);
-    if (result) {
+    if (result["deleted"]) {
       setState(() {
         _documents.removeAt(index);
         isLoading = false;
@@ -603,9 +603,10 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     } else {
       setState(() {
+        // print("result"+ result);
         isLoading = false;
         Fluttertoast.showToast(
-            msg: "Failed",
+            msg: result["message"],
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM);
       });
