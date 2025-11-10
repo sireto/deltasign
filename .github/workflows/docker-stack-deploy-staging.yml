@@ -80,6 +80,11 @@ jobs:
           AWS_SECRET_KEY : ${{ secrets.AWS_SECRET_KEY }}
           AWS_BUCKET : ${{ vars.AWS_BUCKET }}
 
+          #FRONTEND
+          FRONTEND_VIRTUAL_HOST : ${{ vars.FRONTEND_VIRTUAL_HOST }}
+
+          #BACKEND
+          ALLOWED_ORIGINS : ${{ vars.FRONTEND_VIRTUAL_HOST }}
 
           NETWORK: ${vars.NETWORK}
           KUBER_API_KEY: ${{ secrets.KUBER_API_KEY }}

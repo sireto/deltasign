@@ -63,3 +63,32 @@ services:
       placement:
         constraints:
             - "node.labels.deltalender==true"
+
+
+  frontend:
+      restart: always
+      image: registry.sireto.io/deltalender/delta-pdf-frontend:${COMMIT_SHA}
+      build:
+        context: ./webapp
+        dockerfile: Dockerfile
+        args:
+          NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+      networks:
+        - frontend
+      ports:
+        - "3000:3000"
+      environment:
+        VIRTUAL_HOST: ${FRONTEND_VIRTUAL_HOST}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+        NODE_ENV: production
+      depends_on:
+        - backend
+      deploy:
+        restart_policy:
+          delay: 30s
+        resources:
+          limits:
+            memory: 1G
+        placement:
+          constraints:
+            - "node.labels.deltalender==true"
