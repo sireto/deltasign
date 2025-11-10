@@ -1,5 +1,3 @@
-import { link } from "fs";
-
 export default function Footer() {
   const items = [
     {

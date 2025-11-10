@@ -5,7 +5,6 @@ import { SearchInput } from "@/shared/ui/search-input";
 import { Button } from "@/shared/ui/button";
 import { Plus } from "lucide-react";
 import PageAnimation from "@/shared/ui/page-animation";
-import DataTable from "@/shared/ui/data-table";
 
 export default function Page() {
   return (

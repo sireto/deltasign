@@ -1,7 +1,6 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Input } from "./input";
 
 export type SearchProps = React.InputHTMLAttributes<HTMLInputElement>;
 

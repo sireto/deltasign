@@ -106,7 +106,7 @@ export const contractsColumn: ColumnDef<Contract>[] = [
   },
   {
     header: "Sender",
-    cell: ({ row }) => {
+    cell: () => {
       return (
         <div className="flex items-center gap-2">
           <img

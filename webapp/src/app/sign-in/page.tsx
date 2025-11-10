@@ -29,7 +29,7 @@ export default function Page() {
   const handleRequestCode = async ({ email }: { email: string }) => {
     try {
       setEmail(email);
-      const { data } = await requestLoginCode({ email }).unwrap();
+      await requestLoginCode({ email }).unwrap();
       setCurrentStep(2);
     } catch (error) {
       console.log(error);
@@ -47,10 +47,8 @@ export default function Page() {
       });
       await new  Promise((resolve) => setTimeout(resolve , 500))
       router.push("/documents");
-    } catch (error: any) {
+    } catch {
       const message =
-        error?.data?.detail ||
-        error?.message ||
         "⚠️ Something went wrong while verifying the code.";
 
       toast.error(message, {

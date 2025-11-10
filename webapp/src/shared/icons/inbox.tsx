@@ -4,7 +4,7 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {
   color?: string;
 }
 
-const InboxIcon: React.FC<IconProps> = ({ color = "#3F576F", ...props }) => {
+const InboxIcon: React.FC<IconProps> = ({ ...props }) => {
   return (
     <svg
       width="19"

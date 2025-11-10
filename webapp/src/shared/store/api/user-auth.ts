@@ -42,7 +42,7 @@ export const authAPI = createApi({
         includeCredentials: true,
       }),
     }),
-    logoutUser: builder.mutation<void, {}>({
+    logoutUser: builder.mutation<void,null>({
       query: () => ({
         url: "/users/logout",
         method: "POST",

@@ -78,9 +78,16 @@ export default function Page() {
   ];
 
   // --- State for current table data ---
-  const [currentTable, setCurrentTable] = useState<TableConfig<any> | null>(
+  const [currentTable, setCurrentTable] = useState<TableConfig<Contract> | null>(
     null,
   );
+
+  interface PostDocumentError {
+  data: {
+    detail: string;
+  };
+  }
+
 
   useEffect(() => {
     let data: Contract[] | undefined;
@@ -135,7 +142,7 @@ export default function Page() {
     });
   } else if (isError) {
     toast.error(
-      `Failed to post document. ${(error as any)?.data.detail || "Unknown error"}`,
+      `Failed to post document. ${(error as PostDocumentError )?.data.detail || "Unknown error"}`,
       {
         position: "top-right",
         autoClose: 4000,

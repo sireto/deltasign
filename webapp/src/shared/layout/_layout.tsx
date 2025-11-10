@@ -6,7 +6,7 @@ import { useGetDemoApiQuery } from "../store/demo";
 import { useEffect } from "react";
 import ReduxProvider from "../store/provider/redux-provider";
 import { cn } from "@/lib/utils";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Bounce } from "react-toastify";
 

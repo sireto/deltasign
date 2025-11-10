@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import {
   Check,
   ChevronUp,
+  Copy,
   Download,
   LoaderCircle,
   Pen,
@@ -22,12 +23,12 @@ import { Switch } from "@/components/ui/switch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/shared/store/store";
 import Image from "next/image";
-import { Worker, Viewer, RenderPageProps } from "@react-pdf-viewer/core";
+import { Worker, Viewer, RenderPageProps, DocumentLoadEvent } from "@react-pdf-viewer/core";
 import { thumbnailPlugin } from "@react-pdf-viewer/thumbnail";
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/thumbnail/lib/styles/index.css";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -35,7 +36,7 @@ import emailvalidator from "email-validator";
 import { PatchContractRequest } from "../types/contract";
 import { SendHorizonal } from "lucide-react";
 import "react-pdf/dist/Page/TextLayer.js";
-import { toSvg, toPng } from "html-to-image";
+import { toPng } from "html-to-image";
 import localFont from "next/font/local";
 import { capitalize } from "@/shared/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,18 +56,22 @@ const signatureFont = localFont({
   src: "../../../../public/fonts/Madeva Suarte Signature Font.ttf",
 });
 
-const CustomPageRender = React.memo(
+const CustomPageRenderComponent =
   ({
     props,
     annotations,
-    updateAnnotation,
     ghostPos,
     currentPage,
-    userHasSigned,
     previewSignature,
     userEmail,
-    signatureRef,
-  }: any) => {
+  }: {
+    props : RenderPageProps,
+    annotations : Annotation[],
+    ghostPos : {x : number , y : number} | null,
+    currentPage : number,
+    previewSignature : string,
+    userEmail :  string
+  }) => {
     return (
       <div
         style={{
@@ -96,7 +101,7 @@ const CustomPageRender = React.memo(
           </div>
         )}
 
-        {annotations.map((ann: any) => (
+        {annotations.map((ann: Annotation) => (
           <div
             key={ann.id}
             style={{
@@ -114,16 +119,19 @@ const CustomPageRender = React.memo(
             <div
               className={`${signatureFont.className} itallic flex h-full w-full items-center justify-center text-4xl text-black`}
             >
-              {userHasSigned && ann.signer == userEmail && (
+              {ann.signer == userEmail && (
                 <span>{previewSignature}</span>
               )}
             </div>
           </div>
         ))}
       </div>
-    );
-  },
-);
+    )
+  }
+
+const CustomPageRender = React.memo(CustomPageRenderComponent);
+CustomPageRender.displayName = "CustomPageRender";
+
 
 export default function Page() {
   const pathName = usePathname();
@@ -176,12 +184,8 @@ export default function Page() {
     };
   };
 
-  // Get rendered page size (in pixels) from your PDF viewer container
-  // e.g. the <div> that wraps your rendered PDF page.
-  const pageContainer = document.querySelector(".pdf-page") as HTMLElement;
-
   const contractId = pathName.split("/")[2];
-  const { data: contract } = useGetContractByIdQuery({ uuid: contractId });
+  const { data: contract , refetch : refetchContract } = useGetContractByIdQuery({ uuid: contractId });
 
   const [isSignatureMode, setIsSignatureMode] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>(
@@ -206,7 +210,6 @@ export default function Page() {
 
   const [nextId, setNextId] = useState(1);
   const [selectedTool, setSelectedTool] = useState("");
-  const [addMyselfChecked, setAddMyselfChecked] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -222,7 +225,7 @@ export default function Page() {
     pageIndex: number;
   } | null>(null);
 
-  const { userName, userEmail } = useSelector((state: RootState) => ({
+  const { userEmail } = useSelector((state: RootState) => ({
     userName: state.user.name,
     userEmail: state.user.email,
   }));
@@ -239,12 +242,11 @@ export default function Page() {
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const { jumpToPage } = pageNavigationPluginInstance;
 
-  const [patchContract, { isLoading : patchingContract, isSuccess, error }] =
+  const [patchContract, { isLoading : patchingContract }] =
     usePatchContractMutation();
 
   const [previewSignature, setPreviewSignature] = useState("");
 
-  const [userHasSigned, setUserHasSigned] = useState(false);
 
   const [emailMessage , setEmailMessage] = useState("")
 
@@ -287,7 +289,7 @@ export default function Page() {
     console.log("Final PDF coordinates:", patchContractData.annotations);
     
     try {
-      const result = await patchContract({
+      await patchContract({
         uuid: contract.uuid,
         patchContractRequest: patchContractData,
         alert_users: true,
@@ -304,6 +306,7 @@ export default function Page() {
        transition: Bounce,
      });
     } catch (err) {
+      console.error(err)
       toast.error("Failed to create and share document.", {
        position: "top-right",
        autoClose: 4000,
@@ -343,7 +346,7 @@ export default function Page() {
     });
   };
 
-  const handlePdfClick = (e: React.MouseEvent) => {
+  const handlePdfClick = () => {
     if (!isSignatureMode || !containerRef.current || !ghostPos) return;
 
     setPendingAnnotationPos({
@@ -364,19 +367,6 @@ export default function Page() {
     setCurrentPage(pageIndex + 1);
     jumpToPage(pageIndex);
   };
-
-  const updateAnnotation = useCallback(
-    (id: number, x: number, y: number, width: number, height: number) => {
-      setAnnotations((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, x, y, width, height } : a)),
-      );
-    },
-    [],
-  );
-
-  const deleteAnnotation = useCallback((id: number) => {
-    setAnnotations((prev) => prev.filter((a) => a.id !== id));
-  }, []);
 
   const handleConfirmSigner = () => {
     if (!pendingAnnotationPos) return;
@@ -405,10 +395,6 @@ export default function Page() {
     setSignerEmail("");
     setPendingAnnotationPos(null);
     setShowAddSignerDialog(false);
-
-    if (signerEmail === userEmail) {
-      setAddMyselfChecked(true);
-    }
   };
 
   // ========================
@@ -416,7 +402,7 @@ export default function Page() {
   useEffect(() => {
     if (contract) {
       setAnnotations(
-        contract.annotations.map((annotation: any, index: number) => {
+        contract.annotations.map((annotation, index: number) => {
           const webCoords = pdfToWeb(
             annotation.x1,
             annotation.y1,
@@ -450,15 +436,13 @@ export default function Page() {
       );
     }
   }, [contract, pdfDimensions, scaleFactor]);
-  // ========================fff
 
-  const handleDocumentLoad = (e: any) => {
+  const handleDocumentLoad = (e:DocumentLoadEvent) => {
     console.log("PDF Document loaded:", e);
 
-    if (e.doc && e.doc._pdfInfo) {
-      const pdfInfo = e.doc._pdfInfo;
-      const width = pdfInfo.width || 612;
-      const height = pdfInfo.height || 792;
+    if (e.doc && e.doc) {
+      const width = 612;
+      const height = 792;
 
       setPdfDimensions({ width, height });
       console.log("Actual PDF dimensions:", { width, height });
@@ -480,7 +464,6 @@ export default function Page() {
   const [signContract , {isLoading : isSigningDocument}] = useSignContractMutation();
 
   const handleSignDocument = async () => {
-    setUserHasSigned(true)
     if (!signatureRef.current) {
       console.error("Signature Ref is NULL")
       return
@@ -536,6 +519,7 @@ export default function Page() {
        theme: "light",
        transition: Bounce,
      });
+      refetchContract()
     } catch (error) {
       toast.error("Failed to sign document.", {
        position: "top-right",
@@ -549,11 +533,11 @@ export default function Page() {
      });
       console.error("Error:", error);
     }
-    setUserHasSigned(true);
     setShowSignContractDialog(false);
   };
 
   const [showShareDocumentDialog , setShowShareDocumentDialog] = useState(false)
+  const [hideAnnotationBox , setHideAnnotationBox] = useState(contract?.status == "fully signed" ? true : false)
 
   if (!contract) {
     return (
@@ -820,18 +804,14 @@ export default function Page() {
                   onDocumentLoad={handleDocumentLoad}
                   renderPage={(props: RenderPageProps) => (
                     <CustomPageRender
-                      annotations={annotations.filter(
+                      annotations={hideAnnotationBox ? [] : annotations.filter(
                         (a) => a.page === props.pageIndex,
                       )}
                       props={props}
-                      updateAnnotation={updateAnnotation}
-                      deleteAnnotation={deleteAnnotation}
                       ghostPos={ghostPos}
                       currentPage={currentPage}
-                      userHasSigned={userHasSigned}
                       previewSignature={previewSignature}
                       userEmail={userEmail}
-                      signatureRef={signatureRef}
                     />
                   )}
                   onPageChange={(e) => setCurrentPage(e.currentPage + 1)}
@@ -894,6 +874,34 @@ export default function Page() {
               </div>
             </>
           )}
+        {/* Document MetaData Header */}
+          {
+            contract.status == "fully signed" && contract.blockchain_tx_hash && 
+            <>
+            <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center px-5 py-4 border-b-[1px]">
+              <h3 className="text-midnight-gray-900 text-lg font-semibold">
+                Document MetaData
+              </h3>
+            </div>
+            <div className="flex flex-col gap-3 bg-white px-5 py-4">
+              <div className="flex flex-col gap-2">
+                <span className="text-midnight-gray-900 font-medium">Transaction Hash</span>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="truncate text-midnight-gray-600 w-[200]">{contract.blockchain_tx_hash}</p>
+                  <Copy className="text-midnight-gray-400 hover:text-midnight-gray-900 cursor-pointer transition-colors" />
+                </div>
+                <a
+                  href={`https://preview.cardanoscan.io/transaction/${contract.blockchain_tx_hash}?tab=metadata`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 text-sm hover:underline"
+                >
+                  View on cardanoscan
+                </a>
+              </div>
+            </div>
+            </>
+          }
 
           <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center gap-4 border-b-[1px] px-5 py-4">
             <div>
@@ -947,7 +955,26 @@ export default function Page() {
                 </div>
               </div>
             ))}
+
+
           </div>
+            {/* Hide Annotations Toggle */}
+          {contract.status === "fully signed" && (
+            <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center justify-between px-5 py-4 border-b-[1px]">
+              <div>
+                <p className="text-midnight-gray-900 text-lg font-semibold">
+                  Annotations
+                </p>
+                <p className="text-midnight-gray-600 text-sm">
+                  Toggle to show or hide annotation boxes
+                </p>
+              </div>
+              <Switch
+                checked={!hideAnnotationBox}
+                onCheckedChange={(checked) => setHideAnnotationBox(!checked)}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

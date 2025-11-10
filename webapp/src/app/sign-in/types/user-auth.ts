@@ -1,7 +1,7 @@
 export interface LoginCodeRequestResponse {
   success: boolean;
   errors: string[];
-  data: {};
+  data: object;
   message: string;
 }
 

@@ -60,7 +60,7 @@ export default function VerifyEmailCard({
         </span>
         <div>
           <span className="text-midnight-gray-900 block text-center">
-            We've sent a 6-digit code to ({email})
+            We have sent a 6-digit code to ({email})
           </span>
           <span className="text-midnight-gray-900 block text-center">
             Please enter it below.{" "}

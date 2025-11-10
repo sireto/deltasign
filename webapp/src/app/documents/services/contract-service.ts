@@ -4,6 +4,7 @@ import {
   PatchContractRequest,
   Contract,
   PDF_CONSTANTS,
+  Signer,
 } from "../types/index";
 // import Signer
 
@@ -14,7 +15,7 @@ export class ContractService {
   static preparePatchData(
     contract: Contract,
     annotations: PDFAnnotation[],
-    signers: any[],
+    signers: Signer[],
   ): PatchContractRequest {
     return {
       name: contract.name,

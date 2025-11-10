@@ -4,7 +4,6 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useState } from "react";
 import emailvalidator from "email-validator";
-import { LoaderCircle } from "lucide-react";
 
 interface SignInCardProps {
   onSubmit: ({ email }: { email: string }) => void;
