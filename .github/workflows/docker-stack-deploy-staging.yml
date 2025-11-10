@@ -83,6 +83,9 @@ jobs:
           #FRONTEND
           FRONTEND_VIRTUAL_HOST : ${{ vars.FRONTEND_VIRTUAL_HOST }}
 
+          #BACKEND
+          ALLOWED_ORIGINS : ${{ vars.FRONTEND_VIRTUAL_HOST }}
+
           NETWORK: ${vars.NETWORK}
           KUBER_API_KEY: ${{ secrets.KUBER_API_KEY }}
           BLOCKFROST_PROJECT_ID: ${{ secrets.BLOCKFROST_PROJECT_ID }}
