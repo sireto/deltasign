@@ -129,7 +129,7 @@ export default function NavBar() {
       <div className="flex gap-2">
         {pathName === "/sign-in" ? (
           <>
-            <Button variant={"outline"}>Sign Up</Button>
+            {/* <Button variant={"outline"}>Sign Up</Button> */}
             <Link href={"/sign-in"}>
               <Button>Login</Button>
             </Link>

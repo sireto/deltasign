@@ -57,9 +57,9 @@ export default function SignInCard({ onSubmit, isLoading }: SignInCardProps) {
       >
         Continue
       </Button>
-      <span className="text-midnight-gray-600 w-full text-center">
+      {/* <span className="text-midnight-gray-600 w-full text-center">
         Dont have an account? <span className="text-silicon">Sign up</span>
-      </span>
+      </span> */}
     </Card>
   );
 }
