@@ -1,6 +1,6 @@
 version: "3.7"
 networks:
-  frontend:
+  frontend2:
     external: true
   backend:
     external: false
@@ -16,7 +16,7 @@ services:
       context: ./delta-pdf-api
       dockerfile: Dockerfile
     networks:
-      - frontend
+      - frontend2
       - backend
       - mysql
     volumes:
@@ -53,6 +53,13 @@ services:
       AWS_SECRET_KEY : ${AWS_SECRET_KEY}
       AWS_BUCKET : ${AWS_BUCKET}
 
+      WALLET_MNEMONIC : ${WALLET_MNEMONIC}
+
+      # BLOCKFROST
+      BLOCKFROST_PROJECT_ID : ${BLOCKFROST_PROJECT_ID}
+
+      NETWORK : ${NETWORK}
+      KUBER_API_KEY : ${KUBER_API_KEY}
 
     deploy:
       restart_policy:
@@ -72,12 +79,12 @@ services:
         context: ./webapp
         dockerfile: Dockerfile
         args:
-          NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+          NEXT_PUBLIC_API_URL: ${VIRTUAL_HOST}
       networks:
-        - frontend
+        - frontend2
       environment:
         VIRTUAL_HOST: ${FRONTEND_VIRTUAL_HOST}
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+        NEXT_PUBLIC_API_URL: ${VIRTUAL_HOST}
         NODE_ENV: production
       depends_on:
         - backend
