@@ -41,6 +41,8 @@ app.add_middleware(
     allow_headers=ALLOWED_HEADERS,
 )
 
+print("allowed orgins : " , ALLOWED_ORIGINS)
+
 # Public assets
 app.mount("/static", StaticFiles(directory="web/static"), name="static")
 
