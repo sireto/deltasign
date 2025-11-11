@@ -1,0 +1,29 @@
+# Node modules
+node_modules
+
+# Next.js build output
+.next
+
+# Development and temporary files
+.env*
+npm-debug.log
+yarn-debug.log
+.DS_Store
+*.log
+*.tmp
+*.bak
+
+# Version control
+.git
+.gitignore
+
+# Documentation and auxiliary files
+README.md
+LICENSE
+
+# Other potential exclusions
+coverage/
+dist/
+build/
+public/static/
+src/__tests__/
