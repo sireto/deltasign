@@ -75,8 +75,6 @@ services:
           NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
       networks:
         - frontend
-      ports:
-        - "3000:3000"
       environment:
         VIRTUAL_HOST: ${FRONTEND_VIRTUAL_HOST}
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
@@ -91,4 +89,5 @@ services:
             memory: 1G
         placement:
           constraints:
+
             - "node.labels.deltalender==true"
