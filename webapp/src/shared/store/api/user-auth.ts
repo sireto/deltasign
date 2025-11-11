@@ -32,6 +32,7 @@ export const authAPI = createApi({
       query: ({ email, code }) => ({
         url: "/users/login",
         method: "POST",
+        credentials: "include",
         params: {
           email,
           login_code: code,
@@ -39,7 +40,6 @@ export const authAPI = createApi({
         headers: {
           "x-client-type": "web",
         },
-        includeCredentials: true,
       }),
     }),
     logoutUser: builder.mutation<void,null>({
@@ -50,7 +50,6 @@ export const authAPI = createApi({
         headers: {
           "x-client-type": "web",
         },
-        includeCredentials: true,
       }),
     }),
     getSelfUser: builder.query<User, { apikey: string }>({
