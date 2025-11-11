@@ -22,7 +22,7 @@ services:
     volumes:
       - api_data:/opt/deltapdf
     environment:
-      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      VIRTUAL_HOST: ${BACKEND_VIRTUAL_HOST}
 
       # Database details
       DB_DIR: /opt/deltapdf
@@ -79,12 +79,12 @@ services:
         context: ./webapp
         dockerfile: Dockerfile
         args:
-          NEXT_PUBLIC_API_URL: ${VIRTUAL_HOST}
+          NEXT_PUBLIC_API_URL: ${BACKEND_VIRTUAL_HOST}
       networks:
         - frontend2
       environment:
         VIRTUAL_HOST: ${FRONTEND_VIRTUAL_HOST}
-        NEXT_PUBLIC_API_URL: ${VIRTUAL_HOST}
+        NEXT_PUBLIC_API_URL: ${BACKEND_VIRTUAL_HOST}
         NODE_ENV: production
       depends_on:
         - backend

@@ -92,7 +92,7 @@ jobs:
           WALLET_MNEMONIC: ${{ secrets.WALLET_MNEMONIC }}
 
           
-          VIRTUAL_HOST: ${{vars.STAGING_VIRTUAL_HOST}}
+          BACKEND_VIRTUAL_HOST: ${{vars.STAGING_VIRTUAL_HOST}}
 
       - name: Set commit status to success
         if: success()

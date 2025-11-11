@@ -40,7 +40,8 @@ jobs:
           docker compose -f ${{ steps.compose.outputs.file }} build
         env:
           COMMIT_SHA: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
-          IMAGE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}t
+          IMAGE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
+          BACKEND_VIRTUAL_HOST: ${{vars.STAGING_VIRTUAL_HOST}}
 
       - name: Push images
         run: |
