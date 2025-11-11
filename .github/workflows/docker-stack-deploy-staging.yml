@@ -84,7 +84,7 @@ jobs:
           FRONTEND_VIRTUAL_HOST : ${{ vars.FRONTEND_VIRTUAL_HOST }}
 
           #BACKEND
-          ALLOWED_ORIGINS : ${{ vars.FRONTEND_VIRTUAL_HOST }}
+          ALLOWED_ORIGINS : ${{ vars.ALLOWED_ORIGINS }}
 
           NETWORK: ${{ vars.NETWORK }}
           KUBER_API_KEY: ${{ secrets.KUBER_API_KEY }}
