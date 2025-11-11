@@ -86,7 +86,7 @@ jobs:
           #BACKEND
           ALLOWED_ORIGINS : ${{ vars.FRONTEND_VIRTUAL_HOST }}
 
-          NETWORK: ${vars.NETWORK}
+          NETWORK: ${{ vars.NETWORK }}
           KUBER_API_KEY: ${{ secrets.KUBER_API_KEY }}
           BLOCKFROST_PROJECT_ID: ${{ secrets.BLOCKFROST_PROJECT_ID }}
           WALLET_MNEMONIC: ${{ secrets.WALLET_MNEMONIC }}
