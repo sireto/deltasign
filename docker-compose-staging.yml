@@ -61,6 +61,8 @@ services:
       NETWORK : ${NETWORK}
       KUBER_API_KEY : ${KUBER_API_KEY}
 
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+
     deploy:
       restart_policy:
         delay: 30s
@@ -98,3 +100,4 @@ services:
           constraints:
 
             - "node.labels.deltalender==true"
+
