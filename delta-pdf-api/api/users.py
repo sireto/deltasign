@@ -11,6 +11,8 @@ from fastapi.responses import JSONResponse
 from datetime import datetime, timedelta, timezone
 from db import ContractStatus
 from typing import Optional
+from datetime import timedelta
+from config.api_settings import APISettings
 
 users_api = APIRouter()
 """
@@ -20,6 +22,8 @@ GET     /users/login
 POST    /users/login
 DELETE  /users/:uuid
 """
+
+api_settings = APISettings()
 
 @users_api.get("/users", tags=["User API"])
 async def get_users():
@@ -61,9 +65,11 @@ async def login_with_code(email: str, login_code: str , x_client_type : str | No
                 response.set_cookie(
                     key="access_token",
                     value=user.api_key,
+                    expires=datetime.now(timezone.utc) + timedelta(15),
                     httponly=True,
-                    samesite="lax",
-                    secure=False
+                    samesite=api_settings.SAME_SITE,
+                    secure=api_settings.SECURE,
+                    path="/"
                 )
                 return response
         raise UnauthorizedError("Invalid email or login code")

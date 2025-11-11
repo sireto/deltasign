@@ -45,10 +45,10 @@ export default function NavBar() {
   const handleLogout = async () => {
     try {
       await logout(null);
-      router.push("/sign-in");
       dispatch(usersAPI.util.resetApiState())
       dispatch(contractsAPI.util.resetApiState())
       dispatch(documentsAPI.util.resetApiState())
+      router.push("/sign-in");
     } catch (error) {
       console.log(error);
     }

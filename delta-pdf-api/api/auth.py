@@ -18,7 +18,6 @@ GET     /auth/facebook
 GET     /auth/user
 """
 
-
 @router.post("/auth/facebook", tags=["Auth API"])
 async def facebook_callback(fb_user: FacebookUser = Depends(get_facebook_user)):
     # Get user based on facebook id if exists otherwise create an account
