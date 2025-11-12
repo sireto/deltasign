@@ -16,13 +16,15 @@ services:
       context: ./delta-pdf-api
       dockerfile: Dockerfile
     networks:
-      - frontend2
-      - backend
-      - mysql
+       frontend2:
+       backend:
+          aliases:
+            - deltasign-backend
+       mysql:
     volumes:
       - api_data:/opt/deltapdf
     environment:
-      VIRTUAL_HOST: ${BACKEND_VIRTUAL_HOST}
+      VIRTUAL_HOST: ${VIRTUAL_HOST:-https://deltasign.sireto.io}/api -> :8000/api; client_max_body_size 0;
 
       # Database details
       DB_DIR: /opt/deltapdf
@@ -85,8 +87,8 @@ services:
       networks:
         - frontend2
       environment:
-        VIRTUAL_HOST: ${FRONTEND_VIRTUAL_HOST}
-        NEXT_PUBLIC_API_URL: ${BACKEND_VIRTUAL_HOST}
+        VIRTUAL_HOST: ${VIRTUAL_HOST}
+        NEXT_PUBLIC_API_URL: http://deltasign-backend:8000
         NODE_ENV: production
       depends_on:
         - backend

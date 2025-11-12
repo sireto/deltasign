@@ -79,10 +79,6 @@ jobs:
           AWS_ACCESS_KEY : ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_KEY : ${{ secrets.AWS_SECRET_KEY }}
           AWS_BUCKET : ${{ vars.AWS_BUCKET }}
-
-          #FRONTEND
-          FRONTEND_VIRTUAL_HOST : ${{ vars.FRONTEND_VIRTUAL_HOST }}
-
           #BACKEND
           ALLOWED_ORIGINS : ${{ vars.ALLOWED_ORIGINS }}
 
@@ -92,7 +88,7 @@ jobs:
           WALLET_MNEMONIC: ${{ secrets.WALLET_MNEMONIC }}
 
           
-          BACKEND_VIRTUAL_HOST: ${{vars.STAGING_VIRTUAL_HOST}}
+          VIRTUAL_HOST: ${{vars.STAGING_VIRTUAL_HOST}}
 
       - name: Set commit status to success
         if: success()
