@@ -537,7 +537,7 @@ export default function Page() {
   };
 
   const [showShareDocumentDialog , setShowShareDocumentDialog] = useState(false)
-  const [hideAnnotationBox , setHideAnnotationBox] = useState(contract?.status == "fully signed" ? true : false)
+  const [hideAnnotationBox , setHideAnnotationBox] = useState( contract && contract?.signed_number > 0 ? true : false)
 
   if (!contract) {
     return (
@@ -562,6 +562,7 @@ export default function Page() {
         onClick={() => {
           setShowSignContractDialog(true);
         }}
+        disabled={annotations ? contract.annotations.some((annotation) => annotation.signer === userEmail && annotation.signed != null) : false}
       >
         <Pen />
         Sign Document
@@ -804,7 +805,7 @@ export default function Page() {
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11/build/pdf.worker.min.js">
                 <Viewer
                   fileUrl={
-                    contract.status === "fully signed"
+                    contract.signed_number > 0
                       ? contract.signed_doc_url
                       : contract.document.s3_url
                   }
@@ -970,7 +971,7 @@ export default function Page() {
 
           </div>
             {/* Hide Annotations Toggle */}
-          {contract.status === "fully signed" && (
+          {contract.signed_number > 0 && (
             <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center justify-between px-5 py-4 border-b-[1px]">
               <div>
                 <p className="text-midnight-gray-900 text-lg font-semibold">
