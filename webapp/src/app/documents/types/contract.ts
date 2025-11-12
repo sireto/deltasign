@@ -1,6 +1,6 @@
 import { Document } from "../types/document";
 
-interface Annotation {
+export interface Annotation {
   x1: number;
   y1: number;
   x2: number;

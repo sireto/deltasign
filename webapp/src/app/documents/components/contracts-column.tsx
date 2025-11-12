@@ -1,6 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Contract } from "../types/contract";
+import { Annotation, Contract } from "../types/contract";
 import { Checkbox } from "@/shared/ui/checkbox";
 import PdfIcon from "@/shared/icons/pdf";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,8 @@ import { Button } from "@/shared/ui/button";
 import { formatDate } from "../utils/date";
 import { capitalize } from "@/shared/utils";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/shared/store/store";
 
 
 const StatusBadge = ({ status }: { status: string }) => {
@@ -22,40 +24,45 @@ const StatusBadge = ({ status }: { status: string }) => {
   return <span className={cn(statusClasses, "px-[7px]")}>{status}</span>;
 };
 
-const ActionsCell = ({ status , docId }: { status: string , docId : string }) => {
+interface ActionsCellProps {
+  status: string;
+  docId: string;
+  annotations: Annotation[];
+}
 
+const ActionsCell = ({ status, docId, annotations }: ActionsCellProps) => {
   const router = useRouter();
+  const userEmail = useSelector((state: RootState) => state.user.email);
 
   const handleClick = () => {
-    router.push(`/documents/${docId}`)
-  }
-  
-  const getButtonText = (status: string) => {
+    router.push(`/documents/${docId}`);
+  };
+
+  // ✅ Check if current user already signed
+  const signedByUser = annotations?.some(
+    (annotation) => annotation.signer === userEmail && annotation.signed != null
+  );
+
+  const getButtonText = () => {
+    if (signedByUser) return "View"; 
     switch (status) {
       case "Pending":
         return "Sign";
-      case "Fully signed":
-        return "View";
       case "Draft":
         return "Edit";
       default:
-        return null;
+        return "View"; 
     }
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        className="text-silicon border-silicon h-7 rounded-[8px] px-2 text-sm font-[600]"
-        onClick={handleClick}
-      >
-        {getButtonText(status)}
-      </Button>
-      {/* <div className="border-midnight-gray-200 rounded-[8px] border px-2 py-1">
-        <EllipsisVertical size={16} />
-      </div> */}
-    </div>
+    <Button
+      variant="outline"
+      className="text-silicon border-silicon h-7 rounded-[8px] px-2 text-sm font-[600]"
+      onClick={handleClick}
+    >
+      {getButtonText()}
+    </Button>
   );
 };
 
@@ -174,7 +181,9 @@ export const contractsColumn: ColumnDef<Contract>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => (
-      <ActionsCell status={capitalize(row.getValue("status") as string)} docId={row.original.uuid} />
+      <ActionsCell status={capitalize(row.getValue("status") as string)} docId={row.original.uuid} 
+        annotations={row.original.annotations}
+      />
     ),
   },
 ];
