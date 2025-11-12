@@ -23,6 +23,7 @@ export default function Page() {
   const [postLoginCode, { isLoading: postLoginCodeLoading }] =
     usePostLoginCodeMutation();
 
+ 
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -45,7 +46,7 @@ export default function Page() {
         position: "top-right",
         transition: Bounce,
       });
-      await new  Promise((resolve) => setTimeout(resolve , 300))
+      setLoggedIn(true)
       router.push("/documents");
     } catch {
       const message =
@@ -81,6 +82,7 @@ export default function Page() {
           }}
           isLoading={postLoginCodeLoading}
           onResendEmail={async (email : string) => {await handleRequestCode({email : email})}}
+          loggedIn={loggedIn}
         />
       )}
     </div>

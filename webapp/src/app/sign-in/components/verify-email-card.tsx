@@ -10,7 +10,8 @@ interface VerifyEmailCardProps {
   onChangeEmail: () => void;
   onResendEmail: (email : string) => void; 
   isLoading?: boolean;
-  disableVerifyBtn : boolean
+  disableVerifyBtn : boolean;
+  loggedIn?: boolean;
 }
 
 export default function VerifyEmailCard({
@@ -19,12 +20,14 @@ export default function VerifyEmailCard({
   onChangeEmail,
   onResendEmail,
   isLoading,
-  disableVerifyBtn
+  disableVerifyBtn,
+  loggedIn
 }: VerifyEmailCardProps) {
   const [timer, setTimer] = useState(59);
+  const [verified ] =useState(loggedIn)
 
   useEffect(() => {
-    if (timer <= 0) return;
+    if (timer <= 0 || verified) return;
 
     const interval = setInterval(() => {
       setTimer((prev) => prev - 1);

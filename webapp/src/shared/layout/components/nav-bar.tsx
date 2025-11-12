@@ -44,7 +44,7 @@ export default function NavBar() {
 
   const handleLogout = async () => {
     try {
-      await logout(null);
+      await logout(null).unwrap();
       dispatch(usersAPI.util.resetApiState())
       dispatch(contractsAPI.util.resetApiState())
       dispatch(documentsAPI.util.resetApiState())
@@ -130,9 +130,9 @@ export default function NavBar() {
         {pathName === "/sign-in" ? (
           <>
             {/* <Button variant={"outline"}>Sign Up</Button> */}
-            <Link href={"/sign-in"}>
+            {/* <Link href={"/sign-in"}>
               <Button>Login</Button>
-            </Link>
+            </Link> */}
           </>
         ) : (
           <div className="flex h-full items-center gap-2">
