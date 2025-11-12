@@ -14,9 +14,9 @@ GET     /terms_conditions
 """
 
 
-@web_api.get("/")
-def form_post(request: Request):
-    return templates.TemplateResponse('landing.html', context={'request': request})
+# @web_api.get("/")
+# def form_post(request: Request):
+#     return templates.TemplateResponse('landing.html', context={'request': request})
 
 
 @web_api.get("/privacy_policy")
