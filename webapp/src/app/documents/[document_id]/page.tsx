@@ -569,9 +569,20 @@ export default function Page() {
     );
   };
 
+  const handleDownloadDocument = (url: string) => {
+    if (!url) return;
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = ""; 
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const DownloadDocumentButton = () => {
     return (
-      <Button>
+      <Button onClick={()=>handleDownloadDocument(contract.signed_doc_url)}>
         <Download />
         Download Document
       </Button>
