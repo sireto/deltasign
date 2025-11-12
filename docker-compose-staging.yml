@@ -25,6 +25,7 @@ services:
       - api_data:/opt/deltapdf
     environment:
       VIRTUAL_HOST: ${VIRTUAL_HOST:-https://deltasign.sireto.io}/api -> :8000/api; client_max_body_size 0;
+      VIRTUAL_HOST_1: ${VIRTUAL_HOST:-https://deltasign.sireto.io}/openapi.json-> :8000/openapi.json;
 
       # Database details
       DB_DIR: /opt/deltapdf
@@ -83,12 +84,12 @@ services:
         context: ./webapp
         dockerfile: Dockerfile
         args:
-          NEXT_PUBLIC_API_URL: ${BACKEND_VIRTUAL_HOST}
+          NEXT_PUBLIC_API_URL: ${VIRTUAL_HOST:-https://deltasign.sireto.io}/api
       networks:
         - frontend2
       environment:
         VIRTUAL_HOST: ${VIRTUAL_HOST}
-        NEXT_PUBLIC_API_URL: http://deltasign-backend:8000
+        NEXT_PUBLIC_API_URL: ${VIRTUAL_HOST:-https://deltasign.sireto.io}/api
         NODE_ENV: production
       depends_on:
         - backend
