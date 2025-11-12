@@ -121,9 +121,6 @@ export default function DataTable<T>({
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
                         className={cn(i % 2 ? "bg-midnight-gray-50" : "")}
-                        onClick={() =>
-                          tableData?.onRowClick && tableData.onRowClick(row)
-                        }
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id} className="px-3 py-2">

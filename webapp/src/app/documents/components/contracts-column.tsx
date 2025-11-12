@@ -5,9 +5,11 @@ import { Checkbox } from "@/shared/ui/checkbox";
 import PdfIcon from "@/shared/icons/pdf";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui/button";
-import { EllipsisVertical } from "lucide-react";
+// import { EllipsisVertical } from "lucide-react";
 import { formatDate } from "../utils/date";
 import { capitalize } from "@/shared/utils";
+import { useRouter } from "next/navigation";
+
 
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
@@ -20,7 +22,14 @@ const StatusBadge = ({ status }: { status: string }) => {
   return <span className={cn(statusClasses, "px-[7px]")}>{status}</span>;
 };
 
-const ActionsCell = ({ status }: { status: string }) => {
+const ActionsCell = ({ status , docId }: { status: string , docId : string }) => {
+
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/documents/${docId}`)
+  }
+  
   const getButtonText = (status: string) => {
     switch (status) {
       case "Pending":
@@ -39,12 +48,13 @@ const ActionsCell = ({ status }: { status: string }) => {
       <Button
         variant="outline"
         className="text-silicon border-silicon h-7 rounded-[8px] px-2 text-sm font-[600]"
+        onClick={handleClick}
       >
         {getButtonText(status)}
       </Button>
-      <div className="border-midnight-gray-200 rounded-[8px] border px-2 py-1">
+      {/* <div className="border-midnight-gray-200 rounded-[8px] border px-2 py-1">
         <EllipsisVertical size={16} />
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -164,7 +174,7 @@ export const contractsColumn: ColumnDef<Contract>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => (
-      <ActionsCell status={capitalize(row.getValue("status") as string)} />
+      <ActionsCell status={capitalize(row.getValue("status") as string)} docId={row.original.uuid} />
     ),
   },
 ];
