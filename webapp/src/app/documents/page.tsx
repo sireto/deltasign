@@ -28,13 +28,14 @@ interface TableConfig<T> {
 }
 
 export default function Page() {
-  const { data: draftContracts } = useGetContractsQuery(ContractStatus.DRAFT);
-  const { data: pendingContracts } = useGetContractsQuery(
-    ContractStatus.PENDING,
-  );
-  const { data: completedContracts } = useGetContractsQuery(
-    ContractStatus.FULLY_SIGNED,
-  );
+  // filter tabs are being fetched at the inital render causing the site to slow down. need a way to fix this.
+  // const { data: draftContracts } = useGetContractsQuery(ContractStatus.DRAFT);
+  // const { data: pendingContracts } = useGetContractsQuery(
+  //   ContractStatus.PENDING,
+  // );
+  // const { data: completedContracts } = useGetContractsQuery(
+  //   ContractStatus.FULLY_SIGNED,
+  // );
   const { data: allContracts } = useGetContractsQuery();
   const [postDocument , {isLoading : postingDocument , isSuccess : onDocumentPostSuccess , isError , error }] = usePostDocumentMutation();
   const router = useRouter();
@@ -50,24 +51,24 @@ export default function Page() {
       count: allContracts?.length ?? 0,
       value: "All Contracts",
     },
-    {
-      label: "Drafts",
-      count: draftContracts?.length ?? 0,
-      value: "Drafts",
-      icon: DraftsIcon,
-    },
-    {
-      label: "Pending",
-      count: pendingContracts?.length ?? 0,
-      value: "Pending",
-      icon: PendingIcon,
-    },
-    {
-      label: "Completed",
-      count: completedContracts?.length ?? 0,
-      value: "Completed",
-      icon: CompletedIcon,
-    },
+    // {
+    //   label: "Drafts",
+    //   count: draftContracts?.length ?? 0,
+    //   value: "Drafts",
+    //   icon: DraftsIcon,
+    // },
+    // {
+    //   label: "Pending",
+    //   count: pendingContracts?.length ?? 0,
+    //   value: "Pending",
+    //   icon: PendingIcon,
+    // },
+    // {
+    //   label: "Completed",
+    //   count: completedContracts?.length ?? 0,
+    //   value: "Completed",
+    //   icon: CompletedIcon,
+    // },
   ];
 
   // --- Filters ---
@@ -96,15 +97,15 @@ export default function Page() {
       case "All Contracts":
         data = allContracts;
         break;
-      case "Drafts":
-        data = draftContracts;
-        break;
-      case "Pending":
-        data = pendingContracts;
-        break;
-      case "Completed":
-        data = completedContracts;
-        break;
+      // case "Drafts":
+      //   data = draftContracts;
+      //   break;
+      // case "Pending":
+      //   data = pendingContracts;
+      //   break;
+      // case "Completed":
+      //   data = completedContracts;
+      //   break;
       default:
         data = [];
     }
@@ -123,9 +124,9 @@ export default function Page() {
   }, [
     activeTab,
     allContracts,
-    draftContracts,
-    pendingContracts,
-    completedContracts,
+    // draftContracts,
+    // pendingContracts,
+    // completedContracts,
     router,
   ]);
 
@@ -200,7 +201,7 @@ useEffect(() => {
           label: t.label,
           count: t.count,
           value: t.value,
-          icon: t.icon,
+          // icon: t.icon,
         }))}
         filtersTab={
           <FiltersTab

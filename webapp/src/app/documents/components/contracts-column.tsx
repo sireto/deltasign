@@ -106,7 +106,8 @@ export const contractsColumn: ColumnDef<Contract>[] = [
   },
   {
     header: "Sender",
-    cell: () => {
+    cell: ({row}) => {
+      const doc = row.original
       return (
         <div className="flex items-center gap-2">
           <img
@@ -118,7 +119,7 @@ export const contractsColumn: ColumnDef<Contract>[] = [
           />
           <div className="text-midnight-gray-900 text-xs">
             <p className="font-[600]">user</p>
-            <p className="text-midnight-gray-600">test@gmail.com</p>
+            <p className="text-midnight-gray-600">{doc.creator}</p>
           </div>
         </div>
       );

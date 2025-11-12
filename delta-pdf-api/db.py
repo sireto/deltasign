@@ -167,7 +167,8 @@ class Contract(database.Entity):
                 "signers": [sign_request.signer.email for sign_request in sign_requests],
                 "annotations": [annotation.json() for annotation in annotations],
                 "signed_number": self.signed_number,
-                "blockchain_tx_hash" : self.blockchain_tx_hash
+                "blockchain_tx_hash" : self.blockchain_tx_hash,
+                "creator" : self.document.user.email
             }
 
 class SignatureAnnotation(database.Entity):
