@@ -91,6 +91,10 @@ async def logout(x_client_type : str | None = Header(default="mobile")):
         )
         return response
 
+@users_api.get("/users/authenticate" , tags=["Uesr API"])
+async def authenticate_user(user: User = Depends(get_logged_user)):
+    return user.json()
+
 
 @users_api.get("/users/me", tags=["User API"])
 async def get_user(user: User = Depends(get_logged_user)):

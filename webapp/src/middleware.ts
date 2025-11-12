@@ -1,14 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(req: NextRequest) {
-  const accessToken = req.cookies.get("access_token")?.value;
+export async function middleware(req: NextRequest) {
 
-  if (!accessToken) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/authenticate`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        cookie: req.headers.get("cookie") || "",
+      },
+    });
+
+    if (!res.ok) {
+      console.warn("Authentication failed:", res.status, res.statusText);
+      return NextResponse.redirect(new URL("/sign-in", req.url));
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware authentication failed:", error);
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
-
-  return NextResponse.next();
 }
 
 export const config = {

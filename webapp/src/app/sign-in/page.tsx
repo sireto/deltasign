@@ -45,7 +45,7 @@ export default function Page() {
         position: "top-right",
         transition: Bounce,
       });
-      await new  Promise((resolve) => setTimeout(resolve , 500))
+      await new  Promise((resolve) => setTimeout(resolve , 300))
       router.push("/documents");
     } catch {
       const message =

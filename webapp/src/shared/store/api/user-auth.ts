@@ -20,7 +20,7 @@ export const authAPI = createApi({
         url: `/users/login`,
         method: "GET",
         params: {
-          email: email,
+          email,
         },
       }),
     }),
@@ -42,7 +42,8 @@ export const authAPI = createApi({
         },
       }),
     }),
-    logoutUser: builder.mutation<void,null>({
+
+    logoutUser: builder.mutation<void, null>({
       query: () => ({
         url: "/users/logout",
         method: "POST",
@@ -52,6 +53,7 @@ export const authAPI = createApi({
         },
       }),
     }),
+
     getSelfUser: builder.query<User, { apikey: string }>({
       query: ({ apikey }) => ({
         url: "/users/me",
@@ -61,13 +63,20 @@ export const authAPI = createApi({
         },
       }),
     }),
-  }),
+
+    authenticateUser: builder.query<User, null>({
+      query: () => ({
+        url: "/users/authenticate",
+        method: "GET",
+      }),
+    }),
+  }), 
 });
 
-// Export hooks
 export const {
   useRequestLoginCodeMutation,
   usePostLoginCodeMutation,
   useLogoutUserMutation,
   useGetSelfUserQuery,
+  useAuthenticateUserQuery, 
 } = authAPI;
