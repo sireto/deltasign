@@ -156,6 +156,9 @@ class Contract(database.Entity):
         with db_session:
             sign_requests = Contract[self.id].sign_requests
             annotations = Contract[self.id].annotations
+            contract = Contract[self.id]
+            document = contract.document
+            creator_email = document.user.email if document and document.user else None
             return {
                 "uuid": self.uuid,
                 "name": self.name,
@@ -168,7 +171,7 @@ class Contract(database.Entity):
                 "annotations": [annotation.json() for annotation in annotations],
                 "signed_number": self.signed_number,
                 "blockchain_tx_hash" : self.blockchain_tx_hash,
-                "creator" : self.document.user.email
+                "creator" : creator_email
             }
 
 class SignatureAnnotation(database.Entity):
