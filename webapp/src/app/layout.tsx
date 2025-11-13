@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Layout from "@/shared/layout/_layout";
 import ReduxProvider from "@/shared/store/provider/redux-provider";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,7 +27,9 @@ export default function RootLayout({
       </head>
       <body className={`no-scrollbar antialiased`}>
         <ReduxProvider>
-          <Layout>{children}</Layout>
+          <Suspense>
+            <Layout>{children}</Layout>
+          </Suspense>
         </ReduxProvider>
       </body>
     </html>
