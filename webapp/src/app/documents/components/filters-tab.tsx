@@ -45,7 +45,7 @@ export const FiltersTab = ({
   return (
     <div className="flex w-full items-center justify-between bg-white px-5 pt-4">
       <div className="flex w-full gap-2">
-        <SearchInput className="h-[36px] w-[250px]" placeholder="Search" />
+        {/* <SearchInput className="h-[36px] w-[250px]" placeholder="Search" /> */}
         {!hideFilters &&
           filters.map((filter, index) => (
             <DropdownMenu key={index}>

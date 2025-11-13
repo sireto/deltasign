@@ -30,8 +30,8 @@ export default function NavBar() {
 
   const tabItems = [
     { label: "documents", icon: DocumentIcon },
-    { label: "inbox", icon: InboxIcon },
-    { label: "templates", icon: TemplatesIcon },
+    // { label: "inbox", icon: InboxIcon },
+    // { label: "templates", icon: TemplatesIcon },
   ];
 
   const userName = useSelector((state: RootState) => state.user.name);
