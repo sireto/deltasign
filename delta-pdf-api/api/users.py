@@ -125,6 +125,14 @@ async def get_self_user_contracts(
         contracts = contract_service.get_self_user_contracts(user, contract_status=status)
         return [c.json() for c in contracts]
 
+@users_api.get("/users/self/contracts/count" , tags=["User API"])
+async def get_self_user_contract_stats(
+    user : User = Depends(get_logged_user),
+    status : Optional[ContractStatus] = Query(None)
+):
+    with db_session:
+        return contract_service.get_user_contracts_count(user)
+
 
 #todo : to deprecate
 @users_api.get("/users/{uuid}/contracts", tags=["User API"])

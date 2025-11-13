@@ -16,6 +16,7 @@ from model.annotation import ContractCreationRequest, ContractPatchRequest
 from services import document_service, user_service, email_service
 from services.email_service import EmailService
 from services.s3 import s3_service
+from typing import List , Dict
 
 
 from services.pdf_signer import pdf_signer
@@ -171,6 +172,43 @@ def get_self_user_contracts(user, contract_status: Optional[ContractStatus] = No
     except Exception as e:
         print(f"Error fetching contracts: {e}")
         return []
+
+
+@db_session
+def get_user_contracts_count(user) -> Dict[str, int]:
+    try:
+        status_counts = {}
+
+        for status in ContractStatus:
+            owned_contracts = set(
+                select(c.id for c in Contract
+                       if c.document.user.id == user.id
+                       and c.status == status.value)
+            )
+
+            involved_contracts = set(
+                select(sr.contract.id for sr in SignRequest
+                       if (sr.signer == user or sr.requester == user)
+                       and sr.contract.status == status.value)
+            )
+
+            all_contract_ids = owned_contracts.union(involved_contracts)
+            status_counts[status.value] = len(all_contract_ids)
+
+        owned_contracts = set(
+            select(c.id for c in Contract if c.document.user.id == user.id)
+        )
+        involved_contracts = set(
+            select(sr.contract.id for sr in SignRequest if (sr.signer == user or sr.requester == user))
+        )
+        total_unique = len(owned_contracts.union(involved_contracts))
+
+        status_counts["total"] = total_unique
+
+        return status_counts
+
+    except Exception as e:
+        raise Exception(f"Error counting user contracts: {e}")
 
 @db_session
 def get_sign_request(contract: Contract, user: User):

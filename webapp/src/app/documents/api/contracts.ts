@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { appBaseQuery } from "@/shared/store/base-query";
 import {
   Contract,
+  CountractsCountResponse,
   PatchContractRequest,
   PostContractRequest,
 } from "../types/contract";
@@ -14,7 +15,7 @@ export enum ContractStatus {
 
 export const contractsAPI = createApi({
   reducerPath: "contractsAPI",
-  tagTypes: ["Contract"],
+  tagTypes: ["Contract" , "Contract Count"],
   baseQuery: appBaseQuery,
   refetchOnReconnect: true,
   refetchOnFocus: true,
@@ -93,6 +94,14 @@ export const contractsAPI = createApi({
       }),
       invalidatesTags: ["Contract"],
     }),
+    getContractsCount : builder.query<CountractsCountResponse , void>({
+       query: () => ({
+        url: "users/self/contracts/count",
+        method: "GET",
+        credentials: "include",
+      }),
+      providesTags: ["Contract","Contract Count"],
+    })
   }),
 });
 
@@ -103,4 +112,5 @@ export const {
   usePostContractMutation,
   usePatchContractMutation,
   useSignContractMutation,
+  useGetContractsCountQuery
 } = contractsAPI;

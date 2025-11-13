@@ -6,6 +6,7 @@ import { usePostDocumentMutation } from "./api/documents";
 import {
   contractsAPI,
   ContractStatus,
+  useGetContractsCountQuery,
   useGetContractsQuery,
 } from "./api/contracts";
 import { contractsColumn } from "./components/contracts-column";
@@ -54,7 +55,8 @@ export default function Page() {
   }, [activeTab]);
 
   // ✅ Fetch only for the current tab
-  const { data: contracts, isLoading } = useGetContractsQuery(currentStatus);
+  const { data: contracts } = useGetContractsQuery(currentStatus);
+  const { data: contractsCount } = useGetContractsCountQuery();
 
   const [
     postDocument,
@@ -67,10 +69,10 @@ export default function Page() {
   ] = usePostDocumentMutation();
 
   const tabItems = [
-    { label: "All Contracts", value: "All Contracts" , count : 0 },
-    { label: "Drafts", value: "Drafts", icon: DraftsIcon , count : 0 },
-    { label: "Pending", value: "Pending", icon: PendingIcon  , count : 0},
-    { label: "Completed", value: "Completed", icon: CompletedIcon , count :0},
+    { label: "All Contracts", value: "All Contracts" , count : contractsCount ? contractsCount.total : 0 },
+    { label: "Drafts", value: "Drafts", icon: DraftsIcon , count : contractsCount ? contractsCount.draft : 0 },
+    { label: "Pending", value: "Pending", icon: PendingIcon  , count : contractsCount ? contractsCount.pending : 0},
+    { label: "Completed", value: "Completed", icon: CompletedIcon , count :contractsCount ? contractsCount["fully signed"] : 0},
   ];
 
   const filters = [

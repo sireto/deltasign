@@ -1,3 +1,4 @@
+import { number } from "framer-motion";
 import { Document } from "../types/document";
 
 export interface Annotation {
@@ -47,4 +48,11 @@ export interface PatchContractRequest {
   }[];
   signers: string[];
   message: string;
+}
+
+export interface CountractsCountResponse {
+  draft : number
+  pending : number
+  "fully signed" : number
+  total : number
 }
