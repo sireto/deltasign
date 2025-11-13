@@ -70,7 +70,7 @@ export const authAPI = createApi({
         method: "GET",
       }),
     }),
-  }), 
+  }),
 });
 
 export const {
@@ -78,5 +78,5 @@ export const {
   usePostLoginCodeMutation,
   useLogoutUserMutation,
   useGetSelfUserQuery,
-  useAuthenticateUserQuery, 
+  useAuthenticateUserQuery,
 } = authAPI;

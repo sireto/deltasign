@@ -13,16 +13,19 @@ const middlewares = [
   apiSlice.middleware,
   authAPI.middleware,
   documentsAPI.middleware,
-  contractsAPI.middleware
-]
+  contractsAPI.middleware,
+];
 
 const userInfoPersistConfig = {
-  key: "userInfo", 
+  key: "userInfo",
   storage,
-  whitelist: ["userInfo"], 
+  whitelist: ["userInfo"],
 };
 
-const persistedUserInforReducer = persistReducer(userInfoPersistConfig, userReducer);
+const persistedUserInforReducer = persistReducer(
+  userInfoPersistConfig,
+  userReducer,
+);
 
 const combinedReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
@@ -32,9 +35,12 @@ const combinedReducer = combineReducers({
   user: persistedUserInforReducer,
 });
 
-export const rootReducer = (state: ReturnType<typeof combinedReducer> | undefined, action : Action) => {
+export const rootReducer = (
+  state: ReturnType<typeof combinedReducer> | undefined,
+  action: Action,
+) => {
   if (action.type === RESET_STATE_ACTION_TYPE) {
-    state = undefined; 
+    state = undefined;
   }
   return combinedReducer(state, action);
 };
@@ -52,4 +58,4 @@ export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-setupListeners(store.dispatch)
+setupListeners(store.dispatch);

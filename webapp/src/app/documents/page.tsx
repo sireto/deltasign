@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import CreateFolderCard from "./components/cards/create-folder-card";
 import PageAnimation from "@/shared/ui/page-animation";
 import { usePostDocumentMutation } from "./api/documents";
@@ -14,13 +14,18 @@ import { FiltersTab } from "./components/filters-tab";
 import { ChevronDown, Calendar } from "lucide-react";
 import PendingIcon from "@/shared/icons/pending";
 import CompletedIcon from "@/shared/icons/completed";
+import DraftsIcon from "@/shared/icons/drafts";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Contract } from "./types/contract";
-import DraftsIcon from "@/shared/icons/drafts";
 import { useDispatch } from "react-redux";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
+interface PostDocumentError {
+  data: {
+    detail: string;
+  };
+}
 interface TableConfig<T> {
   data: T[];
   columns: ColumnDef<T>[];
@@ -28,159 +33,85 @@ interface TableConfig<T> {
 }
 
 export default function Page() {
-  // filter tabs are being fetched at the inital render causing the site to slow down. need a way to fix this.
-  const { data: draftContracts } = useGetContractsQuery(ContractStatus.DRAFT);
-  const { data: pendingContracts } = useGetContractsQuery(
-    ContractStatus.PENDING,
-  );
-  const { data: completedContracts } = useGetContractsQuery(
-    ContractStatus.FULLY_SIGNED,
-  );
-  const { data: allContracts } = useGetContractsQuery();
-  const [postDocument , {isLoading : postingDocument , isSuccess : onDocumentPostSuccess , isError , error }] = usePostDocumentMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const dispatch = useDispatch();
 
-  // Get active tab from URL or default to 'All Contracts'
   const activeTab = searchParams.get("tab") || "All Contracts";
 
-  // --- Tab items ---
+  // ✅ Map tab name to API query parameter
+  const currentStatus = useMemo(() => {
+    switch (activeTab) {
+      case "Drafts":
+        return ContractStatus.DRAFT;
+      case "Pending":
+        return ContractStatus.PENDING;
+      case "Completed":
+        return ContractStatus.FULLY_SIGNED;
+      default:
+        return undefined; // for "All Contracts"
+    }
+  }, [activeTab]);
+
+  // ✅ Fetch only for the current tab
+  const { data: contracts, isLoading } = useGetContractsQuery(currentStatus);
+
+  const [
+    postDocument,
+    {
+      isLoading: postingDocument,
+      isSuccess: onDocumentPostSuccess,
+      isError,
+      error,
+    },
+  ] = usePostDocumentMutation();
+
   const tabItems = [
-    {
-      label: "All Contracts",
-      count: allContracts?.length ?? 0,
-      value: "All Contracts",
-    },
-    {
-      label: "Drafts",
-      count: draftContracts?.length ?? 0,
-      value: "Drafts",
-      icon: DraftsIcon,
-    },
-    {
-      label: "Pending",
-      count: pendingContracts?.length ?? 0,
-      value: "Pending",
-      icon: PendingIcon,
-    },
-    {
-      label: "Completed",
-      count: completedContracts?.length ?? 0,
-      value: "Completed",
-      icon: CompletedIcon,
-    },
+    { label: "All Contracts", value: "All Contracts" , count : 0 },
+    { label: "Drafts", value: "Drafts", icon: DraftsIcon , count : 0 },
+    { label: "Pending", value: "Pending", icon: PendingIcon  , count : 0},
+    { label: "Completed", value: "Completed", icon: CompletedIcon , count :0},
   ];
 
-  // --- Filters ---
   const filters = [
     { label: "Sender", icon: ChevronDown },
     { label: "Status", icon: ChevronDown },
     { label: "All time", icon: Calendar },
   ];
 
-  // --- State for current table data ---
-  const [currentTable, setCurrentTable] = useState<TableConfig<Contract> | null>(
-    null,
-  );
-
-  interface PostDocumentError {
-  data: {
-    detail: string;
-  };
-  }
-
+  const currentTable: TableConfig<Contract> | null = contracts
+    ? {
+        data: contracts,
+        columns: contractsColumn,
+        onRowClick: (row: Row<Contract>) =>
+          router.push(`/documents/${row.original.uuid}`),
+      }
+    : null;
 
   useEffect(() => {
-    let data: Contract[] | undefined;
-
-    switch (activeTab) {
-      case "All Contracts":
-        data = allContracts;
-        break;
-      case "Drafts":
-        data = draftContracts;
-        break;
-      case "Pending":
-        data = pendingContracts;
-        break;
-      case "Completed":
-        data = completedContracts;
-        break;
-      default:
-        data = [];
+    if (onDocumentPostSuccess) {
+      toast.success("Document posted successfully!", { theme: "light" });
+    } else if (isError) {
+      toast.error(
+        `Failed to post document. ${
+          (error as PostDocumentError)?.data.detail || "Unknown error"
+        }`,
+        { theme: "colored" },
+      );
     }
+  }, [onDocumentPostSuccess, isError, error]);
 
-    if (data && data.length > 0) {
-      setCurrentTable({
-        data,
-        columns: contractsColumn,
-        onRowClick: (row: Row<Contract>) => {
-          router.push(`/documents/${row.original.uuid}`);
-        },
-      });
-    } else {
-      setCurrentTable(null);
+  useEffect(() => {
+    if (postingDocument) {
+      toast.info("Uploading document...", { autoClose: 2000, theme: "light" });
     }
-  }, [
-    activeTab,
-    allContracts,
-    draftContracts,
-    pendingContracts,
-    completedContracts,
-    router,
-  ]);
+  }, [postingDocument]);
 
-    useEffect(() => {
-  if (onDocumentPostSuccess) {
-    toast.success("Document posted successfully!", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-    });
-  } else if (isError) {
-    toast.error(
-      `Failed to post document. ${(error as PostDocumentError )?.data.detail || "Unknown error"}`,
-      {
-        position: "top-right",
-        autoClose: 4000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "colored",
-      }
-    );
-  }
-  console.log(error)
-}, [onDocumentPostSuccess, isError, error]);
-
-useEffect(() => {
-  if (postingDocument) {
-    toast.info("Uploading document...", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-    });
-  }
-}, [postingDocument]);
-
-  // --- Handle tab switching ---
   const handleTabChange = (value: string) => {
-    // Update URL with new tab value
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", value);
     router.push(`?${params.toString()}`, { scroll: false });
   };
-
-  const dispatch = useDispatch();
 
   const handlePost = async (file: File) => {
     const formData = new FormData();
@@ -191,18 +122,13 @@ useEffect(() => {
 
   return (
     <PageAnimation>
-      <p className="text-midnight-gray-900 text-2xl leading-[36px] font-[700]">
+      <p className="text-midnight-gray-900 text-2xl font-[700] leading-[36px]">
         All files
       </p>
-      {/* <CreateFolderCard />/ */}
+
       <DataTable
         defaultValue={activeTab}
-        items={tabItems.map((t) => ({
-          label: t.label,
-          count: t.count,
-          value: t.value,
-          icon: t.icon,
-        }))}
+        items={tabItems}
         filtersTab={
           <FiltersTab
             filters={filters}
@@ -214,6 +140,7 @@ useEffect(() => {
         }
         tableData={currentTable}
         onTabChange={handleTabChange}
+        // loading={isLoading}
       />
     </PageAnimation>
   );

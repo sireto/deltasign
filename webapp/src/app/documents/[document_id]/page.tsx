@@ -23,12 +23,17 @@ import { Switch } from "@/components/ui/switch";
 import { useSelector } from "react-redux";
 import { RootState } from "@/shared/store/store";
 import Image from "next/image";
-import { Worker, Viewer, RenderPageProps, DocumentLoadEvent } from "@react-pdf-viewer/core";
+import {
+  Worker,
+  Viewer,
+  RenderPageProps,
+  DocumentLoadEvent,
+} from "@react-pdf-viewer/core";
 import { thumbnailPlugin } from "@react-pdf-viewer/thumbnail";
 import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/thumbnail/lib/styles/index.css";
-import {useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -40,7 +45,7 @@ import { toPng } from "html-to-image";
 import localFont from "next/font/local";
 import { capitalize } from "@/shared/utils";
 import { Textarea } from "@/components/ui/textarea";
-import {toast , Bounce} from "react-toastify";
+import { toast, Bounce } from "react-toastify";
 
 interface Annotation {
   id: number;
@@ -56,82 +61,78 @@ const signatureFont = localFont({
   src: "../../../../public/fonts/Madeva Suarte Signature Font.ttf",
 });
 
-const CustomPageRenderComponent =
-  ({
-    props,
-    annotations,
-    ghostPos,
-    currentPage,
-    previewSignature,
-    userEmail,
-  }: {
-    props : RenderPageProps,
-    annotations : Annotation[],
-    ghostPos : {x : number , y : number} | null,
-    currentPage : number,
-    previewSignature : string,
-    userEmail :  string
-  }) => {
-    return (
-      <div
-        style={{
-          position: "relative",
-          width: `${props.width}px`,
-          height: `${props.height}px`,
-        }}
-        id="page-wrapper"
-        className="overflow-clip"
-      >
-        {props.canvasLayer.children}
-        {props.textLayer.children}
-        {props.annotationLayer.children}
+const CustomPageRenderComponent = ({
+  props,
+  annotations,
+  ghostPos,
+  currentPage,
+  previewSignature,
+  userEmail,
+}: {
+  props: RenderPageProps;
+  annotations: Annotation[];
+  ghostPos: { x: number; y: number } | null;
+  currentPage: number;
+  previewSignature: string;
+  userEmail: string;
+}) => {
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: `${props.width}px`,
+        height: `${props.height}px`,
+      }}
+      id="page-wrapper"
+      className="overflow-clip"
+    >
+      {props.canvasLayer.children}
+      {props.textLayer.children}
+      {props.annotationLayer.children}
 
-        {/* Ghost Preview */}
-        {ghostPos && currentPage - 1 === props.pageIndex && (
-          <div
-            className="border-silicon ring-silicon/20 pointer-events-none absolute flex h-[44px] w-[154px] items-center justify-center rounded-[8px] border-[1.5px] ring-[2px] ring-offset-[1px]"
-            style={{
-              left: ghostPos.x,
-              top: ghostPos.y,
-            }}
-          >
-            <span className="text-midnight-gray-900 text-sm font-[500] text-silicon">
-              Signature
-            </span>
-          </div>
-        )}
+      {/* Ghost Preview */}
+      {ghostPos && currentPage - 1 === props.pageIndex && (
+        <div
+          className="border-silicon ring-silicon/20 pointer-events-none absolute flex h-[44px] w-[154px] items-center justify-center rounded-[8px] border-[1.5px] ring-[2px] ring-offset-[1px]"
+          style={{
+            left: ghostPos.x,
+            top: ghostPos.y,
+          }}
+        >
+          <span className="text-midnight-gray-900 text-silicon text-sm font-[500]">
+            Signature
+          </span>
+        </div>
+      )}
 
-        {annotations.map((ann: Annotation) => (
-          <div
-            key={ann.id}
-            style={{
-              cursor: "move",
-              left: ann.x,
-              top: ann.y,
-              height: ann.height,
-              width: ann.width,
-            }}
-            className="border-silicon ring-silicon/20 absolute rounded-[8px] border-[1.5px] ring-[2px] ring-offset-[1px]"
-          >
-            <div className="text-silicon text-midnight-gray-900 absolute -top-4 rounded px-1 text-[10px] font-medium">
-              {ann.signer == userEmail ? "You" : ann.signer}
-            </div>
-            <div
-              className={`${signatureFont.className} itallic flex h-full w-full items-center justify-center text-4xl text-black`}
-            >
-              {ann.signer == userEmail && (
-                <span>{previewSignature}</span>
-              )}
-            </div>
+      {annotations.map((ann: Annotation) => (
+        <div
+          key={ann.id}
+          style={{
+            cursor: "move",
+            left: ann.x,
+            top: ann.y,
+            height: ann.height,
+            width: ann.width,
+          }}
+          className="border-silicon ring-silicon/20 absolute rounded-[8px] border-[1.5px] ring-[2px] ring-offset-[1px]"
+        >
+          <div className="text-silicon text-midnight-gray-900 absolute -top-4 rounded px-1 text-[10px] font-medium">
+            {ann.signer == userEmail ? "You" : ann.signer}
           </div>
-        ))}
-      </div>
-    )
-  }
+          <div
+            className={`${signatureFont.className} itallic flex h-full w-full items-center justify-center text-4xl text-black`}
+          >
+            {ann.signer == userEmail && <span>{previewSignature}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const CustomPageRender = React.memo(CustomPageRenderComponent);
 CustomPageRender.displayName = "CustomPageRender";
-
 
 export default function Page() {
   const pathName = usePathname();
@@ -185,7 +186,9 @@ export default function Page() {
   };
 
   const contractId = pathName.split("/")[2];
-  const { data: contract , refetch : refetchContract } = useGetContractByIdQuery({ uuid: contractId });
+  const { data: contract, refetch: refetchContract } = useGetContractByIdQuery({
+    uuid: contractId,
+  });
 
   const [isSignatureMode, setIsSignatureMode] = useState(false);
   const [annotations, setAnnotations] = useState<Annotation[]>(
@@ -242,13 +245,12 @@ export default function Page() {
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const { jumpToPage } = pageNavigationPluginInstance;
 
-  const [patchContract, { isLoading : patchingContract }] =
+  const [patchContract, { isLoading: patchingContract }] =
     usePatchContractMutation();
 
   const [previewSignature, setPreviewSignature] = useState("");
 
-
-  const [emailMessage , setEmailMessage] = useState("")
+  const [emailMessage, setEmailMessage] = useState("");
 
   const handleSendDocument = async () => {
     if (!contract) return;
@@ -284,10 +286,8 @@ export default function Page() {
       message: emailMessage,
     };
 
-    
-    
     console.log("Final PDF coordinates:", patchContractData.annotations);
-    
+
     try {
       await patchContract({
         uuid: contract.uuid,
@@ -295,30 +295,33 @@ export default function Page() {
         alert_users: true,
       }).unwrap();
       setEmailMessage("");
-      toast.success("🎉 Document has been created and shared successfully with recipents.", {
-       position: "top-right",
-       autoClose: 4000,
-       hideProgressBar: false,
-       closeOnClick: true,
-       pauseOnHover: true,
-       draggable: true,
-       theme: "light",
-       transition: Bounce,
-     });
+      toast.success(
+        "🎉 Document has been created and shared successfully with recipents.",
+        {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+          transition: Bounce,
+        },
+      );
     } catch (err) {
-      console.error(err)
+      console.error(err);
       toast.error("Failed to create and share document.", {
-       position: "top-right",
-       autoClose: 4000,
-       hideProgressBar: false,
-       closeOnClick: true,
-       pauseOnHover: true,
-       draggable: true,
-       theme: "light",
-       transition: Bounce,
-     });
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
     }
-    setShowShareDocumentDialog(false)
+    setShowShareDocumentDialog(false);
   };
 
   const tools = [
@@ -437,7 +440,7 @@ export default function Page() {
     }
   }, [contract, pdfDimensions, scaleFactor]);
 
-  const handleDocumentLoad = (e:DocumentLoadEvent) => {
+  const handleDocumentLoad = (e: DocumentLoadEvent) => {
     console.log("PDF Document loaded:", e);
 
     if (e.doc && e.doc) {
@@ -461,13 +464,14 @@ export default function Page() {
     }
   };
 
-  const [signContract , {isLoading : isSigningDocument}] = useSignContractMutation();
+  const [signContract, { isLoading: isSigningDocument }] =
+    useSignContractMutation();
 
   const handleSignDocument = async () => {
     if (!signatureRef.current) {
-      console.error("Signature Ref is NULL")
-      return
-    };
+      console.error("Signature Ref is NULL");
+      return;
+    }
     try {
       const dataUrl = await toPng(signatureRef.current, {
         cacheBust: true,
@@ -510,34 +514,36 @@ export default function Page() {
       console.log("Server response:", result);
 
       toast.success("🎉 Document has been signed successfully.", {
-       position: "top-right",
-       autoClose: 4000,
-       hideProgressBar: false,
-       closeOnClick: true,
-       pauseOnHover: true,
-       draggable: true,
-       theme: "light",
-       transition: Bounce,
-     });
-      refetchContract()
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
+      refetchContract();
     } catch (error) {
       toast.error("Failed to sign document.", {
-       position: "top-right",
-       autoClose: 4000,
-       hideProgressBar: false,
-       closeOnClick: true,
-       pauseOnHover: true,
-       draggable: true,
-       theme: "light",
-       transition: Bounce,
-     });
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+        transition: Bounce,
+      });
       console.error("Error:", error);
     }
     setShowSignContractDialog(false);
   };
 
-  const [showShareDocumentDialog , setShowShareDocumentDialog] = useState(false)
-  const [hideAnnotationBox , setHideAnnotationBox] = useState( contract && contract?.signed_number > 0 ? true : false)
+  const [showShareDocumentDialog, setShowShareDocumentDialog] = useState(false);
+  const [hideAnnotationBox, setHideAnnotationBox] = useState(
+    contract && contract?.signed_number > 0 ? true : false,
+  );
 
   if (!contract) {
     return (
@@ -549,7 +555,12 @@ export default function Page() {
 
   const ShareDocumentButton = () => {
     return (
-      <Button disabled={annotations.length === 0} onClick={()=>{setShowShareDocumentDialog(true)}}>
+      <Button
+        disabled={annotations.length === 0}
+        onClick={() => {
+          setShowShareDocumentDialog(true);
+        }}
+      >
         <SendHorizonal />
         Send Document
       </Button>
@@ -562,7 +573,14 @@ export default function Page() {
         onClick={() => {
           setShowSignContractDialog(true);
         }}
-        disabled={annotations ? contract.annotations.some((annotation) => annotation.signer === userEmail && annotation.signed != null) : false}
+        disabled={
+          annotations
+            ? contract.annotations.some(
+                (annotation) =>
+                  annotation.signer === userEmail && annotation.signed != null,
+              )
+            : false
+        }
       >
         <Pen />
         Sign Document
@@ -574,7 +592,7 @@ export default function Page() {
     if (!url) return;
     const link = document.createElement("a");
     link.href = url;
-    link.download = ""; 
+    link.download = "";
     link.target = "_blank";
     document.body.appendChild(link);
     link.click();
@@ -583,7 +601,7 @@ export default function Page() {
 
   const DownloadDocumentButton = () => {
     return (
-      <Button onClick={()=>handleDownloadDocument(contract.signed_doc_url)}>
+      <Button onClick={() => handleDownloadDocument(contract.signed_doc_url)}>
         <Download />
         Download Document
       </Button>
@@ -592,45 +610,46 @@ export default function Page() {
 
   return (
     <div>
-      <Dialog open={showShareDocumentDialog} onOpenChange={setShowShareDocumentDialog}>
+      <Dialog
+        open={showShareDocumentDialog}
+        onOpenChange={setShowShareDocumentDialog}
+      >
         <DialogContent className="w-[400px] gap-0 overflow-hidden p-0">
           <DialogTitle className="text-md text-midnight-gray-900 bg-[#F9F9FC] px-4 py-3">
             Send Document
           </DialogTitle>
-          <div className="flex flex-col gap-[20px] py-4 px-5 bg-white border-y-[1px] border-midnight-gray-200">
-              <div className="flex flex-col gap-2">
-                <Label className="text-midnight-gray-900">Subject (Optional)</Label>
-                <Input
-                  placeholder="Subject"
-                  className="bg-midnight-gray-100"
-                />
-              </div>
-               <div className="flex flex-col gap-2">
-                <Label className="text-midnight-gray-900">Message (Optional)</Label>
-                <Textarea
-                  className="bg-midnight-gray-100"
-                  placeholder="Message"
-                  value={emailMessage}
-                  onChange={(event) => setEmailMessage(event.target.value)}
-                />
-              </div>
-          </div>
-           <div className="grid grid-cols-2 gap-3 bg-[#F9F9FC] p-4">
-              <Button
-                onClick={() => setShowShareDocumentDialog(false)}
-                variant={"outline"}
-                disabled={patchingContract}
-              >
-                <span>Cancel</span>
-              </Button>
-              <Button
-                onClick={handleSendDocument}
-                isLoading={patchingContract}
-              >
-                <SendHorizonal/>
-                Send
-              </Button>
+          <div className="border-midnight-gray-200 flex flex-col gap-[20px] border-y-[1px] bg-white px-5 py-4">
+            <div className="flex flex-col gap-2">
+              <Label className="text-midnight-gray-900">
+                Subject (Optional)
+              </Label>
+              <Input placeholder="Subject" className="bg-midnight-gray-100" />
             </div>
+            <div className="flex flex-col gap-2">
+              <Label className="text-midnight-gray-900">
+                Message (Optional)
+              </Label>
+              <Textarea
+                className="bg-midnight-gray-100"
+                placeholder="Message"
+                value={emailMessage}
+                onChange={(event) => setEmailMessage(event.target.value)}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 bg-[#F9F9FC] p-4">
+            <Button
+              onClick={() => setShowShareDocumentDialog(false)}
+              variant={"outline"}
+              disabled={patchingContract}
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button onClick={handleSendDocument} isLoading={patchingContract}>
+              <SendHorizonal />
+              Send
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
       {/* Add Signer Dialog */}
@@ -816,9 +835,13 @@ export default function Page() {
                   onDocumentLoad={handleDocumentLoad}
                   renderPage={(props: RenderPageProps) => (
                     <CustomPageRender
-                      annotations={hideAnnotationBox ? [] : annotations.filter(
-                        (a) => a.page === props.pageIndex,
-                      )}
+                      annotations={
+                        hideAnnotationBox
+                          ? []
+                          : annotations.filter(
+                              (a) => a.page === props.pageIndex,
+                            )
+                      }
                       props={props}
                       ghostPos={ghostPos}
                       currentPage={currentPage}
@@ -834,7 +857,7 @@ export default function Page() {
         </div>
 
         {/* Sidebar */}
-        <div className="border-midnight-gray-200 overflow-clip rounded-lg border-[1.5px] bg-white min-w-[320px]">
+        <div className="border-midnight-gray-200 min-w-[320px] overflow-clip rounded-lg border-[1.5px] bg-white">
           {contract.status === "draft" && (
             <>
               <div className="bg-midnight-gray-50 flex items-center gap-4 px-5 py-4">
@@ -886,34 +909,37 @@ export default function Page() {
               </div>
             </>
           )}
-        {/* Document MetaData Header */}
-          {
-            contract.status == "fully signed" && contract.blockchain_tx_hash && 
+          {/* Document MetaData Header */}
+          {contract.status == "fully signed" && contract.blockchain_tx_hash && (
             <>
-            <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center px-5 py-4 border-b-[1px]">
-              <h3 className="text-midnight-gray-900 text-lg font-semibold">
-                Document MetaData
-              </h3>
-            </div>
-            <div className="flex flex-col gap-3 bg-white px-5 py-4">
-              <div className="flex flex-col gap-2">
-                <span className="text-midnight-gray-900 font-medium">Transaction Hash</span>
-                <div className="flex items-center justify-between gap-2">
-                  <p className="truncate text-midnight-gray-600 w-[200]">{contract.blockchain_tx_hash}</p>
-                  <Copy className="text-midnight-gray-400 hover:text-midnight-gray-900 cursor-pointer transition-colors" />
-                </div>
-                <a
-                  href={`https://preview.cardanoscan.io/transaction/${contract.blockchain_tx_hash}?tab=metadata`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 text-sm hover:underline"
-                >
-                  View on cardanoscan
-                </a>
+              <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center border-b-[1px] px-5 py-4">
+                <h3 className="text-midnight-gray-900 text-lg font-semibold">
+                  Document MetaData
+                </h3>
               </div>
-            </div>
+              <div className="flex flex-col gap-3 bg-white px-5 py-4">
+                <div className="flex flex-col gap-2">
+                  <span className="text-midnight-gray-900 font-medium">
+                    Transaction Hash
+                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-midnight-gray-600 w-[200] truncate">
+                      {contract.blockchain_tx_hash}
+                    </p>
+                    <Copy className="text-midnight-gray-400 hover:text-midnight-gray-900 cursor-pointer transition-colors" />
+                  </div>
+                  <a
+                    href={`https://preview.cardanoscan.io/transaction/${contract.blockchain_tx_hash}?tab=metadata`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-500 hover:underline"
+                  >
+                    View on cardanoscan
+                  </a>
+                </div>
+              </div>
             </>
-          }
+          )}
 
           <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center gap-4 border-b-[1px] px-5 py-4">
             <div>
@@ -967,12 +993,10 @@ export default function Page() {
                 </div>
               </div>
             ))}
-
-
           </div>
-            {/* Hide Annotations Toggle */}
+          {/* Hide Annotations Toggle */}
           {contract.signed_number > 0 && (
-            <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center justify-between px-5 py-4 border-b-[1px]">
+            <div className="bg-midnight-gray-50 border-midnight-gray-200 flex items-center justify-between border-b-[1px] px-5 py-4">
               <div>
                 <p className="text-midnight-gray-900 text-lg font-semibold">
                   Annotations

@@ -25,7 +25,7 @@ export const FiltersTab = ({
   filters: filter[];
   showUploadButton?: boolean;
   onUpload?: (file: File) => void;
-  disableUploadButton : boolean,
+  disableUploadButton: boolean;
   hideFilters?: boolean;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -39,7 +39,7 @@ export const FiltersTab = ({
     if (file && onUpload) {
       onUpload(file);
     }
-    e.target.value = ""; 
+    e.target.value = "";
   };
 
   return (
@@ -70,8 +70,12 @@ export const FiltersTab = ({
             className="hidden"
             onChange={handleFileChange}
           />
-          <Button onClick={handleButtonClick} className="flex gap-1" disabled={disableUploadButton}>
-            <Plus className=" h-6 w-6  text-white" strokeWidth={3} />
+          <Button
+            onClick={handleButtonClick}
+            className="flex gap-1"
+            disabled={disableUploadButton}
+          >
+            <Plus className="h-6 w-6 text-white" strokeWidth={3} />
             <span>Upload Document</span>
           </Button>
         </div>

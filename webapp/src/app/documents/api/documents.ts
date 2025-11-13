@@ -14,7 +14,7 @@ export const documentsAPI = createApi({
       query: () => ({
         url: "/documents",
         method: "GET",
-        credentials: "include"
+        credentials: "include",
       }),
       providesTags: ["Document"],
     }),
@@ -24,7 +24,7 @@ export const documentsAPI = createApi({
       query: ({ uuid }) => ({
         url: `/documents/${uuid}`,
         method: "GET",
-        credentials: "include"
+        credentials: "include",
       }),
       providesTags: ["Document"],
     }),
@@ -35,7 +35,7 @@ export const documentsAPI = createApi({
         url: "/documents",
         method: "POST",
         body: formData,
-        credentials : "include"
+        credentials: "include",
       }),
     }),
 
@@ -44,7 +44,7 @@ export const documentsAPI = createApi({
       query: ({ uuid }) => ({
         url: `/documents/${uuid}`,
         method: "DELETE",
-        credentials : "include"
+        credentials: "include",
       }),
       invalidatesTags: ["Document"],
     }),
@@ -59,7 +59,7 @@ export const documentsAPI = createApi({
             url: `/documents/${uuid}`,
             method: "PATCH",
             body: formData,
-            credentials: "include"
+            credentials: "include",
           };
         },
         invalidatesTags: ["Document"],

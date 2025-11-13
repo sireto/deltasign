@@ -2,15 +2,15 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/shared/ui/input-otp";
 import { useEffect, useState } from "react";
-import {toast , Bounce} from "react-toastify";
+import { toast, Bounce } from "react-toastify";
 
 interface VerifyEmailCardProps {
   email: string;
   onVerify: (code: string) => void;
   onChangeEmail: () => void;
-  onResendEmail: (email : string) => void; 
+  onResendEmail: (email: string) => void;
   isLoading?: boolean;
-  disableVerifyBtn : boolean;
+  disableVerifyBtn: boolean;
   loggedIn?: boolean;
 }
 
@@ -21,10 +21,10 @@ export default function VerifyEmailCard({
   onResendEmail,
   isLoading,
   disableVerifyBtn,
-  loggedIn
+  loggedIn,
 }: VerifyEmailCardProps) {
   const [timer, setTimer] = useState(59);
-  const [verified ] =useState(loggedIn)
+  const [verified] = useState(loggedIn);
 
   useEffect(() => {
     if (timer <= 0 || verified) return;
@@ -38,7 +38,7 @@ export default function VerifyEmailCard({
 
   const [otp, setOtp] = useState("");
 
-   const handleResendEmail = () => {
+  const handleResendEmail = () => {
     if (timer <= 0) {
       onResendEmail(email);
       toast.success("✅ A new verification code has been sent to your email.", {
@@ -97,7 +97,10 @@ export default function VerifyEmailCard({
           Verify
         </Button>
         <div>
-          <span className="text-midnight-gray-400 block text-center font-[600]" onClick={handleResendEmail}>
+          <span
+            className="text-midnight-gray-400 block text-center font-[600]"
+            onClick={handleResendEmail}
+          >
             Resend OTP again:
           </span>
           <span className="block text-center">

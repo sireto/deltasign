@@ -15,15 +15,13 @@ export default function Page() {
   const [email, setEmail] = useState("");
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
-  const [loggedIn , setLoggedIn] = useState(false)
-
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const [requestLoginCode, { isLoading: requestLoginCodeLoading }] =
     useRequestLoginCodeMutation();
   const [postLoginCode, { isLoading: postLoginCodeLoading }] =
     usePostLoginCodeMutation();
 
- 
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -41,16 +39,15 @@ export default function Page() {
     try {
       const { full_name, uuid } = await postLoginCode({ email, code }).unwrap();
       dispatch(setUser({ full_name, uuid, email }));
-      setLoggedIn(true)
+      setLoggedIn(true);
       toast.success("🎉 Your email has been successfully verified!", {
         position: "top-right",
         transition: Bounce,
       });
-      setLoggedIn(true)
+      setLoggedIn(true);
       router.push("/documents");
     } catch {
-      const message =
-        "⚠️ Something went wrong while verifying the code.";
+      const message = "⚠️ Something went wrong while verifying the code.";
 
       toast.error(message, {
         position: "top-right",
@@ -81,7 +78,9 @@ export default function Page() {
             setCurrentStep(1);
           }}
           isLoading={postLoginCodeLoading}
-          onResendEmail={async (email : string) => {await handleRequestCode({email : email})}}
+          onResendEmail={async (email: string) => {
+            await handleRequestCode({ email: email });
+          }}
           loggedIn={loggedIn}
         />
       )}

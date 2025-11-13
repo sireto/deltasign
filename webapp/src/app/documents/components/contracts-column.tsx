@@ -12,7 +12,6 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/shared/store/store";
 
-
 const StatusBadge = ({ status }: { status: string }) => {
   const statusClasses = cn(
     status === "Draft" && "text-midnight-gray-900 bg-midnight-gray-100",
@@ -40,18 +39,19 @@ const ActionsCell = ({ status, docId, annotations }: ActionsCellProps) => {
 
   // ✅ Check if current user already signed
   const signedByUser = annotations?.some(
-    (annotation) => annotation.signer === userEmail && annotation.signed != null
+    (annotation) =>
+      annotation.signer === userEmail && annotation.signed != null,
   );
 
   const getButtonText = () => {
-    if (signedByUser) return "View"; 
+    if (signedByUser) return "View";
     switch (status) {
       case "Pending":
         return "Sign";
       case "Draft":
         return "Edit";
       default:
-        return "View"; 
+        return "View";
     }
   };
 
@@ -123,8 +123,8 @@ export const contractsColumn: ColumnDef<Contract>[] = [
   },
   {
     header: "Sender",
-    cell: ({row}) => {
-      const doc = row.original
+    cell: ({ row }) => {
+      const doc = row.original;
       return (
         <div className="flex items-center gap-2">
           <img
@@ -181,7 +181,9 @@ export const contractsColumn: ColumnDef<Contract>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => (
-      <ActionsCell status={capitalize(row.getValue("status") as string)} docId={row.original.uuid} 
+      <ActionsCell
+        status={capitalize(row.getValue("status") as string)}
+        docId={row.original.uuid}
         annotations={row.original.annotations}
       />
     ),

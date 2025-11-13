@@ -45,14 +45,14 @@ export default function DataTable<T>({
   onTabChange,
 }: DataTableProps<T>) {
   const table = useReactTable({
-  data: tableData?.data ?? [],
-  columns: tableData?.columns ?? [],
-  getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
+    data: tableData?.data ?? [],
+    columns: tableData?.columns ?? [],
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden border-[1.5px] rounded-[8px] border-gray-200">
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-[8px] border-[1.5px] border-gray-200">
       <Tabs
         defaultValue={defaultValue}
         className="flex h-full flex-1 flex-col gap-0"

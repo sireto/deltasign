@@ -10,11 +10,11 @@ export default function NavBar({
   className,
   fileName,
   RenderButton,
-  contractStatus
+  contractStatus,
 }: {
   className?: string;
   fileName: string;
-  contractStatus? : string
+  contractStatus?: string;
   RenderButton: ComponentType;
 }) {
   const router = useRouter();
@@ -39,12 +39,11 @@ export default function NavBar({
           {fileName}
         </span>
         <span className="text-midnight-gray-300">|</span>
-        {
-          contractStatus && 
+        {contractStatus && (
           <span className="text-midnight-gray-600 border-midnight-gray-300 rounded-sm border px-1 py-[2px] text-xs font-[500]">
             {contractStatus}
           </span>
-        }
+        )}
       </div>
       <div className="flex gap-3">
         <Button variant="outline">

@@ -23,7 +23,7 @@ export interface Contract {
   annotations: Annotation[];
   signed_number: number;
   blockchain_tx_hash: string;
-  creator : string
+  creator: string;
 }
 
 export interface PostContractRequest {
