@@ -46,6 +46,7 @@ import localFont from "next/font/local";
 import { capitalize } from "@/shared/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { toast, Bounce } from "react-toastify";
+import { createSelector } from "@reduxjs/toolkit";
 
 interface Annotation {
   id: number;
@@ -228,10 +229,21 @@ export default function Page() {
     pageIndex: number;
   } | null>(null);
 
-  const { userEmail } = useSelector((state: RootState) => ({
-    userName: state.user.name,
-    userEmail: state.user.email,
-  }));
+  const selectUserInfo = createSelector(
+    (state: RootState) => state.user.name,
+    (state: RootState) => state.user.email,
+    (name, email) => ({
+      userName: name,
+      userEmail: email,
+    }),
+  );
+
+  const {userEmail , userName} = useSelector(selectUserInfo)
+
+
+  // const selectUserInfo = createSelector(
+  //   (state) => state.user.
+  // )
 
   const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(
     null,
