@@ -137,37 +137,31 @@ def get_self_user_contracts(user, contract_status: Optional[ContractStatus] = No
     contracts = []
 
     try:
-        if contract_status != None:
-            user_contracts = list(select(
-                contract for contract in Contract 
-                if contract.document.user.id == user.id and contract.status == contract_status.value
-            )[:])
-            return user_contracts
-            
-        # Base query: all contracts related to the user
-        else: 
-            contracts = list(select(
-                sr.contract for sr in SignRequest 
-                if sr.signer == user or sr.requester == user
-            )[:])
 
-            # Optionally filter by contract_status
-            if contract_status:
-                contracts = [c for c in contracts if c.status == contract_status]
+        print(contract_status)
+        contracts = list(select(
+            sr.contract for sr in SignRequest 
+            if sr.signer == user or sr.requester == user
+        )[:])
 
-            # Include contracts where user owns the document
-            user_contracts = list(select(
-                contract for contract in Contract 
-                if contract.document.user.id == user.id
-            )[:])
+        # Include contracts where user owns the document
+        user_contracts = list(select(
+            contract for contract in Contract 
+            if contract.document.user.id == user.id
+        )[:])
 
-            # Combine lists, avoiding duplicates
-            contracts_ids = {c.id for c in contracts}
-            for c in user_contracts:
-                if c.id not in contracts_ids:
-                    contracts.append(c)
+        # Combine lists, avoiding duplicates
+        contracts_ids = {c.id for c in contracts}
+        for c in user_contracts:
+            if c.id not in contracts_ids:
+                contracts.append(c)
+                
+        # Optionally filter by contract_status4 
+        if contract_status:
+            contracts = [c for c in contracts if c.status == contract_status.value]
 
-            return contracts
+
+        return contracts
 
     except Exception as e:
         print(f"Error fetching contracts: {e}")
