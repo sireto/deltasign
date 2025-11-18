@@ -78,7 +78,7 @@ export default function DataTable<T>({
           <div className="border-midnight-gray-200 flex h-full w-full border-b-[1.5px]" />
         </TabsList>
         {filtersTab && filtersTab}
-        <Card className="flex min-h-[300px] flex-1 rounded-none border-t-0 border-none p-5">
+        <Card className="flex h-full flex-1 rounded-none border-t-0 border-none p-5">
           {table && table.getRowCount() != 0 ? (
             <div className="overflow-hidden rounded-md border">
               <Table>
