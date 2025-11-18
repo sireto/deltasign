@@ -8,3 +8,8 @@ export interface Document {
   updated_date: string;
   owner_uuid: string;
 }
+
+export interface PdfProperties {
+  width : number;
+  height : number;
+}

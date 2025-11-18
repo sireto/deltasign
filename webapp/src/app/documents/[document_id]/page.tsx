@@ -35,7 +35,6 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/thumbnail/lib/styles/index.css";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import React from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import emailvalidator from "email-validator";
 import { PatchContractRequest } from "../types/contract";
@@ -47,6 +46,8 @@ import { capitalize } from "@/shared/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { toast, Bounce } from "react-toastify";
 import { createSelector } from "@reduxjs/toolkit";
+import React from "react";
+import { PdfProperties } from "../types/document";
 
 interface Annotation {
   id: number;
@@ -69,6 +70,9 @@ const CustomPageRenderComponent = ({
   currentPage,
   previewSignature,
   userEmail,
+  ref,
+  onMouseMove,
+  onClick
 }: {
   props: RenderPageProps;
   annotations: Annotation[];
@@ -76,22 +80,26 @@ const CustomPageRenderComponent = ({
   currentPage: number;
   previewSignature: string;
   userEmail: string;
+  ref : React.RefObject<HTMLDivElement|null>;
+  onMouseMove : (e : React.MouseEvent) => void;
+  onClick : () => void;
 }) => {
   return (
     <div
+      ref={ref}
       style={{
         position: "relative",
         width: `${props.width}px`,
         height: `${props.height}px`,
       }}
       id="page-wrapper"
-      className="overflow-clip"
+      onMouseMove={onMouseMove}
+      onClick={onClick}
     >
       {props.canvasLayer.children}
       {props.textLayer.children}
       {props.annotationLayer.children}
 
-      {/* Ghost Preview */}
       {ghostPos && currentPage - 1 === props.pageIndex && (
         <div
           className="border-silicon ring-silicon/20 pointer-events-none absolute flex h-[44px] w-[154px] items-center justify-center rounded-[8px] border-[1.5px] ring-[2px] ring-offset-[1px]"
@@ -124,6 +132,11 @@ const CustomPageRenderComponent = ({
           <div
             className={`${signatureFont.className} itallic flex h-full w-full items-center justify-center text-4xl text-black`}
           >
+            {/* <span className="text-sm">
+              {ann.height.toFixed(0)}
+              &nbsp;-&nbsp;
+              {ann.width.toFixed(0)}
+            </span> */}
             {ann.signer == userEmail && <span>{previewSignature}</span>}
           </div>
         </div>
@@ -134,6 +147,7 @@ const CustomPageRenderComponent = ({
 
 const CustomPageRender = React.memo(CustomPageRenderComponent);
 CustomPageRender.displayName = "CustomPageRender";
+
 
 export default function Page() {
   const pathName = usePathname();
@@ -152,11 +166,11 @@ export default function Page() {
     webWidth: number,
     webHeight: number,
   ) => {
-    const pdfX = webX * scaleFactor;
+    const pdfX = webX;
     const pdfY =
-      pdfDimensions.height - webY * scaleFactor - webHeight * scaleFactor;
-    const pdfWidth = webWidth * scaleFactor;
-    const pdfHeight = webHeight * scaleFactor;
+      pdfDimensions.height - webY - webHeight ;
+    const pdfWidth = webWidth;
+    const pdfHeight = webHeight;
 
     return {
       x1: pdfX,
@@ -186,6 +200,7 @@ export default function Page() {
     };
   };
 
+  
   const contractId = pathName.split("/")[2];
   const { data: contract, refetch: refetchContract } = useGetContractByIdQuery({
     uuid: contractId,
@@ -198,7 +213,7 @@ export default function Page() {
         id: index + 1,
         x: annotation.x1,
         y: annotation.y1,
-        height: annotation.y2 - annotation.y1,
+        height: annotation.y2 - annotation.x2,
         width: annotation.x2 - annotation.x1,
         page: annotation.page,
         signer: annotation.signer,
@@ -240,11 +255,6 @@ export default function Page() {
 
   const {userEmail , userName} = useSelector(selectUserInfo)
 
-
-  // const selectUserInfo = createSelector(
-  //   (state) => state.user.
-  // )
-
   const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(
     null,
   );
@@ -270,25 +280,13 @@ export default function Page() {
     const patchContractData: PatchContractRequest = {
       name: contract.name,
       annotations: annotations.map((annotation) => {
-        const pdfCoords = webToPdf(
-          annotation.x,
-          annotation.y,
-          annotation.width,
-          annotation.height,
-        );
-
-        console.log("📍 Web → PDF Conversion:");
-        console.log("Web:", {
-          x: annotation.x,
-          y: annotation.y,
-          width: annotation.width,
-          height: annotation.height,
-        });
-        console.log("PDF:", pdfCoords);
-        console.log("Scale factor:", scaleFactor);
-
+        const {x : x1 , y : y1} = convertWebCoordinatesToPdf(annotation.x , annotation.y + annotation.height , pdfDimensions.width , pdfDimensions.height , pdfDimensions.width , pdfDimensions.height)
+        const {x : x2 , y : y2} = convertWebCoordinatesToPdf(annotation.x + annotation.width , annotation.y , pdfDimensions.width , pdfDimensions.height , pdfDimensions.width , pdfDimensions.height)
         return {
-          ...pdfCoords,
+          x1,
+          y1,
+          x2,
+          y2,
           signer: annotation.signer,
           color: "#000",
           page: annotation.page,
@@ -297,7 +295,7 @@ export default function Page() {
       signers: signers.map((signer) => signer.email),
       message: emailMessage,
     };
-
+    
     console.log("Final PDF coordinates:", patchContractData.annotations);
 
     try {
@@ -349,20 +347,64 @@ export default function Page() {
   // ========================
   // Handlers
   // ========================
+
+ const convertWebCoordinatesToPdf = (
+    x: number,
+    y: number,
+    canvasWidth: number,
+    canvasHeight: number,
+    pdfWidth: number,
+    pdfHeight: number
+  ) => {
+    return {
+      x: (x / canvasWidth) * pdfWidth,
+      y: ((canvasHeight - y) / canvasHeight) * pdfHeight
+    };
+  };
+
+  const convertPdfToWebCoordinates = (
+    pdfX: number,
+    pdfY: number,
+    canvasWidth: number,
+    canvasHeight: number,
+    pdfWidth: number,
+    pdfHeight: number
+  ) => {
+    return {
+      x: (pdfX / pdfWidth) * canvasWidth,
+      y: canvasHeight - (pdfY / pdfHeight) * canvasHeight
+    };
+  };
+
+
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isSignatureMode || !containerRef.current) {
       setGhostPos(null);
       return;
     }
-    const rect = containerRef.current.getBoundingClientRect();
-    setGhostPos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+     const rect = containerRef.current.getBoundingClientRect();
+  const boxWidth = 154;
+  const boxHeight = 44;
+
+  let x = e.clientX - rect.left;
+  let y = e.clientY - rect.top;
+
+  // Clamp X so the box never leaves page boundaries
+  x = Math.max(0, Math.min(rect.width - boxWidth, x));
+
+  // Clamp Y
+  y = Math.max(0, Math.min(rect.height - boxHeight, y));
+
+  setGhostPos({x , y})
   };
 
   const handlePdfClick = () => {
-    if (!isSignatureMode || !containerRef.current || !ghostPos) return;
+    if (!isSignatureMode || !containerRef.current || !ghostPos){
+      console.log(isSignatureMode)
+      console.log(containerRef.current)
+      console.log(ghostPos)
+      return;
+    } 
 
     setPendingAnnotationPos({
       x: ghostPos.x,
@@ -412,6 +454,10 @@ export default function Page() {
     setShowAddSignerDialog(false);
   };
 
+  useEffect(()=>{
+    console.log(pdfDimensions)
+  },[pdfDimensions])
+
   // ========================
   // Render
   useEffect(() => {
@@ -425,6 +471,8 @@ export default function Page() {
             annotation.y2,
           );
 
+          const {x , y} = convertPdfToWebCoordinates(annotation.x1 , annotation.y1+44 , pdfDimensions.width , pdfDimensions.height , pdfDimensions.width , pdfDimensions.height)
+
           console.log("📍 PDF → Web Conversion:");
           console.log("PDF:", {
             x1: annotation.x1,
@@ -436,7 +484,10 @@ export default function Page() {
 
           return {
             id: index + 1,
-            ...webCoords,
+            x,
+            y,
+            width : 154,
+            height : 44, 
             page: annotation.page,
             signer: annotation.signer,
           };
@@ -454,27 +505,28 @@ export default function Page() {
 
   const handleDocumentLoad = (e: DocumentLoadEvent) => {
     console.log("PDF Document loaded:", e);
-
-    if (e.doc && e.doc) {
-      const width = 612;
-      const height = 792;
-
-      setPdfDimensions({ width, height });
-      console.log("Actual PDF dimensions:", { width, height });
-
-      // Calculate actual scale factor based on rendered size
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const actualScaleX = width / rect.width;
-        const actualScaleY = height / rect.height;
-
-        // Use average scale factor
-        const calculatedScale = (actualScaleX + actualScaleY) / 2;
-        setScaleFactor(calculatedScale);
-        console.log("Calculated scale factor:", calculatedScale);
-      }
-    }
   };
+
+useEffect(() => {
+  if (!contract?.document?.properties) {
+    console.log(contract)
+    return;
+  }
+
+  try {
+    const props: PdfProperties = JSON.parse(contract.document.properties);
+
+    console.log(props)
+
+    if (typeof props.width === "number" && typeof props.height === "number") {
+      setPdfDimensions({ width: props.width, height: props.height });
+    }
+  } catch (err) {
+    console.error("Failed to parse PDF properties", err);
+  }
+}, [contract]);
+
+
 
   const [signContract, { isLoading: isSigningDocument }] =
     useSignContractMutation();
@@ -490,24 +542,12 @@ export default function Page() {
         skipFonts: false,
         width: 154,
         height: 44,
-        canvasHeight: 44,
-        canvasWidth: 154,
         style: {
           width: "154px",
           height: "44px",
         },
       });
       const blob = await (await fetch(dataUrl)).blob();
-
-      // const url = window.URL.createObjectURL(blob);
-      // const a = document.createElement("a");
-      // a.style.display = "none";
-      // a.href = url;
-      // a.download = `debug-signature-${Date.now()}.png`;
-      // document.body.appendChild(a);
-      // a.click();
-      // window.URL.revokeObjectURL(url);
-      // document.body.removeChild(a);
 
       console.log("Signature dimensions:", {
         width: signatureRef.current.offsetWidth,
@@ -724,8 +764,8 @@ export default function Page() {
                   <div className="border-midnight-gray-300 rounded-md border border-dashed bg-white p-4">
                     {previewSignature ? (
                       <p
-                        className={`${signatureFont.className} text-5xl text-black italic`}
                         ref={signatureRef}
+                        className={`${signatureFont.className} text-5xl text-black italic`}
                       >
                         {previewSignature}
                       </p>
@@ -784,7 +824,7 @@ export default function Page() {
       <NavBar
         className="sticky top-0"
         fileName={contract.name}
-        contractStatus={capitalize(contract.status)}
+        contractStatus={`${currentPage}`}
         RenderButton={
           contract.status == "draft"
             ? ShareDocumentButton
@@ -794,6 +834,7 @@ export default function Page() {
         }
       />
       <div className="flex h-full w-full justify-between px-3 pt-3">
+
         {/* Thumbnails */}
         <div className="flex overflow-clip rounded-[8px]">
           <div className="h-[calc(100vh-82px)] min-w-[130px] bg-white p-2">
@@ -825,14 +866,7 @@ export default function Page() {
         </div>
 
         {/* PDF Viewer */}
-        <div className="flex h-[792px] w-[612px] pt-[32px]">
-          <div className="no-scrollbar flex-1 overflow-hidden rounded-[12px] border border-gray-200">
-            <div
-              ref={containerRef}
-              onClick={handlePdfClick}
-              className="relative h-full w-full flex-1"
-              onMouseMove={handleMouseMove}
-            >
+        <div className="flex h-[900px] w-full pt-[32px] no-scrollbar">
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11/build/pdf.worker.min.js">
                 <Viewer
                   fileUrl={
@@ -840,6 +874,7 @@ export default function Page() {
                       ? contract.signed_doc_url
                       : contract.document.s3_url
                   }
+                  defaultScale={1}
                   plugins={[
                     thumbnailPluginInstance,
                     pageNavigationPluginInstance,
@@ -859,23 +894,25 @@ export default function Page() {
                       currentPage={currentPage}
                       previewSignature={previewSignature}
                       userEmail={userEmail}
+                      ref={containerRef}
+                      onMouseMove={handleMouseMove}
+                      onClick={handlePdfClick}
                     />
                   )}
                   onPageChange={(e) => setCurrentPage(e.currentPage + 1)}
                 />
               </Worker>
-            </div>
-          </div>
         </div>
-
-        {/* Sidebar */}
         <div className="border-midnight-gray-200 min-w-[320px] overflow-clip rounded-lg border-[1.5px] bg-white">
           {contract.status === "draft" && (
             <>
               <div className="bg-midnight-gray-50 flex items-center gap-4 px-5 py-4">
                 <div>
                   <p className="text-midnight-gray-900 text-lg font-[600]">
-                    General Settings
+                    General Settings {currentPage}  {pdfDimensions.height} {pdfDimensions.width}
+                  </p>
+                  <p>
+                      {ghostPos && ghostPos.x.toFixed()} {ghostPos && ghostPos.y.toFixed()}
                   </p>
                   <p className="text-midnight-gray-600 text-sm">
                     Configure general settings for the document.
@@ -967,20 +1004,6 @@ export default function Page() {
           </div>
 
           <div className="flex flex-col gap-3 bg-white px-5 py-3">
-            {/* {contract.status === "draft" && (
-              <div className="bg-midnight-gray-50 border-midnight-gray-200 flex justify-between rounded-[8px] border-[1px] p-[10px]">
-                <span className="text-midnight-gray-900 text-sm font-[600]">
-                  Add yourself
-                </span>
-                <Switch
-                  onCheckedChange={(checked) =>
-                    addRemoveSelfToSignersList(checked)
-                  }
-                  checked={addMyselfChecked}
-                />
-              </div>
-            )} */}
-
             {signers.map((signer, index) => (
               <div className="flex justify-between" key={index}>
                 <div className="flex gap-3">

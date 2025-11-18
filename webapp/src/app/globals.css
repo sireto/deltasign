@@ -820,3 +820,8 @@ body::-webkit-scrollbar {
   width: fit-content;
   background-color: #001e19;
 } */
+
+.rpv-core__inner-page , .rpv-core__doc-loading{
+  background: transparent !important;
+}
+
