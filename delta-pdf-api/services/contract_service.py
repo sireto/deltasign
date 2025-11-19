@@ -305,12 +305,22 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
             if (not annotation.signed) and annotation.signer == user.email:
                 document_s3_url = create_pdf_signature(annotation, contract, file)
                 s3_url = s3_service.save_file(user.uuid, file, "signature")
+
+                print(f"annotation url : {s3_url}" )
                 # save file hash to annotations
                 hash = util.get_hash(file)
+
+                print(f"filehash : {hash}")
+
                 sig_annotation = SignatureAnnotation[annotation.id]
+
+                print(f"signature annoation : {sig_annotation}")
+
                 sig_annotation.signature_hash = hash
                 sig_annotation.s3_url = s3_url
                 sig_annotation.signed = True
+
+                print(sig_annotation.json())
 
             # TODO refactor this print statement as it will print even if the email is present as signer
             elif annotation.signed and annotation.signer == user.email:
