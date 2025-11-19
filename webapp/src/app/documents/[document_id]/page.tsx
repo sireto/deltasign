@@ -132,11 +132,6 @@ const CustomPageRenderComponent = ({
           <div
             className={`${signatureFont.className} itallic flex h-full w-full items-center justify-center text-4xl text-black`}
           >
-            {/* <span className="text-sm">
-              {ann.height.toFixed(0)}
-              &nbsp;-&nbsp;
-              {ann.width.toFixed(0)}
-            </span> */}
             {ann.signer == userEmail && <span>{previewSignature}</span>}
           </div>
         </div>
@@ -383,7 +378,9 @@ export default function Page() {
       setGhostPos(null);
       return;
     }
-     const rect = containerRef.current.getBoundingClientRect();
+  const rect = e.currentTarget.getBoundingClientRect()
+
+  console.log("react" , rect)
   const boxWidth = 154;
   const boxHeight = 44;
 
@@ -566,6 +563,7 @@ useEffect(() => {
       }).unwrap();
       console.log("Server response:", result);
       await refetchContract();
+      setPreviewSignature("")
       setPdfKey((prev)=> prev+1)
       toast.success("🎉 Document has been signed successfully.", {
         position: "top-right",
@@ -911,10 +909,7 @@ useEffect(() => {
               <div className="bg-midnight-gray-50 flex items-center gap-4 px-5 py-4">
                 <div>
                   <p className="text-midnight-gray-900 text-lg font-[600]">
-                    General Settings {currentPage}  {pdfDimensions.height} {pdfDimensions.width}
-                  </p>
-                  <p>
-                      {ghostPos && ghostPos.x.toFixed()} {ghostPos && ghostPos.y.toFixed()}
+                    General Settings 
                   </p>
                   <p className="text-midnight-gray-600 text-sm">
                     Configure general settings for the document.
