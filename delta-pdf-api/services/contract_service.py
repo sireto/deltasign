@@ -28,6 +28,7 @@ from typing import Optional
 from db import ContractStatus
 
 from datetime import datetime
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -320,6 +321,12 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
         contract_db = Contract[contract.id]
         contract_db.signed_number = contract_db.signed_number + 1
         contract_db.signed_doc_url = document_s3_url
+        
+
+        signed_list = json.loads(contract_db.signed_by) if contract_db.signed_by else []
+        signed_list.append(user.email)
+        contract_db.signed_by = json.dumps(signed_list)
+
 
         if not contract.signed_by_all and _check_if_all_signer_have_signed(Contract[contract.id].annotations):
             contract_db.signed_by_all = True

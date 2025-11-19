@@ -158,6 +158,7 @@ export default function Page() {
     height: 792,
   });
   const [scaleFactor, setScaleFactor] = useState(0.75);
+  const [pdfKey , setPdfKey] = useState(0)
 
   // Web Pixels → PDF Points
   const webToPdf = (
@@ -564,7 +565,8 @@ useEffect(() => {
         formData,
       }).unwrap();
       console.log("Server response:", result);
-
+      await refetchContract();
+      setPdfKey((prev)=> prev+1)
       toast.success("🎉 Document has been signed successfully.", {
         position: "top-right",
         autoClose: 4000,
@@ -575,7 +577,6 @@ useEffect(() => {
         theme: "light",
         transition: Bounce,
       });
-      refetchContract();
     } catch (error) {
       toast.error("Failed to sign document.", {
         position: "top-right",
@@ -869,8 +870,9 @@ useEffect(() => {
         <div className="flex h-[900px] w-full pt-[32px] no-scrollbar">
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11/build/pdf.worker.min.js">
                 <Viewer
+                  key={pdfKey}
                   fileUrl={
-                    contract.signed_number > 0
+                    contract.signed_by.length > 0
                       ? contract.signed_doc_url
                       : contract.document.s3_url
                   }

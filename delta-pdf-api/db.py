@@ -1,7 +1,7 @@
 import json
 import uuid
 from datetime import datetime
-from typing import Dict
+from typing import Dict , List
 
 from pony import orm
 from pony.orm import PrimaryKey, db_session
@@ -118,6 +118,7 @@ class Contract(database.Entity):
 
     signed_by_all = orm.Optional(bool, sql_default=0)
     signed_number = orm.Required(int, sql_default=0)
+    signed_by = orm.Optional(str)
 
     status = orm.Required(str , default=ContractStatus.DRAFT.value)
 
@@ -135,7 +136,8 @@ class Contract(database.Entity):
                         status=status,
                         signed_doc_url=document.s3_url,
                         created_date=datetime.now(),
-                        signed_number=0)
+                        signed_number=0,
+                        signed_by=json.dumps([]))
 
     def create_sign_request(self, requester: User, signer: User):
         self.sign_requests.add(SignRequest.create(self, requester, signer))
@@ -171,8 +173,21 @@ class Contract(database.Entity):
                 "annotations": [annotation.json() for annotation in annotations],
                 "signed_number": self.signed_number,
                 "blockchain_tx_hash" : self.blockchain_tx_hash,
-                "creator" : creator_email
+                "creator" : creator_email,
+                "signed_by": self.signed_by_list
             }
+    
+    @property
+    def signed_by_list(self) -> List[str]:
+        if not self.signed_by:
+            return []
+        try:
+            data = json.loads(self.signed_by)
+            if isinstance(data, str):
+                return [data]
+            return data
+        except Exception:
+            return [self.signed_by]
 
 class SignatureAnnotation(database.Entity):
     _table_ = 'contract_annotations'

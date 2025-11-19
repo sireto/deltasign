@@ -29,19 +29,15 @@ interface ActionsCellProps {
   annotations: Annotation[];
 }
 
-const ActionsCell = ({ status, docId, annotations }: ActionsCellProps) => {
-  const router = useRouter();
+
+const ActionsCell = ({ signed_by, signers , status }: {signed_by : string[] , signers : string[] , status: string}) => {
+
   const userEmail = useSelector((state: RootState) => state.user.email);
 
-  const handleClick = () => {
-    router.push(`/documents/${docId}`);
-  };
+  // Check if current user has signed
+  const signedByUser = signed_by.includes(userEmail);
 
-  // ✅ Check if current user already signed
-  const signedByUser = annotations?.some(
-    (annotation) =>
-      annotation.signer === userEmail && annotation.signed != null,
-  );
+
 
   const getButtonText = () => {
     if (signedByUser) return "View";
@@ -59,7 +55,6 @@ const ActionsCell = ({ status, docId, annotations }: ActionsCellProps) => {
     <Button
       variant="outline"
       className="text-silicon border-silicon h-7 rounded-[8px] px-2 text-sm font-[600]"
-      onClick={handleClick}
     >
       {getButtonText()}
     </Button>
@@ -169,6 +164,19 @@ export const contractsColumn: ColumnDef<Contract>[] = [
     ),
   },
   {
+    accessorKey: "Signers",
+    header: "Signers",
+    cell: ({ row }) => (
+      <div className="text-midnight-gray-600 text-start">
+       {
+          row.original.status !== "draft"
+            ? `${row.original.signed_by.length}/${row.original.signers.length}`
+            : "-"
+        }
+      </div>
+    ),
+  },
+  {
     accessorKey: "status",
     header: () => <div className="p-2 pl-10 text-center font-bold">Status</div>,
     cell: ({ row }) => (
@@ -183,8 +191,8 @@ export const contractsColumn: ColumnDef<Contract>[] = [
     cell: ({ row }) => (
       <ActionsCell
         status={capitalize(row.getValue("status") as string)}
-        docId={row.original.uuid}
-        annotations={row.original.annotations}
+        signed_by={row.original.signed_by}
+        signers={row.original.signers}
       />
     ),
   },

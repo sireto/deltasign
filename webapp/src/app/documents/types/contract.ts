@@ -25,7 +25,10 @@ export interface Contract {
   signed_number: number;
   blockchain_tx_hash: string;
   creator: string;
+  signed_by : string[] // list string.
 }
+
+
 
 export interface PostContractRequest {
   name: string;
