@@ -153,48 +153,7 @@ export default function Page() {
     height: 792,
   });
   const [scaleFactor, setScaleFactor] = useState(0.75);
-  const [pdfKey , setPdfKey] = useState(0)
-
-  // Web Pixels → PDF Points
-  const webToPdf = (
-    webX: number,
-    webY: number,
-    webWidth: number,
-    webHeight: number,
-  ) => {
-    const pdfX = webX;
-    const pdfY =
-      pdfDimensions.height - webY - webHeight ;
-    const pdfWidth = webWidth;
-    const pdfHeight = webHeight;
-
-    return {
-      x1: pdfX,
-      y1: pdfY,
-      x2: pdfX + pdfWidth,
-      y2: pdfY + pdfHeight,
-    };
-  };
-
-  // PDF Points → Web Pixels
-  const pdfToWeb = (
-    pdfX1: number,
-    pdfY1: number,
-    pdfX2: number,
-    pdfY2: number,
-  ) => {
-    const webX = pdfX1 / scaleFactor;
-    const webY = (pdfDimensions.height - pdfY2) / scaleFactor; // Convert PDF top to web top
-    const webWidth = (pdfX2 - pdfX1) / scaleFactor;
-    const webHeight = (pdfY2 - pdfY1) / scaleFactor;
-
-    return {
-      x: webX,
-      y: webY,
-      width: webWidth,
-      height: webHeight,
-    };
-  };
+  const [pdfKey , setPdfKey] = useState(Date.now())
 
   
   const contractId = pathName.split("/")[2];
@@ -461,13 +420,7 @@ export default function Page() {
   useEffect(() => {
     if (contract) {
       setAnnotations(
-        contract.annotations.map((annotation, index: number) => {
-          const webCoords = pdfToWeb(
-            annotation.x1,
-            annotation.y1,
-            annotation.x2,
-            annotation.y2,
-          );
+        contract.annotations.map((annotation, index: number) => {         
 
           const {x , y} = convertPdfToWebCoordinates(annotation.x1 , annotation.y1+44 , pdfDimensions.width , pdfDimensions.height , pdfDimensions.width , pdfDimensions.height)
 
@@ -478,7 +431,6 @@ export default function Page() {
             x2: annotation.x2,
             y2: annotation.y2,
           });
-          console.log("Web:", webCoords);
 
           return {
             id: index + 1,
@@ -564,7 +516,7 @@ useEffect(() => {
       console.log("Server response:", result);
       await refetchContract();
       setPreviewSignature("")
-      setPdfKey((prev)=> prev+1)
+      setPdfKey(Date.now())
       toast.success("🎉 Document has been signed successfully.", {
         position: "top-right",
         autoClose: 4000,
