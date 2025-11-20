@@ -48,6 +48,7 @@ import { toast, Bounce } from "react-toastify";
 import { createSelector } from "@reduxjs/toolkit";
 import React from "react";
 import { PdfProperties } from "../types/document";
+import { Checkbox } from "@/shared/ui/checkbox";
 
 interface Annotation {
   id: number;
@@ -225,6 +226,9 @@ export default function Page() {
 
   const [emailMessage, setEmailMessage] = useState("");
 
+  const [applyAnnotationToAllPages , setApplyAnnotationToAllPages] = useState(false)
+  const [totalPages , setTotalPages] = useState(0)
+
   const handleSendDocument = async () => {
     if (!contract) return;
 
@@ -289,8 +293,13 @@ export default function Page() {
     {
       label: "Signature",
       onClick: () => {
-        setIsSignatureMode(true);
-        setSelectedTool("Signature");
+        if (isSignatureMode) {
+          setIsSignatureMode(false)
+          setSelectedTool("")
+        } else {
+          setIsSignatureMode(true);
+          setSelectedTool("Signature");
+        }
       },
     },
   ];
@@ -387,8 +396,33 @@ export default function Page() {
       signer: signerName || signerEmail,
     };
 
-    setAnnotations((prev) => [...prev, newAnnotation]);
-    setNextId((prev) => prev + 1);
+    if (applyAnnotationToAllPages && totalPages > 1) {
+      const startId = nextId;
+      const annotationsForAllPages = Array.from({ length: totalPages }, (_, i) => ({
+        id: startId + i,
+        x: pendingAnnotationPos.x,
+        y: pendingAnnotationPos.y,
+        width: 154,
+        height: 44,
+        page: i,
+        signer: signerName || signerEmail,
+      }));
+
+      setAnnotations((prev) => [...prev, ...annotationsForAllPages]);
+      setNextId((prev) => prev + totalPages);
+    } else {
+      const singleAnnotation: Annotation = {
+        id: nextId,
+        x: pendingAnnotationPos.x,
+        y: pendingAnnotationPos.y,
+        width: 154,
+        height: 44,
+        page: pendingAnnotationPos.pageIndex,
+        signer: signerName || signerEmail,
+      };
+      setAnnotations((prev) => [...prev, singleAnnotation]);
+      setNextId((prev) => prev + 1);
+    }
 
     // Add signer
     setSigners((prev) => {
@@ -401,11 +435,8 @@ export default function Page() {
     setSignerEmail("");
     setPendingAnnotationPos(null);
     setShowAddSignerDialog(false);
+    setApplyAnnotationToAllPages(false)
   };
-
-  useEffect(()=>{
-    console.log(pdfDimensions)
-  },[pdfDimensions])
 
   // ========================
   // Render
@@ -446,7 +477,8 @@ export default function Page() {
   }, [contract, pdfDimensions, scaleFactor]);
 
   const handleDocumentLoad = (e: DocumentLoadEvent) => {
-    console.log("PDF Document loaded:", e);
+    console.log("PDF Document loaded:");
+    setTotalPages(e.doc.numPages);
   };
 
 useEffect(() => {
@@ -539,6 +571,8 @@ useEffect(() => {
   const [hideAnnotationBox, setHideAnnotationBox] = useState(
     contract && contract?.signed_number > 0 ? true : false,
   );
+
+  useEffect(()=>{console.log(annotations)} , [annotations])
 
   if (!contract) {
     return (
@@ -654,7 +688,7 @@ useEffect(() => {
             Add Signer
           </DialogTitle>
           <div>
-            <div className="border-midnight-gray-200 flex flex-col gap-3 border-y bg-white px-4 py-6">
+            <div className="border-midnight-gray-200 flex flex-col gap-y-4 border-y bg-white px-4 py-6">
               <div className="flex flex-col gap-2">
                 <Label className="text-midnight-gray-900">Email</Label>
                 <Input
@@ -664,6 +698,13 @@ useEffect(() => {
                   onChange={(e) => setSignerEmail(e.target.value)}
                 />
               </div>
+              {
+                totalPages > 1 && 
+                <div className="flex gap-2">
+                  <Checkbox className="border-gray-700" checked={applyAnnotationToAllPages} onCheckedChange={()=>{setApplyAnnotationToAllPages(!applyAnnotationToAllPages)}}/>
+                  <Label className="text-midnight-gray-900">Automatically include this annotation on all pages.</Label>
+                </div>
+              }
             </div>
             <div className="grid grid-cols-2 gap-3 bg-[#F9F9FC] p-4">
               <Button
