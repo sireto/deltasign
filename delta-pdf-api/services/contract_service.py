@@ -306,15 +306,11 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
                 document_s3_url = create_pdf_signature(annotation, contract, file)
                 s3_url = s3_service.save_file(user.uuid, file, "signature")
 
-                print(f"annotation url : {s3_url}" )
                 # save file hash to annotations
                 hash = util.get_hash(file)
 
-                print(f"filehash : {hash}")
-
                 sig_annotation = SignatureAnnotation[annotation.id]
 
-                print(f"signature annoation : {sig_annotation}")
 
                 sig_annotation.signature_hash = hash
                 sig_annotation.s3_url = s3_url
@@ -328,19 +324,39 @@ def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
             else:
                 print(f"Annotation signer {annotation.signer} does not match current user {user.email}")
 
+
         contract_db = Contract[contract.id]
         contract_db.signed_number = contract_db.signed_number + 1
         contract_db.signed_doc_url = document_s3_url
-        
 
+        # get count of remaining signer
         signed_list = json.loads(contract_db.signed_by) if contract_db.signed_by else []
-        signed_list.append(user.email)
+        if user.email not in signed_list:
+            signed_list.append(user.email)
         contract_db.signed_by = json.dumps(signed_list)
 
+        remaining_signers = [annotation for annotation in contract_db.annotations if annotation.signed == None]
 
-        if not contract.signed_by_all and _check_if_all_signer_have_signed(Contract[contract.id].annotations):
+        print("document s3 url" , document_s3_url)
+
+        if remaining_signers.__len__() == 0:
             contract_db.signed_by_all = True
             contract_db.status = ContractStatus.FULLY_SIGNED.value
+            document = Document.get(id=contract.document.id)
+            contract_db = Contract[contract.id]
+            print("Posting Transaction With Document Validation Info")
+            transaction_hash , document_hash = kuber_service.post_transaction_with_document_validation_info(document_s3_url , document.file_hash , document.user.uuid)
+            contract_db.blockchain_tx_hash = transaction_hash
+            contract_db.signature_hash = document_hash
+
+            email_list = [email for email in contract.json()["signers"]]
+            contract_name = contract.json()["name"]
+
+            if transaction_hash is not None:
+                Thread(target=run_transaction_polling, args=(transaction_hash,email_list,contract_name)).start()
+            else:
+                raise ValueError(f"Transaction Hash is None for contract {contract.id}")
+
 
 
 def _check_if_all_signer_have_signed(annotations):
@@ -375,25 +391,6 @@ def _delete_residual_files_after_signing(file_path):
 def sign_and_upload(pdf_file, signature_file, contract, annotation):
     signed_file = pdf_signer.writeImageBasedStamp(pdf_file, signature_file, annotation)
     s3_service.upload_file(signed_file, contract.signed_doc_url)
-    # get count of remaining signers
-    remaining_signers = select(s for s in SignatureAnnotation if s.contract == contract and s.signed == 0)[:]
-
-
-    if remaining_signers.__len__() <= 1:
-        document = Document.get(id=contract.document.id)
-        contract_db = Contract[contract.id]
-        print("Posting Transaction With Document Validation Info")
-        transaction_hash , document_hash = kuber_service.post_transaction_with_document_validation_info(signed_file , document.file_hash , document.user.uuid)
-        contract_db.blockchain_tx_hash = transaction_hash
-        contract_db.signature_hash = document_hash
-
-        email_list = [email for email in contract.json()["signers"]]
-        contract_name = contract.json()["name"]
-
-        if transaction_hash is not None:
-            Thread(target=run_transaction_polling, args=(transaction_hash,email_list,contract_name)).start()
-        else:
-            raise ValueError(f"Transaction Hash is None for contract {contract.id}")
 
     # delete files
     _delete_residual_files_after_signing(signed_file)

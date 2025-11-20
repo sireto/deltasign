@@ -15,6 +15,7 @@ from pyhanko.sign import signers, fields
 
 import util
 from services.file_service import delete_file
+import requests
 
 
 class PDFSigner:
@@ -154,19 +155,25 @@ class PDFSigner:
             print("Pdf validated")
             return "Pdf validated"
 
-    def get_signed_pdf_hashes(self, file_path):
-        with open(file_path, 'rb') as docs:
-            document_hash = util.get_hash(docs.read())
-            pdf = PdfFileReader(docs)
-            signature_hashes = {}
-            for index,sig in enumerate(pdf.embedded_signatures):
-                signature_hashes[f"annotation-{index}"] = util.get_hash(sig.compute_digest())
-            docs.close()
+    def get_signed_pdf_hashes(self, s3_url):
+        print(s3_url)
+        response = requests.get(s3_url)
+        response.raise_for_status()
+        pdf_bytes = io.BytesIO(response.content)
 
-            delete_file(file_path)
+        document_hash = util.get_hash(pdf_bytes.getvalue())
 
-            signature_hashes["signed_document_hash"] = document_hash
-            return signature_hashes
+        pdf_bytes.seek(0)
+        pdf = PdfFileReader(pdf_bytes)
+
+        signature_hashes = {}
+        for index, sig in enumerate(pdf.embedded_signatures):
+            signature_hashes[f"annotation-{index}"] = util.get_hash(sig.compute_digest())
+
+        signature_hashes["signed_document_hash"] = document_hash
+
+        return signature_hashes
+
 
 # pdf_signer = PDFSigner("../certs/demo2_user1.p12", b'1234')
 pdf_signer = PDFSigner()
