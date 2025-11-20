@@ -70,7 +70,6 @@ const CustomPageRenderComponent = ({
   currentPage,
   previewSignature,
   userEmail,
-  ref,
   onMouseMove,
   onClick
 }: {
@@ -80,13 +79,11 @@ const CustomPageRenderComponent = ({
   currentPage: number;
   previewSignature: string;
   userEmail: string;
-  ref : React.RefObject<HTMLDivElement|null>;
   onMouseMove : (e : React.MouseEvent) => void;
   onClick : () => void;
 }) => {
   return (
     <div
-      ref={ref}
       style={{
         position: "relative",
         width: `${props.width}px`,
@@ -185,7 +182,6 @@ export default function Page() {
   const [nextId, setNextId] = useState(1);
   const [selectedTool, setSelectedTool] = useState("");
 
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const [showAddSignerDialog, setShowAddSignerDialog] = useState(false);
 
@@ -333,10 +329,7 @@ export default function Page() {
 
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isSignatureMode || !containerRef.current) {
-      setGhostPos(null);
-      return;
-    }
+    if (!isSignatureMode) return;
   const rect = e.currentTarget.getBoundingClientRect()
 
   console.log("react" , rect)
@@ -356,9 +349,8 @@ export default function Page() {
   };
 
   const handlePdfClick = () => {
-    if (!isSignatureMode || !containerRef.current || !ghostPos){
+    if (!isSignatureMode || !ghostPos){
       console.log(isSignatureMode)
-      console.log(containerRef.current)
       console.log(ghostPos)
       return;
     } 
@@ -846,7 +838,6 @@ useEffect(() => {
                       currentPage={currentPage}
                       previewSignature={previewSignature}
                       userEmail={userEmail}
-                      ref={containerRef}
                       onMouseMove={handleMouseMove}
                       onClick={handlePdfClick}
                     />
