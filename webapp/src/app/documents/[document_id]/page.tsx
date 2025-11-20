@@ -49,6 +49,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import React from "react";
 import { PdfProperties } from "../types/document";
 import { Checkbox } from "@/shared/ui/checkbox";
+import { text } from "stream/consumers";
 
 interface Annotation {
   id: number;
@@ -58,6 +59,7 @@ interface Annotation {
   height: number;
   page: number;
   signer: string;
+  color : string;
 }
 
 const signatureFont = localFont({
@@ -121,10 +123,17 @@ const CustomPageRenderComponent = ({
             top: ann.y,
             height: ann.height,
             width: ann.width,
+            border: `2px solid ${ann.color}`,
+            boxShadow: `0 0 10px 2px ${ann.color}66`
           }}
-          className="border-silicon ring-silicon/20 absolute rounded-[8px] border-[1.5px] ring-[2px] ring-offset-[1px]"
+          className=" absolute rounded-[8px] border-[1.5px] ring-[2px] ring-offset-[1px]"
         >
-          <div className="text-silicon text-midnight-gray-900 absolute -top-4 rounded px-1 text-[10px] font-medium">
+          <div 
+            style={{
+              color : ann.color 
+            }}
+            className="absolute -top-4 rounded px-1 text-[10px] font-medium"
+          >
             {ann.signer == userEmail ? "You" : ann.signer}
           </div>
           <div
@@ -170,6 +179,7 @@ export default function Page() {
         width: annotation.x2 - annotation.x1,
         page: annotation.page,
         signer: annotation.signer,
+        color : annotation.color
       })) || [],
   );
   const [signers, setSigners] = useState<{ email: string; name: string }[]>(
@@ -187,6 +197,19 @@ export default function Page() {
   const [showAddSignerDialog, setShowAddSignerDialog] = useState(false);
 
   const [showSignContractDialog, setShowSignContractDialog] = useState(false);
+
+  const defaultAnnotationColors = [
+    "#19902e", // Green
+    "#3c7de5", // Blue
+    "#ea9d17", // Orange
+    "#89c5ca", // Teal
+    "#dbe200", // Yellow
+    "#e53935", // Red
+    "#8e24aa", // Purple
+    "#ff5722", // Deep Orange
+    "#00bfa5", // Cyan/Teal
+    "#607d8b", // Grayish Blue
+  ];
 
   const [signerName, setSignerName] = useState("");
   const [signerEmail, setSignerEmail] = useState("");
@@ -243,7 +266,7 @@ export default function Page() {
           x2,
           y2,
           signer: annotation.signer,
-          color: "#000",
+          color: annotation.color,
           page: annotation.page,
         };
       }),
@@ -394,6 +417,7 @@ export default function Page() {
       height: 44,
       page: pendingAnnotationPos.pageIndex,
       signer: signerName || signerEmail,
+      color : selectedAnnotationBoxColor
     };
 
     if (applyAnnotationToAllPages && totalPages > 1) {
@@ -406,6 +430,7 @@ export default function Page() {
         height: 44,
         page: i,
         signer: signerName || signerEmail,
+        color : selectedAnnotationBoxColor
       }));
 
       setAnnotations((prev) => [...prev, ...annotationsForAllPages]);
@@ -419,6 +444,7 @@ export default function Page() {
         height: 44,
         page: pendingAnnotationPos.pageIndex,
         signer: signerName || signerEmail,
+        color : selectedAnnotationBoxColor
       };
       setAnnotations((prev) => [...prev, singleAnnotation]);
       setNextId((prev) => prev + 1);
@@ -463,6 +489,7 @@ export default function Page() {
             height : 44, 
             page: annotation.page,
             signer: annotation.signer,
+            color: annotation.color
           };
         }),
       );
@@ -571,6 +598,8 @@ useEffect(() => {
   const [hideAnnotationBox, setHideAnnotationBox] = useState(
     contract && contract?.signed_number > 0 ? true : false,
   );
+
+  const [selectedAnnotationBoxColor , setSelectedAnnotationBoxColor] = useState("#19902e")
 
   useEffect(()=>{console.log(annotations)} , [annotations])
 
@@ -688,7 +717,7 @@ useEffect(() => {
             Add Signer
           </DialogTitle>
           <div>
-            <div className="border-midnight-gray-200 flex flex-col gap-y-4 border-y bg-white px-4 py-6">
+            <div className="border-midnight-gray-200 flex flex-col gap-y-6 border-y bg-white px-4 py-6">
               <div className="flex flex-col gap-2">
                 <Label className="text-midnight-gray-900">Email</Label>
                 <Input
@@ -697,14 +726,30 @@ useEffect(() => {
                   value={signerEmail}
                   onChange={(e) => setSignerEmail(e.target.value)}
                 />
+                  {
+                  totalPages > 1 && 
+                  <div className="flex gap-2 mt-1">
+                    <Checkbox className="border-gray-700" checked={applyAnnotationToAllPages} onCheckedChange={()=>{setApplyAnnotationToAllPages(!applyAnnotationToAllPages)}}/>
+                    <Label className="text-midnight-gray-900">Automatically include this annotation on all pages.</Label>
+                  </div>
+                }
               </div>
-              {
-                totalPages > 1 && 
+
+              <div className="flex gap-2 flex-col">
+                <Label className="text-midnight-gray-900">Choose Annotation Box Color : </Label>
                 <div className="flex gap-2">
-                  <Checkbox className="border-gray-700" checked={applyAnnotationToAllPages} onCheckedChange={()=>{setApplyAnnotationToAllPages(!applyAnnotationToAllPages)}}/>
-                  <Label className="text-midnight-gray-900">Automatically include this annotation on all pages.</Label>
+                  {defaultAnnotationColors.map((color, index) => (
+                    <div
+                      key={index}
+                      className={cn("w-4 h-4 rounded-[4px] border border-gray-300" ,  selectedAnnotationBoxColor === color
+                      ? "ring-4 ring-blue-400 ring-offset-1"
+                      : "")}
+                      style={{ backgroundColor: color }}
+                      onClick={()=>{setSelectedAnnotationBoxColor(color)}}
+                    />
+                  ))}
                 </div>
-              }
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3 bg-[#F9F9FC] p-4">
               <Button
