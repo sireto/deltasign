@@ -296,58 +296,52 @@ def patch_contract(uuid: str, patch_request: ContractPatchRequest, user: User , 
 
 def sign_and_upload_to_s3(contract: Contract, user: User, file: bytes):
     with (db_session):
+        user_annotations = [annotation for annotation in Contract[contract.id].annotations if (not annotation.signed) and annotation.signer == user.email]
+
+        if len(user_annotations) == 0:
+            raise BadRequest(f"No annotations to Sign")
+
         document_s3_url = ""
-        for annotation in Contract[contract.id].annotations:
+        for annotation in user_annotations:
             print(f"annotation: {annotation.json()} {annotation.signed}")
             if not os.path.exists('./data/s3'):
                 os.makedirs('./data/s3', mode=0o777)
 
-            if (not annotation.signed) and annotation.signer == user.email:
-                document_s3_url = create_pdf_signature(annotation, contract, file)
-                s3_url = s3_service.save_file(user.uuid, file, "signature")
+            document_s3_url = create_pdf_signature(annotation, contract, file)
+            s3_url = s3_service.save_file(user.uuid, file, "signature")
 
-                # save file hash to annotations
-                hash = util.get_hash(file)
+            hash = util.get_hash(file)
 
-                sig_annotation = SignatureAnnotation[annotation.id]
+            sig_annotation = SignatureAnnotation[annotation.id]
 
-
-                sig_annotation.signature_hash = hash
-                sig_annotation.s3_url = s3_url
-                sig_annotation.signed = True
-
-                print(sig_annotation.json())
-
-            # TODO refactor this print statement as it will print even if the email is present as signer
-            elif annotation.signed and annotation.signer == user.email:
-                print(f"Already signed")
-            else:
-                print(f"Annotation signer {annotation.signer} does not match current user {user.email}")
+            sig_annotation.signature_hash = hash
+            sig_annotation.s3_url = s3_url
+            sig_annotation.signed = True
 
 
-        contract_db = Contract[contract.id]
-        contract_db.signed_number = contract_db.signed_number + 1
-        contract_db.signed_doc_url = document_s3_url
+        contract = Contract[contract.id]
+        contract.signed_number = contract.signed_number + 1
+        contract.signed_doc_url = document_s3_url
 
         # get count of remaining signer
-        signed_list = json.loads(contract_db.signed_by) if contract_db.signed_by else []
+        signed_list = json.loads(contract.signed_by) if contract.signed_by else []
         if user.email not in signed_list:
             signed_list.append(user.email)
-        contract_db.signed_by = json.dumps(signed_list)
+        contract.signed_by = json.dumps(signed_list)
 
-        remaining_signers = [annotation for annotation in contract_db.annotations if annotation.signed == None]
+        remaining_signers = [annotation for annotation in contract.annotations if annotation.signed == None]
 
         print("document s3 url" , document_s3_url)
 
+        # perform blockchain transaction
         if remaining_signers.__len__() == 0:
-            contract_db.signed_by_all = True
-            contract_db.status = ContractStatus.FULLY_SIGNED.value
+            contract.signed_by_all = True
+            contract.status = ContractStatus.FULLY_SIGNED.value
             document = Document.get(id=contract.document.id)
-            contract_db = Contract[contract.id]
             print("Posting Transaction With Document Validation Info")
             transaction_hash , document_hash = kuber_service.post_transaction_with_document_validation_info(document_s3_url , document.file_hash , document.user.uuid)
-            contract_db.blockchain_tx_hash = transaction_hash
-            contract_db.signature_hash = document_hash
+            contract.blockchain_tx_hash = transaction_hash
+            contract.signature_hash = document_hash
 
             email_list = [email for email in contract.json()["signers"]]
             contract_name = contract.json()["name"]
