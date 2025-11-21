@@ -160,7 +160,7 @@ export default function Page() {
     height: 792,
   });
   const [scaleFactor, setScaleFactor] = useState(0.75);
-  const [pdfKey , setPdfKey] = useState(Date.now())
+  const [pdfVersion , setPdfVersion] = useState(0)
 
   
   const contractId = pathName.split("/")[2];
@@ -567,7 +567,7 @@ useEffect(() => {
       console.log("Server response:", result);
       await refetchContract();
       setPreviewSignature("")
-      setPdfKey(Date.now())
+      setPdfVersion(prev=>prev+1)
       toast.success("🎉 Document has been signed successfully.", {
         position: "top-right",
         autoClose: 4000,
@@ -898,7 +898,7 @@ useEffect(() => {
         <div className="flex h-[900px] w-full pt-[32px] no-scrollbar">
               <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11/build/pdf.worker.min.js">
                 <Viewer
-                  key={pdfKey}
+                  key={pdfVersion}
                   fileUrl={
                     contract.signed_by.length > 0
                       ? contract.signed_doc_url
